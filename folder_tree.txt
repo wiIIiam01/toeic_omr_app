@@ -1,0 +1,33 @@
+toeic_omr_app/
+│
+├── app/                       # mã nguồn chính
+│   ├── main.py                 # entry point (Kivy app)
+│   ├── ui/                     # giao diện Kivy (kv files, widgets)
+│   ├── camera/                 # xử lý camera + mask
+│   ├── processing/             # xử lý ảnh (OpenCV)
+│   │   ├── detect_corners.py
+│   │   ├── warp_and_crop.py
+│   │   └── read_answers.py
+│   ├── grading/                # logic chấm điểm
+│   │   ├── score_calc.py
+│   │   └── mapping_parts.py
+│   └── storage/                # quản lý dữ liệu & sync
+│       ├── database.py         # SQLite
+│       ├── sheets_upload.py    # Google Sheets API
+│       └── answers_loader.py   # load đáp án từ file
+│
+├── data/
+│   ├── answers/                # chứa đáp án chuẩn cho từng bộ đề
+│   │   ├── set1.txt
+│   │   ├── set2.txt
+│   │   └── ...
+│   └── sets_overview.csv       # bảng <STT, Bộ đề, Số lượng mã đề>
+│
+├── results/                    # lưu kết quả đã chấm
+│   ├── local.sqlite            # SQLite DB
+│   └── exports/                # bản CSV, JSON kết quả xuất ra
+│
+├── docs/                       # tài liệu (ví dụ: sample.pdf)
+│   └── sample.pdf
+│
+└── requirements.txt            # dependencies
