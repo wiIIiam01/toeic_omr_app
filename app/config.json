@@ -1,0 +1,26 @@
+{
+    "marker_scaling_ref": 0.041726618705035974,
+    "warp_size": {
+        "width": 1320,
+        "height": 869
+    },
+
+    "omr_engine": {
+        "min_fill_percentage": 0.50
+    },
+
+    "preprocessing": {
+        "clahe_clip_limit": 2.0,
+        "clahe_tile_grid_size": 8,
+        "threshold_value": 150
+    },
+
+    "visualization": {
+        "threshold_high_density": 0.60,
+        "threshold_medium_density": 0.50,
+        "color_high": [0, 255, 0],       
+        "color_medium": [0, 255, 255],   
+        "color_low": [0, 165, 255],      
+        "color_error": [0, 50, 255]      
+    }
+}
