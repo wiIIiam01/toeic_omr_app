@@ -10,8 +10,6 @@
     },
 
     "preprocessing": {
-        "clahe_clip_limit": 2.0,
-        "clahe_tile_grid_size": 8,
         "threshold_value": 150
     },
 

@@ -25,8 +25,9 @@ def main():
         scoring_ref = load_scoring_ref(SCORING_REF_PATH)
         selected_set, selected_id, image_dir = get_user_selection(all_keys_data)
         key_raw = get_answer_key(all_keys_data, selected_set, selected_id)
-        print(f"\n✅ Đã chọn Bộ đề: **{selected_set}**, Mã đề: **{selected_id}**. ({len(key_raw)} câu)")
-        print(f"Bắt đầu chấm điểm thư mục: {image_dir}")
+        print(f"\n--- {selected_set}, test {selected_id} ---".upper())
+        print(f"Working on: {Path(image_dir).name}")
+        print("-----------------------------------------")
         
         warp_processor = WarpingProcessor(config)
         omr_engine = OMREngine(config)
@@ -57,14 +58,14 @@ def main():
 
     for img_path in image_files:
         base_name = img_path.stem
-        print(f"\tĐang xử lý: {img_path.name}", end='\r')
+        print(f"\t⏳ Grading: {img_path.name}", end='\r')
         
         try:
             img_bgr = cv2.imdecode(np.fromfile(str(img_path), np.uint8), cv2.IMREAD_UNCHANGED)
             if img_bgr is None:
                 raise RuntimeError("Không thể đọc/giải mã file ảnh.")
 
-            img_warped_bgr, img_warped_binary, _ = warp_processor.process_warping(img_bgr)
+            img_warped_bgr, img_warped_binary = warp_processor.process_warping(img_bgr)
             
             answers_list, _, image_with_grid = omr_engine.process_omr(
                 img_warped_binary, 
@@ -77,16 +78,15 @@ def main():
             row_dict = grade_manager.format_result(base_name, parts, answers_list)
             all_results_list.append(row_dict)
             
-            print(f"\t✅ Xử lý thành công: {img_path.name}.")
+            print(f"\t✅ Graded: {img_path.name}")
             
         except Exception as e:
-            print(f"\t❌ LỖI khi xử lý file {img_path.name}: {e}")
+            print(f"\t❌ Error {img_path.name}: {e}")
             continue
 
     if all_results_list:
         grade_manager.save_all_to_excel(all_results_list, result_xlsx)
-        print(f"\n✨ Đã lưu tất cả kết quả vào {result_xlsx}.")
-        print(f"Kết quả ảnh và Excel được lưu tại: **{result_dir}**")
+        print(f"\n✨ Results saved: {result_dir.name}\\{result_xlsx.name}.")
 
 if __name__ == "__main__":
     main()

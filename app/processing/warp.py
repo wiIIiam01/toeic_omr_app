@@ -15,15 +15,8 @@ class WarpingProcessor:
 
     #Xử lý ảnh trước khi quét các marker đáp án
     def _preprocess_bubble(self, img_gray: np.ndarray) -> np.ndarray:
-        
-        clip_limit = self.P_CFG.get('clahe_clip_limit', 2.0)
-        tile_size = self.P_CFG.get('clahe_tile_grid_size', 8)
         threshold_value = self.P_CFG.get('threshold_value', 127)
-        
-        clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=(tile_size, tile_size))
-        img_clahe = clahe.apply(img_gray)
         _, img_binary_bubble = cv2.threshold(img_gray, threshold_value, 255, cv2.THRESH_BINARY_INV)
-        
         return img_binary_bubble
 
     def _find_and_order_markers(self, img_binary_marker: np.ndarray) -> List[Tuple[int, int, int, int]]:
@@ -56,7 +49,7 @@ class WarpingProcessor:
 
         return [markers[tl_idx], markers[tr_idx], markers[br_idx], markers[bl_idx]]
 
-    def process_warping(self, img_bgr: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def process_warping(self, img_bgr: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 
         img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
         
@@ -87,6 +80,5 @@ class WarpingProcessor:
 
         img_warped_bgr = cv2.warpPerspective(img_bgr, M, warp_size)
         img_warped_binary = cv2.warpPerspective(img_binary_bubble, M, warp_size)
-        img_warped_gray = cv2.warpPerspective(img_gray, M, warp_size)
 
-        return img_warped_bgr, img_warped_binary, img_warped_gray
+        return img_warped_bgr, img_warped_binary

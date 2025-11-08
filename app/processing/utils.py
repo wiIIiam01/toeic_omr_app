@@ -75,15 +75,15 @@ def get_user_selection(key_data: Dict[str, Dict[str, str]]) -> Tuple[str, str, s
 
     # 2. Chọn Mã đề (Test ID)
     test_ids = list(key_data[selected_set].keys())
-    print(f"\n--- CHỌN MÃ ĐỀ TRONG {selected_set} ---")
-    print(f"Các mã đề có sẵn: {', '.join(test_ids)}")
+    print(f"\n--- CHỌN TEST TRONG {selected_set} ---")
+    print(f"Các test có sẵn: {', '.join(test_ids)}")
 
     while True:
-        selected_id = input(f"Nhập Mã đề: ").strip()
+        selected_id = input(f"Nhập Test: ").strip()
         if selected_id in test_ids:
             break
         else:
-            print(f"Mã đề '{selected_id}' không tồn tại trong Bộ đề này.")
+            print(f"Test '{selected_id}' không tồn tại trong Bộ đề này.")
 
     # 3. Chọn Folder chứa bài làm
     print("\n--- NHẬP ĐƯỜNG DẪN THƯ MỤC ẢNH ---")
