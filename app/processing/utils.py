@@ -1,6 +1,7 @@
 from typing import Tuple, Dict, Any
 from pathlib import Path
 import json
+import os
 
 def load_config(filename: Path = Path("config.json")) -> Dict[str, Any]:
     try:
@@ -30,3 +31,66 @@ def get_answer_parts_ranges():
         (131, 146),
         (147, 200)
     ]
+    
+def load_key(key_file_path: str = 'key.json') -> Dict[str, Dict[str, str]]:
+    try:
+        with open(key_file_path, 'r', encoding='utf-8') as f:
+            key_data = json.load(f)
+        if not isinstance(key_data, dict):
+            raise ValueError("Cấu trúc file key.json không hợp lệ.")           
+        return key_data
+        
+    except json.JSONDecodeError:
+        raise ValueError(f"Lỗi: Không thể giải mã file JSON tại {key_file_path}. Kiểm tra lỗi cú pháp JSON.")
+    except Exception as e:
+        raise Exception(f"Lỗi khi tải key.json: {e}")
+    
+def get_user_selection(key_data: Dict[str, Dict[str, str]]) -> Tuple[str, str, str]:
+    set_names = list(key_data.keys())
+    print("\n--- CHỌN BỘ ĐỀ ---")
+    for i, name in enumerate(set_names):
+        print(f"[{i+1}] {name}")
+    
+    while True:
+        try:
+            choice = int(input("Nhập số thứ tự Bộ đề: "))
+            if 1 <= choice <= len(set_names):
+                selected_set = set_names[choice - 1]
+                break
+            else:
+                print("Lựa chọn không hợp lệ.")
+        except ValueError:
+            print("Vui lòng nhập một số.")
+
+    # 2. Chọn Mã đề (Test ID)
+    test_ids = list(key_data[selected_set].keys())
+    print(f"\n--- CHỌN MÃ ĐỀ TRONG {selected_set} ---")
+    print(f"Các mã đề có sẵn: {', '.join(test_ids)}")
+
+    while True:
+        selected_id = input(f"Nhập Mã đề: ").strip()
+        if selected_id in test_ids:
+            break
+        else:
+            print(f"Mã đề '{selected_id}' không tồn tại trong Bộ đề này.")
+
+    # 3. Chọn Folder chứa bài làm
+    print("\n--- NHẬP ĐƯỜNG DẪN THƯ MỤC ẢNH ---")
+    while True:
+        # .replace('"', '') để loại bỏ dấu ngoặc kép khi dán đường dẫn trên Windows
+        folder_path = input("Dán đường dẫn thư mục chứa ảnh bài làm: ").strip().replace('"', '') 
+        if os.path.isdir(folder_path):
+            break
+        else:
+            print("Đường dẫn không hợp lệ. Vui lòng thử lại.")
+            
+    return selected_set, selected_id, folder_path
+
+def get_answer_key(key_data: Dict[str, Dict[str, str]], set_name: str, test_id: str) -> str:
+    if set_name not in key_data:
+        raise KeyError(f"Lỗi: Không tìm thấy Bộ đề '{set_name}' trong key.json.")
+    
+    if test_id not in key_data[set_name]:
+        raise KeyError(f"Lỗi: Không tìm thấy Mã đề '{test_id}' trong Bộ đề '{set_name}'.")
+        
+    return key_data[set_name][test_id]
