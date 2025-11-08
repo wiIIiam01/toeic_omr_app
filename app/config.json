@@ -6,7 +6,7 @@
     },
 
     "omr_engine": {
-        "min_fill_percentage": 0.50
+        "min_fill_percentage": 0.40
     },
 
     "preprocessing": {
@@ -16,11 +16,10 @@
     },
 
     "visualization": {
-        "threshold_high_density": 0.60,
+        "threshold_high_density": 0.65,
         "threshold_medium_density": 0.50,
         "color_high": [0, 255, 0],       
         "color_medium": [0, 255, 255],   
-        "color_low": [0, 165, 255],      
-        "color_error": [0, 50, 255]      
+        "color_low": [0, 165, 255]   
     }
 }

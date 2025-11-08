@@ -125,18 +125,18 @@ class OMREngine:
         color_high = tuple(self.VIS_CFG.get('color_high', [0, 255, 0]))
         color_medium = tuple(self.VIS_CFG.get('color_medium', [0, 255, 255]))
         color_low = tuple(self.VIS_CFG.get('color_low', [0, 165, 255]))
-        color_error = tuple(self.VIS_CFG.get('color_error', [0, 50, 255]))
 
         for g in range(groups): 
             col_start = g * 4
             col_indices = list(range(col_start, col_start + 4))
             for r in range(rows): 
                 bits = tuple(int(result_matrix[r, c]) for c in col_indices)
-                ch = bits_to_char(bits)
+                densities = [density_matrix[r, c] for c in col_indices]
+                ch, final_bits = bits_to_char(bits, densities)
                 answers_list.append(ch)
                 
                 if ch in ('A', 'B', 'C', 'D'):
-                    marked_col_idx = col_indices[bits.index(1)] 
+                    marked_col_idx = col_indices[final_bits.index(1)] 
                     x = X_CENTERS[marked_col_idx]
                     y = Y_CENTERS[r]
                     density = density_matrix[r, marked_col_idx] # Lấy Density của bubble đã chọn
@@ -148,11 +148,7 @@ class OMREngine:
                     else:
                         cv2.circle(image_with_grid, (x, y), R - 2, color_low, -1)
                     
-                elif ch == 'X':
-                    marked_col_indices = [col_indices[i] for i, bit in enumerate(bits) if bit == 1]
-                    for marked_col_idx in marked_col_indices:
-                        cx = X_CENTERS[marked_col_idx]
-                        cy = Y_CENTERS[r]
-                        cv2.circle(image_with_grid, (cx, cy), R - 2, color_error, -1)
+                elif ch == '0':
+                    pass
 
         return answers_list, result_matrix, image_with_grid

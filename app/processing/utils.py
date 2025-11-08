@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any, List
 from pathlib import Path
 import json
 import os
@@ -10,14 +10,25 @@ def load_config(filename: Path = Path("config.json")) -> Dict[str, Any]:
     except FileNotFoundError:
         raise FileNotFoundError(f"Lỗi: Không tìm thấy file cấu hình {filename}. Vui lòng tạo file này.")
 
-def bits_to_char(bits: Tuple[int, int, int, int]) -> str:
-    """Chuyển 4 bit nhị phân (0, 1) thành ký tự đáp án (0, A, B, C, D, X)."""
-    if bits == (0,0,0,0): return '0' # Không tô
-    if bits == (1,0,0,0): return 'A'
-    if bits == (0,1,0,0): return 'B'
-    if bits == (0,0,1,0): return 'C'
-    if bits == (0,0,0,1): return 'D'
-    return 'X' # Tô quá 1 ô (hoặc lỗi khác)
+def bits_to_char(bits: Tuple[int, int, int, int], densities: List[float]) -> Tuple[str, Tuple[int, int, int, int]]:
+    sum_bits = sum(bits)
+    bits_list = list(bits)
+    
+    if sum_bits == 0: 
+        return '0', (0, 0, 0, 0)
+    
+    if sum_bits > 1:
+        marked_info = [(densities[i], i) for i, bit in enumerate(bits) if bit == 1]
+        best_index = max(marked_info, key=lambda x: x[0])[1]
+        bits_list = [0] * 4
+        bits_list[best_index] = 1
+     
+    final_bits = tuple(bits_list)
+    
+    if final_bits == (1,0,0,0): return 'A', final_bits
+    if final_bits == (0,1,0,0): return 'B', final_bits
+    if final_bits == (0,0,1,0): return 'C', final_bits
+    if final_bits == (0,0,0,1): return 'D', final_bits
 
 def get_answer_parts_ranges():
     """Trả về các phạm vi câu hỏi cho việc chấm điểm từng phần."""
@@ -94,3 +105,18 @@ def get_answer_key(key_data: Dict[str, Dict[str, str]], set_name: str, test_id: 
         raise KeyError(f"Lỗi: Không tìm thấy Mã đề '{test_id}' trong Bộ đề '{set_name}'.")
         
     return key_data[set_name][test_id]
+
+def load_scoring_ref(ref_file_path: str = 'scoring_ref.json') -> Dict[str, Dict[str, int]]:
+    try:
+        with open(ref_file_path, 'r', encoding='utf-8') as f:
+            ref_data = json.load(f)
+            
+            for key in ref_data:
+                ref_data[key] = {int(k): v for k, v in ref_data[key].items()}
+            
+            return ref_data
+            
+    except json.JSONDecodeError:
+        raise ValueError(f"Lỗi: Không thể giải mã file JSON tại {ref_file_path}.")
+    except Exception as e:
+        raise Exception(f"Lỗi khi tải scoring_ref.json: {e}")
