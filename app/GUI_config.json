@@ -1,0 +1,20 @@
+{
+    "PALETTE": {
+        "C_PRIMARY_DARK": "#222831",
+        "C_SECONDARY_DARK": "#393E46",
+        "C_ACCENT": "#00ADB5",
+        "C_LIGHT": "#EEEEEE"
+    },
+    "SIZES_AND_PADDING": {
+        "H_PAD": 20,
+        "INPUT_FONT_SIZE": 20,
+        "ACTION_FONT_SIZE": 11,
+        "INPUT_PADY": 5,
+        "ACTION_PADY": 5
+    },
+    "DEFAULT_SETTINGS": {
+        "FONT_FAMILY": "Arial",
+        "WINDOW_TITLE": "TOEIC OMR Scoring",
+        "GEOMETRY": "800x600"
+    }
+}

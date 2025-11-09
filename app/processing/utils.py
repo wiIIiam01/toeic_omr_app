@@ -88,7 +88,6 @@ def get_user_selection(key_data: Dict[str, Dict[str, str]]) -> Tuple[str, str, s
     # 3. Chọn Folder chứa bài làm
     print("\n--- NHẬP ĐƯỜNG DẪN THƯ MỤC ẢNH ---")
     while True:
-        # .replace('"', '') để loại bỏ dấu ngoặc kép khi dán đường dẫn trên Windows
         folder_path = input("Dán đường dẫn thư mục chứa ảnh bài làm: ").strip().replace('"', '') 
         if os.path.isdir(folder_path):
             break
