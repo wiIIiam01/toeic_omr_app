@@ -11,6 +11,46 @@ from processing.grade import GradeManager
 KEY_PATH = Path("key.json")
 SCORING_REF_PATH = 'scoring_ref.json'
 
+def get_user_selection(key_data: Dict[str, Dict[str, str]]) -> Tuple[str, str, str]:
+    set_names = list(key_data.keys())
+    print("\n--- CHỌN BỘ ĐỀ ---")
+    for i, name in enumerate(set_names):
+        print(f"[{i+1}] {name}")
+    
+    while True:
+        try:
+            choice = int(input("Nhập số thứ tự Bộ đề: "))
+            if 1 <= choice <= len(set_names):
+                selected_set = set_names[choice - 1]
+                break
+            else:
+                print("Lựa chọn không hợp lệ.")
+        except ValueError:
+            print("Vui lòng nhập một số.")
+
+    # 2. Chọn Mã đề (Test ID)
+    test_ids = list(key_data[selected_set].keys())
+    print(f"\n--- CHỌN TEST TRONG {selected_set} ---")
+    print(f"Các test có sẵn: {', '.join(test_ids)}")
+
+    while True:
+        selected_id = input(f"Nhập Test: ").strip()
+        if selected_id in test_ids:
+            break
+        else:
+            print(f"Test '{selected_id}' không tồn tại trong Bộ đề này.")
+
+    # 3. Chọn Folder chứa bài làm
+    print("\n--- NHẬP ĐƯỜNG DẪN THƯ MỤC ẢNH ---")
+    while True:
+        folder_path = input("Dán đường dẫn thư mục chứa ảnh bài làm: ").strip().replace('"', '') 
+        if os.path.isdir(folder_path):
+            break
+        else:
+            print("Đường dẫn không hợp lệ. Vui lòng thử lại.")
+            
+    return selected_set, selected_id, folder_path
+
 def main():
     if os.name == 'nt':
         os.system('chcp 65001')

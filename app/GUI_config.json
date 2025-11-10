@@ -14,7 +14,7 @@
     },
     "DEFAULT_SETTINGS": {
         "FONT_FAMILY": "Arial",
-        "WINDOW_TITLE": "TOEIC OMR Scoring",
+        "WINDOW_TITLE": "TOEIC Score",
         "GEOMETRY": "800x600"
     }
 }

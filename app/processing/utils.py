@@ -2,7 +2,7 @@ from typing import Tuple, Dict, Any, List
 from pathlib import Path
 import json
 import os
-import datetime
+import pandas as pd
 
 def load_config(filename: Path = Path("config.json")) -> Dict[str, Any]:
     try:
@@ -56,46 +56,6 @@ def load_key(key_file_path: str = 'key.json') -> Dict[str, Dict[str, str]]:
         raise ValueError(f"Lỗi: Không thể giải mã file JSON tại {key_file_path}. Kiểm tra lỗi cú pháp JSON.")
     except Exception as e:
         raise Exception(f"Lỗi khi tải key.json: {e}")
-    
-def get_user_selection(key_data: Dict[str, Dict[str, str]]) -> Tuple[str, str, str]:
-    set_names = list(key_data.keys())
-    print("\n--- CHỌN BỘ ĐỀ ---")
-    for i, name in enumerate(set_names):
-        print(f"[{i+1}] {name}")
-    
-    while True:
-        try:
-            choice = int(input("Nhập số thứ tự Bộ đề: "))
-            if 1 <= choice <= len(set_names):
-                selected_set = set_names[choice - 1]
-                break
-            else:
-                print("Lựa chọn không hợp lệ.")
-        except ValueError:
-            print("Vui lòng nhập một số.")
-
-    # 2. Chọn Mã đề (Test ID)
-    test_ids = list(key_data[selected_set].keys())
-    print(f"\n--- CHỌN TEST TRONG {selected_set} ---")
-    print(f"Các test có sẵn: {', '.join(test_ids)}")
-
-    while True:
-        selected_id = input(f"Nhập Test: ").strip()
-        if selected_id in test_ids:
-            break
-        else:
-            print(f"Test '{selected_id}' không tồn tại trong Bộ đề này.")
-
-    # 3. Chọn Folder chứa bài làm
-    print("\n--- NHẬP ĐƯỜNG DẪN THƯ MỤC ẢNH ---")
-    while True:
-        folder_path = input("Dán đường dẫn thư mục chứa ảnh bài làm: ").strip().replace('"', '') 
-        if os.path.isdir(folder_path):
-            break
-        else:
-            print("Đường dẫn không hợp lệ. Vui lòng thử lại.")
-            
-    return selected_set, selected_id, folder_path
 
 def get_answer_key(key_data: Dict[str, Dict[str, str]], set_name: str, test_id: str) -> str:
     if set_name not in key_data:
@@ -120,3 +80,52 @@ def load_scoring_ref(ref_file_path: str = 'scoring_ref.json') -> Dict[str, Dict[
         raise ValueError(f"Lỗi: Không thể giải mã file JSON tại {ref_file_path}.")
     except Exception as e:
         raise Exception(f"Lỗi khi tải scoring_ref.json: {e}")
+    
+def save_results_to_excel(
+    results: List[Dict[str, Any]], 
+    result_dir: Path, 
+    set_name: str, 
+    test_id: str
+):
+    """
+    Lưu danh sách kết quả (List[Dict]) vào file Excel.
+    Hàm này sẽ append dữ liệu nếu file đã tồn tại.
+    """
+    
+    if not results:
+        return # Không có gì để lưu
+    
+    df_new = pd.DataFrame(results)
+    
+    # Tên file được tạo từ set_name và test_id
+    excel_path = result_dir / f"{set_name.replace(" ", "")}_{test_id}_Score_Summary.xlsx"
+    
+    if excel_path.exists():
+        # Nếu file đã tồn tại, đọc file cũ và nối dữ liệu (append)
+        try:
+            df_old = pd.read_excel(excel_path)
+            # Đảm bảo cột Timestamp là chuỗi trước khi nối để tránh lỗi format
+            df_old['Date'] = df_old['Date'].astype(str)
+            df_new['Date'] = df_new['Date'].astype(str)
+            df_combined = pd.concat([df_old, df_new], ignore_index=True)
+            
+        except Exception as e:
+            # Nếu có lỗi khi đọc, coi như df_combined là df_new (ghi đè file cũ)
+            print(f"Lỗi khi đọc file Excel cũ, sẽ ghi đè: {e}")
+            df_combined = df_new
+    else:
+        df_combined = df_new
+
+    try:
+        # Đảm bảo thư mục cha tồn tại (dù đã được tạo ở bước chấm điểm)
+        result_dir.mkdir(parents=True, exist_ok=True) 
+        df_combined.to_excel(excel_path, index=False)
+        print(f"Results saved at: {excel_path}")
+        
+        # Trả về đường dẫn file đã lưu để hiển thị thông báo
+        return excel_path 
+        
+    except Exception as e:
+        print(f"Error when saving results: {e}")
+        # Ném lỗi lại để lớp GUI có thể bắt và hiển thị
+        raise e
