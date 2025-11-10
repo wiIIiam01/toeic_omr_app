@@ -1,14 +1,131 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, font as tkfont, messagebox
-import json
-import os
-import sys
+from typing import Dict, Any, List, Optional, Tuple, Set
 from pathlib import Path
+from datetime import datetime
+import json
+import sys 
+import os
 import cv2
 import numpy as np
 import pandas as pd
-import threading
-from typing import Dict, Any, List
+from threading import Thread
+
+# Import các lớp xử lý cần thiết (đã bỏ comment)
+from processing.utils import load_config as load_app_config, load_key, load_scoring_ref, get_answer_key, get_answer_parts_ranges
+from processing.warp import WarpingProcessor
+from processing.omr_engine import OMREngine
+from processing.grade import GradeManager
+
+KEY_PATH = Path("key.json")
+SCORING_REF_PATH = 'scoring_ref.json' # Định nghĩa đường dẫn scoring ref
+
+class FormStateManager:
+    """Quản lý và cập nhật trạng thái của các Input/Điều kiện cần thiết cho quá trình chấm điểm OMR."""
+    
+    # Biến hằng số mặc định cho UI
+    UNSELECTED_SET = "Select Set"
+    UNSELECTED_ID = "Test"
+    UNSELECTED_DATE_HINT = "Test Date (YYYY-MM-DD)"
+
+    def __init__(self, all_keys_data: Dict[str, Dict[str, str]]):
+        self.all_keys_data = all_keys_data
+        
+        # 1. TRẠNG THÁI FORM CHÍNH
+        self.state: Dict[str, Any] = {
+            # INPUTS CẦN TỪ NGƯỜI DÙNG
+            'set_name': self.UNSELECTED_SET,
+            'test_id': self.UNSELECTED_ID,
+            'test_date': self.UNSELECTED_DATE_HINT,
+            # image_files: HÀNG ĐỢI (QUEUE) - List[Path] chứa đường dẫn file ảnh
+            'image_files': [], 
+            # results: Danh sách lưu trữ kết quả chấm điểm (từng file ảnh)
+            # Dạng: List[Dict[str, Any]]
+            'results': [],
+            
+            # DERIVED STATE (Trạng thái dẫn xuất)
+            'key': "", # Chuỗi đáp án chuẩn
+            'is_valid': False, # Trạng thái Form hợp lệ để chạy Scoring
+            'error_message': None, # Thông báo lỗi gần nhất
+        }
+        
+    def set_value(self, key: str, value: Any, skip_validation: bool = False):
+        """Cập nhật một giá trị trong trạng thái. Thường được gọi khi input thay đổi."""
+        if key in self.state:
+            self.state[key] = value
+            if not skip_validation:
+                self._update_derived_key()
+            
+    def get_value(self, key: str) -> Any:
+        """Lấy một giá trị từ trạng thái."""
+        return self.state.get(key)
+        
+    def _update_derived_key(self):
+        """Chỉ cập nhật Answer Key khi Set Name hoặc Test ID thay đổi."""
+        set_name = self.state['set_name']
+        test_id = self.state['test_id']
+        new_key = ""
+        
+        if set_name in self.all_keys_data and test_id in self.all_keys_data.get(set_name, {}):
+            try:
+                new_key = get_answer_key(self.all_keys_data, set_name, test_id)
+            except Exception:
+                pass 
+                
+        self.state['key'] = new_key
+        
+    def validate_and_update_state(self):
+        """Thực hiện kiểm tra toàn bộ Form. Chỉ gọi khi bấm START."""
+        is_valid, error_msg = self._validate_form()
+        self.state['is_valid'] = is_valid
+        self.state['error_message'] = error_msg
+        
+        # In ra trạng thái để debug
+        print(f"\n--- VALIDATION ON START CLICKED ---")
+        print(f"Set: {self.state['set_name']} | ID: {self.state['test_id']} | Valid: {is_valid}")
+        print(f"Key Length: {len(self.state['key']) if self.state['key'] else 0} | Files: {len(self.state['image_files'])}")
+        if not is_valid:
+            print(f"Error: {error_msg}")
+        print(f"-----------------------------------")
+        
+        return is_valid, error_msg
+
+        
+    def _validate_form(self) -> Tuple[bool, Optional[str]]:
+        """Kiểm tra tất cả ràng buộc cần thiết để chạy OMR Scoring."""
+        
+        # Đảm bảo Key được cập nhật trước khi validation
+        self._update_derived_key() 
+
+        # 1. Kiểm tra Set Name
+        if self.state['set_name'] == self.UNSELECTED_SET or not self.state['set_name']:
+            return False, "Vui lòng chọn Bộ đề."
+        
+        # 2. Kiểm tra Test ID
+        if self.state['test_id'] == self.UNSELECTED_ID or not self.state['test_id']:
+            return False, "Vui lòng chọn Mã đề."
+
+        # 3. Kiểm tra Answer Key
+        if not self.state['key']:
+             return False, "Lỗi: Không tìm thấy đáp án chuẩn cho Mã đề đã chọn."
+
+        # 4. Kiểm tra Image Files
+        if not self.state['image_files']:
+            return False, "Vui lòng tải ít nhất một file ảnh bài làm."
+        
+        # 5. Kiểm tra Test Date (Ràng buộc mềm hơn, chỉ cần không phải hint)
+        if self.state['test_date'] == self.UNSELECTED_DATE_HINT:
+             return False, "Vui lòng nhập Ngày thi."
+             
+        # 6. Kiểm tra Định dạng Ngày thi (YYYY-MM-DD)
+        try:
+            if self.state['test_date'] != self.UNSELECTED_DATE_HINT:
+                datetime.strptime(self.state['test_date'], '%Y-%m-%d')
+        except ValueError:
+            return False, "Ngày thi không đúng định dạng YYYY-MM-DD."
+
+        return True, None
+
 
 class OMRLayoutDesign:
     
@@ -54,13 +171,51 @@ class OMRLayoutDesign:
                     fieldbackground=self.P['C_LIGHT'],
                     foreground=self.P['C_PRIMARY_DARK'])
         
-        # --- 1. BIẾN MÔ PHỎNG ---
-        self.selected_set_var = tk.StringVar(master, value="Select Set")
-        self.selected_id_var = tk.StringVar(master, value="Test") 
-        self.test_date_var = tk.StringVar(master)
+        # --- 2. TẢI VÀ CHUẨN BỊ DỮ LIỆU KEY & STATE MANAGER ---
+        self.all_keys_data: Dict[str, Dict[str, str]] = {}
+        self.set_names_list: List[str] = []
+        self.app_config: Dict[str, Any] = {} # Config cho OMR Engine/Warping
+        self.scoring_ref: Dict[str, Dict[str, int]] = {} # Bảng quy đổi điểm
+        
+        try:
+            # Tải dữ liệu key từ file key.json
+            self.all_keys_data = load_key(KEY_PATH) 
+            self.set_names_list = list(self.all_keys_data.keys())
+            # Tải config cho OMR
+            self.app_config = load_app_config()
+            # Tải bảng quy đổi điểm
+            self.scoring_ref = load_scoring_ref(SCORING_REF_PATH)
+            
+        except FileNotFoundError as e:
+            messagebox.showerror("Lỗi Cấu hình", f"Không tìm thấy file cần thiết: {e.filename}")
+            print(f"Lỗi: Không tìm thấy file cần thiết: {e.filename}")
+            # Dừng nếu các file cấu hình quan trọng bị thiếu
+            self.master.destroy() 
+            return
+        except Exception as e:
+            messagebox.showerror("Lỗi Cấu hình Key", f"Không thể tải dữ liệu cấu hình: {e}")
+            print(f"Lỗi: Không thể tải dữ liệu cấu hình: {e}")
+            self.master.destroy() 
+            return
+            
+        # KHỞI TẠO STATE MANAGER
+        self.form_state_manager = FormStateManager(self.all_keys_data)
+            
+        # --- 3. BIẾN TRẠNG THÁI UI (STATE VARIABLES CHO TKINTER) ---
+        # Lấy giá trị mặc định từ State Manager
+        self.selected_set_var = tk.StringVar(master, value=self.form_state_manager.UNSELECTED_SET)
+        self.selected_id_var = tk.StringVar(master, value=self.form_state_manager.UNSELECTED_ID) 
+        self.test_date_var = tk.StringVar(master, value=self.form_state_manager.UNSELECTED_DATE_HINT)
+        
+        # UI State 
         self.has_files_loaded = False 
+        self.is_scoring = False # Trạng thái đang chấm điểm
+        self.tree: Optional[ttk.Treeview] = None # Khởi tạo treeview là None
+        
+        # Biến lưu trữ tên file đã tồn tại để check unique (để tăng tốc độ)
+        self.existing_filenames: Set[str] = set()
 
-        # --- 2. TẠO CÁC KHUNG (FRAMES) CHÍNH ---
+        # --- 4. TẠO CÁC KHUNG (FRAMES) CHÍNH ---
         self.top_controls_frame = tk.Frame(master, bg=self.P['C_LIGHT'], padx=self.S['H_PAD'], pady=10)
         self.top_controls_frame.grid(row=0, column=0, sticky='ew')
         
@@ -70,94 +225,400 @@ class OMRLayoutDesign:
         self.footer_frame = tk.Frame(master, bg=self.P['C_LIGHT'], padx=self.S['H_PAD'], pady=10)
         self.footer_frame.grid(row=2, column=0, sticky='ew')
 
-        # --- 3. ĐIỀN NỘI DUNG VÀO CÁC KHUNG ---
+        # --- 5. ĐIỀN NỘI DUNG VÀO CÁC KHUNG ---
         self._create_top_controls()
         
-        if self.has_files_loaded:
-            self._create_table_view()
-        else:
-            self._create_drag_drop_area()
-            
+        # Khởi tạo Drag & Drop/Table View lần đầu
+        self._refresh_content_frame()
+        
         self._create_footer_buttons()
+        
+        # --- 6. BIND SỰ KIỆN THAY ĐỔI KÍCH THƯỚC CỬA SỔ ---
+        # Gọi cập nhật kích thước cột sau khi cửa sổ được vẽ lần đầu
+        self.master.bind("<Configure>", self._resize_treeview_columns)
+        
+        # --- KHỞI TẠO CÁC NÚT & STATE BAN ĐẦU ---
+        self._update_ui_state()
+
 
     def _load_config(self, filename='GUI_config.json'):
+        # Giữ nguyên hàm tải config
         default_config = {
             "PALETTE": {"C_PRIMARY_DARK": '#222831', "C_SECONDARY_DARK": '#393E46', "C_ACCENT": '#00ADB5', "C_LIGHT": '#EEEEEE'},
             "SIZES_AND_PADDING": {"H_PAD": 20, "INPUT_FONT_SIZE": 20, "ACTION_FONT_SIZE": 11, "INPUT_PADY": 5, "ACTION_PADY": 5},
-            "DEFAULT_SETTINGS": {"FONT_FAMILY": "Arial", "WINDOW_TITLE": "TOEIC OMR Scoring (Mặc Định)", "GEOMETRY": "720x540"}
+            "DEFAULT_SETTINGS": {"FONT_FAMILY": "Arial", "WINDOW_TITLE": "TOEIC OMR Scoring (Mặc Định)", "GEOMETRY": "800x600"}
         }
         
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-            print(f"Lỗi: Không tìm thấy file cấu hình {filename}. Sử dụng cấu hình mặc định.")
-            return default_config
+            raise FileNotFoundError(filename) # Ném lỗi để bắt ở __init__
         except json.JSONDecodeError:
             print(f"Lỗi: File cấu hình {filename} không hợp lệ. Sử dụng cấu hình mặc định.")
             return default_config
 
+    # --- ACTION LOGIC: START SCORING ---
+
+    def _update_ui_state(self, is_scoring: Optional[bool] = None):
+        """Cập nhật trạng thái của các nút/combo box dựa trên trạng thái chấm điểm."""
+        if is_scoring is not None:
+            self.is_scoring = is_scoring
+
+        # Cập nhật trạng thái của các nút/combo box
+        state_control = 'disabled' if self.is_scoring else 'readonly'
+        state_input = 'disabled' if self.is_scoring else 'normal'
+
+        # Comboboxes
+        self.set_combo.config(state=state_control)
+        
+        # Test ID Combo: chỉ kích hoạt khi đã chọn Set
+        current_set = self.selected_set_var.get()
+        if not self.is_scoring and current_set != self.form_state_manager.UNSELECTED_SET:
+            self.id_combo.config(state='readonly')
+        else:
+            self.id_combo.config(state='disabled')
+
+        # Date Entry
+        self.date_entry.config(state=state_input)
+
+        # Start Button (Đổi màu/văn bản/trạng thái)
+        start_btn_text = "STOP" if self.is_scoring else "▶"
+        start_btn_color = self.P['C_SECONDARY_DARK'] if self.is_scoring else self.P['C_ACCENT']
+        
+        # Tìm lại nút start
+        start_btn_container = self.top_controls_frame.winfo_children()[0].winfo_children()[1] # R0, C1
+        start_btn = start_btn_container.winfo_children()[0]
+
+        start_btn.config(text=start_btn_text, bg=start_btn_color, 
+                         activebackground=self.P['C_PRIMARY_DARK'],
+                         activeforeground=self.P['C_LIGHT'])
+        
+        # Nút quản lý file
+        if self.has_files_loaded:
+            # Các nút Add/Remove/Clear trong table view
+            file_management_frame = self.content_frame.winfo_children()[0].winfo_children()[1]
+            for widget in file_management_frame.winfo_children():
+                if isinstance(widget, tk.Button):
+                    widget.config(state=state_input)
+        
+        # Footer buttons
+        # Nút Upload chỉ kích hoạt sau khi chấm điểm xong
+        # Nút View Log
+        footer_widgets = self.footer_frame.winfo_children()
+        view_log_btn = footer_widgets[0]
+        upload_btn = footer_widgets[1]
+
+        view_log_btn.config(state=state_input) # Có thể xem log ngay cả khi đang chấm điểm nếu có log
+        upload_btn.config(state='disabled') # Tạm thời disabled
+
+    
+    def _on_start_button_clicked(self):
+        """Hàm xử lý khi nút START/STOP được nhấn."""
+        
+        if self.is_scoring:
+            # STOP: Tạm thời không hỗ trợ
+            messagebox.showwarning("Warning", "Không thể dừng quá trình chấm điểm hiện tại.")
+            return
+
+        is_valid, error_msg = self.form_state_manager.validate_and_update_state() 
+        
+        if is_valid:
+            # 1. Khóa UI
+            self._update_ui_state(is_scoring=True)
+
+            # 2. Xóa các kết quả cũ
+            self.form_state_manager.set_value('results', [], skip_validation=True)
+            self._populate_treeview() # Reset bảng trạng thái
+
+            # 3. Chạy Scoring Thread
+            state = self.form_state_manager.state
+            
+            # Khởi tạo các processor
+            warp_processor = WarpingProcessor(self.app_config)
+            omr_engine = OMREngine(self.app_config)
+            grade_manager = GradeManager(
+                key_answer=state['key'], 
+                scoring_ref=self.scoring_ref, 
+                set_name=state['set_name'], 
+                test_id=state['test_id']
+            )
+            
+            # Tạo thư mục kết quả
+            result_dir_name = f"RESULTS_{state['set_name']}-{state['test_id']}_{state['test_date']}"
+            result_dir = Path(result_dir_name)
+            result_dir.mkdir(exist_ok=True)
+
+
+            scoring_thread = ScoringThread(
+                app_gui=self, # Truyền tham chiếu đến GUI
+                image_files=state['image_files'],
+                warp_processor=warp_processor,
+                omr_engine=omr_engine,
+                grade_manager=grade_manager,
+                result_dir=result_dir
+            )
+            scoring_thread.start()
+
+        else:
+            messagebox.showwarning("Validation Failed", f"Warning:\n{error_msg}")
+
+    # --- UI UPDATE CALLBACKS TỪ THREAD SCORING ---
+    
+    def on_file_graded(self, original_path: Path, result_dict: Optional[Dict[str, Any]], error_msg: Optional[str]):
+        """Callback được gọi từ thread khi một file đã được chấm điểm/thất bại."""
+        
+        # 1. Cập nhật Treeview
+        if self.tree is not None:
+            iid = str(original_path)
+            
+            if result_dict:
+                # Cập nhật kết quả thành công
+                self.form_state_manager.get_value('results').append(result_dict)
+                values = (
+                    original_path.name, 
+                    result_dict['Total'], 
+                    result_dict['LC'].split('/')[0].strip(), # Chỉ lấy điểm số
+                    result_dict['RC'].split('/')[0].strip(),
+                    "✅ Success"
+                )
+                self.tree.item(iid, values=values)
+            else:
+                # Cập nhật kết quả thất bại
+                values = (original_path.name, "-", "-", "-", f"❌ Failed: {error_msg[:40]}...")
+                self.tree.item(iid, values=values)
+                # Cập nhật màu chữ cho trạng thái lỗi (tùy chọn)
+                self.tree.tag_configure('failed', foreground='red')
+                self.tree.item(iid, tags=('failed',))
+        
+        # 2. Đảm bảo trạng thái UI hiển thị đúng (cần thiết khi có nhiều file)
+        self.master.update_idletasks()
+        
+    def on_scoring_complete(self):
+        """Callback được gọi khi tất cả các file đã được xử lý."""
+        
+        # Mở khóa UI
+        self._update_ui_state(is_scoring=False)
+        
+        # Cập nhật trạng thái nút Upload (nếu có kết quả)
+        if self.form_state_manager.get_value('results'):
+            footer_widgets = self.footer_frame.winfo_children()
+            upload_btn = footer_widgets[1]
+            upload_btn.config(state='normal')
+
+        messagebox.showinfo("Hoàn tất", f"Đã chấm điểm xong {len(self.form_state_manager.get_value('image_files'))} bài.")
+
+    # --- FILE MANAGEMENT LOGIC (Giữ nguyên) ---
+
+    def _process_new_paths(self, new_paths: List[Path]):
+        """
+        Thêm các Path mới vào hàng đợi, loại bỏ trùng lặp và cập nhật UI.
+        new_paths: Danh sách các Path (file hoặc folder) mới được chọn.
+        """
+        current_files: List[Path] = self.form_state_manager.get_value('image_files')
+        
+        new_valid_files: List[Path] = []
+        
+        for path in new_paths:
+            if path.is_dir():
+                # Xử lý thư mục: Quét các file .jpg/.jpeg
+                folder_files = sorted([p for p in path.glob('*.jpg') if p.is_file()])
+                folder_files.extend(sorted([p for p in path.glob('*.jpeg') if p.is_file()]))
+                
+                for file_path in folder_files:
+                    if file_path.name not in self.existing_filenames:
+                        new_valid_files.append(file_path)
+                        self.existing_filenames.add(file_path.name)
+            elif path.is_file() and path.suffix.lower() in ('.jpg', '.jpeg'):
+                # Xử lý file: Chỉ thêm nếu là .jpg/.jpeg và không trùng lặp
+                if path.name not in self.existing_filenames:
+                    new_valid_files.append(path)
+                    self.existing_filenames.add(path.name)
+                    
+        # Cập nhật hàng đợi
+        if new_valid_files:
+            current_files.extend(new_valid_files)
+            self.form_state_manager.set_value('image_files', current_files, skip_validation=True)
+            self.has_files_loaded = True
+            self._refresh_content_frame(True) # Cập nhật chỉ bảng
+            
+        print(f"Total files in queue: {len(current_files)}")
+
+
+    def _load_files(self):
+        """Mở hộp thoại cho phép chọn file (multi-select) hoặc thư mục (single-select)."""
+        
+        # 1. Chọn file ảnh (multi-select)
+        file_paths = filedialog.askopenfilenames(
+            title="Chọn File Ảnh Bài Làm (.jpg/.jpeg)",
+            filetypes=[("JPEG files", "*.jpg;*.jpeg")]
+        )
+        
+        selected_paths: List[Path] = []
+        if file_paths:
+            selected_paths.extend([Path(p) for p in file_paths])
+
+            
+        if selected_paths:
+            self._process_new_paths(selected_paths)
+
+
+    def _remove_selected_files(self):
+        """Loại bỏ các file đang được chọn trong Treeview khỏi hàng đợi."""
+        if self.tree is None: return
+
+        selected_iids = self.tree.selection()
+        if not selected_iids:
+            messagebox.showwarning("Cảnh báo", "Vui lòng chọn ít nhất một file để xóa.")
+            return
+
+        current_files: List[Path] = self.form_state_manager.get_value('image_files')
+        
+        # Sử dụng set để tìm kiếm nhanh hơn
+        paths_to_remove = {Path(iid) for iid in selected_iids}
+        
+        # Lọc ra danh sách file mới
+        new_files = [f for f in current_files if f not in paths_to_remove]
+        
+        # Cập nhật trạng thái và tên file tồn tại
+        self.form_state_manager.set_value('image_files', new_files, skip_validation=True)
+        self.existing_filenames = {f.name for f in new_files}
+        
+        # Cập nhật UI
+        self.has_files_loaded = bool(new_files)
+        self._refresh_content_frame()
+        
+        print(f"Removed {len(paths_to_remove)} files. Total files remaining: {len(new_files)}")
+
+
+    def _clear_all_files(self):
+        """Loại bỏ tất cả file trong hàng đợi."""
+        if not self.form_state_manager.get_value('image_files'):
+            messagebox.showinfo("Thông báo", "Hàng đợi đã trống.")
+            return
+            
+        confirm = messagebox.askyesno("Xác nhận", "Bạn có chắc chắn muốn xóa tất cả các file ảnh đã tải?")
+        if confirm:
+            self.form_state_manager.set_value('image_files', [], skip_validation=True)
+            self.existing_filenames.clear()
+            self.has_files_loaded = False
+            self._refresh_content_frame()
+            print("Cleared all files in queue.")
+
+    # --- INPUT LOGIC (Giữ nguyên) ---
+
+    def _on_set_selected(self, event=None):
+        """Hàm xử lý khi Set Combobox thay đổi."""
+        selected_set = self.selected_set_var.get()
+        self.form_state_manager.set_value('set_name', selected_set, skip_validation=True)
+        
+        if selected_set != self.form_state_manager.UNSELECTED_SET:
+             self._update_test_id_combo(selected_set)
+        else:
+            self.selected_id_var.set(self.form_state_manager.UNSELECTED_ID)
+            self.id_combo.config(values=[], state='disabled')
+            
+        self.form_state_manager.set_value('test_id', self.form_state_manager.UNSELECTED_ID, skip_validation=True)
+
+
+    def _on_id_selected(self, event=None):
+        """Hàm xử lý khi ID Combobox thay đổi."""
+        selected_id = self.selected_id_var.get()
+        self.form_state_manager.set_value('test_id', selected_id, skip_validation=True)
+
+    def _update_test_id_combo(self, selected_set: str):
+        """Cập nhật các Mã đề hợp lệ cho Combobox Mã đề."""
+        self.id_combo.config(state='disabled')
+        self.id_combo.set(self.form_state_manager.UNSELECTED_ID)
+        
+        if selected_set in self.all_keys_data:
+            test_ids = list(self.all_keys_data[selected_set].keys())
+            self.id_combo.config(values=test_ids)
+            self.id_combo.config(state='readonly')
+        else:
+            self.id_combo.config(values=[])
+            
+        
+    def _on_date_focus_in(self, event):
+        """Xử lý khi Date Entry được focus, xóa hint."""
+        if self.test_date_var.get() == self.form_state_manager.UNSELECTED_DATE_HINT:
+            self.test_date_var.set('')
+
+    def _on_date_focus_out(self, event):
+        """Xử lý khi Date Entry mất focus, thêm hint nếu rỗng."""
+        current_date = self.test_date_var.get()
+        if current_date == '':
+            current_date = self.form_state_manager.UNSELECTED_DATE_HINT
+            self.test_date_var.set(current_date)
+            
+        self.form_state_manager.set_value('test_date', current_date, skip_validation=True)
+
+    # --- UI LAYOUTS (Giữ nguyên) ---
+            
     def _create_top_controls(self):
         frame = self.top_controls_frame
         
         frame.grid_columnconfigure(0, weight=6, uniform="top_columns") 
         frame.grid_columnconfigure(1, weight=4, uniform="top_columns") 
-        
-        # --- 3.1. KHU VỰC INPUT & START (60% WIDTH) ---
+
+        # Khung chứa các input (Set, ID, Date)
         input_and_start_frame = tk.Frame(frame, bg=self.P['C_LIGHT'])
         input_and_start_frame.grid(row=0, column=0, sticky='ew')
         
         input_and_start_frame.grid_columnconfigure(0, weight=1) 
         input_and_start_frame.grid_columnconfigure(1, weight=0, minsize=80) 
 
-        # Khung chứa các input (Set, ID, Date)
+        # Khung chứa Combobox/Entry
         input_area = tk.Frame(input_and_start_frame, bg=self.P['C_LIGHT'])
         input_area.grid(row=0, column=0, rowspan=2, sticky='nsew') 
         
-        # Cấu hình 7:3 cho 2 Combobox
         input_area.grid_columnconfigure(0, weight=7, uniform="inputs") 
         input_area.grid_columnconfigure(1, weight=3, uniform="inputs")
         
         # --- HÀNG 0: SET NAME & TEST ID/TEST ---
         self.set_combo = ttk.Combobox(input_area, textvariable=self.selected_set_var,
-                                      values=["SET A", "SET B", "SET C", "SET D"], 
-                                      state='readonly',
-                                      )
+                                     values=self.set_names_list,
+                                     state='readonly',
+                                     )
         self.set_combo.grid(row=0, column=0, padx=(0, 5), pady=(0, self.S['INPUT_PADY']), sticky='ew')
+        self.set_combo.bind('<<ComboboxSelected>>', self._on_set_selected)
         
         self.id_combo = ttk.Combobox(input_area, textvariable=self.selected_id_var,
-                                     values=[str(i) for i in range(1, 11)], 
+                                     values=[], 
                                      state='disabled')
         self.id_combo.grid(row=0, column=1, padx=(5, 0), pady=(0, self.S['INPUT_PADY']), sticky='ew') 
-
+        self.id_combo.bind('<<ComboboxSelected>>', self._on_id_selected)
+        
         # --- HÀNG 1: DATE INPUT ---
         self.date_entry = ttk.Entry(input_area, textvariable=self.test_date_var, width=50) 
         self.date_entry.grid(row=1, column=0, columnspan=2, padx=(0, 0), 
                              pady=(self.S['INPUT_PADY'], 0), sticky='ew')
-        self.date_entry.insert(0, "Test Date (DD-MM-YYYY)") 
+        self.date_entry.bind('<FocusIn>', self._on_date_focus_in)
+        self.date_entry.bind('<FocusOut>', self._on_date_focus_out)
         
-        # --- START BUTTON (Hình vuông, kề sát) ---
+        # --- START BUTTON ---
         start_button_container = tk.Frame(input_and_start_frame, bg=self.P['C_LIGHT'])
         start_button_container.grid(row=0, column=1, rowspan=2, padx=(10, 0), pady=0, sticky='nsew') 
         
+        start_button_container.grid_columnconfigure(0, weight=1)
+        start_button_container.grid_rowconfigure(0, weight=1)
+
         start_button_font = tkfont.Font(family=self.D['FONT_FAMILY'], size=36, weight="bold")
         
         # Nút START 
         start_btn = tk.Button(start_button_container, 
-                  text="▶", 
-                  font=start_button_font, 
-                  bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'], 
-                  activebackground=self.P['C_PRIMARY_DARK'], 
-                  activeforeground=self.P['C_ACCENT'],
-                  relief='flat', bd=0, 
-                  highlightthickness=0,
-                  width=3,  
-                  command=lambda: print("Start Clicked")
-                  )
+                      text="▶", 
+                      font=start_button_font, 
+                      bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'], 
+                      activebackground=self.P['C_PRIMARY_DARK'], 
+                      activeforeground=self.P['C_ACCENT'],
+                      relief='flat', bd=0, 
+                      highlightthickness=0,
+                      command=self._on_start_button_clicked) 
         
         start_btn.place(relx=0.5, rely=0.5, anchor='center')
-
-        # --- 3.2. KHU VỰC INFO (40% WIDTH, Căn phải) ---
+        
+        # --- 3.2. KHU VỰC INFO ---
         info_area = tk.Frame(frame, bg=self.P['C_LIGHT'])
         info_area.grid(row=0, column=1, rowspan=2, sticky='nse') 
         
@@ -168,9 +629,9 @@ class OMRLayoutDesign:
         tk.Label(info_area, text="Developed by Phong Nguyen", 
                  font=(self.D['FONT_FAMILY'], 10), 
                  fg=self.P['C_SECONDARY_DARK'], bg=self.P['C_LIGHT']).pack(anchor='e')
-    
+        
     def _create_drag_drop_area(self):
-        # --- KHU VỰC DRAG & DROP (Cố định ở trung tâm) ---
+        # Nút Browse giờ đây sẽ gọi hàm mới
         frame = self.content_frame
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
@@ -182,7 +643,6 @@ class OMRLayoutDesign:
         drop_area.grid_rowconfigure(0, weight=1) 
         drop_area.grid_rowconfigure(4, weight=1) 
         
-        # 1. Placeholder Image
         image_placeholder = tk.Frame(drop_area, width=100, height=100, bg=self.P['C_LIGHT'], 
                                      highlightbackground=self.P['C_PRIMARY_DARK'], 
                                      highlightcolor=self.P['C_PRIMARY_DARK']) 
@@ -194,26 +654,25 @@ class OMRLayoutDesign:
         image_placeholder.grid_rowconfigure(0, weight=1)
         
         icon_label = tk.Label(image_placeholder, 
-                 text="     🖼️", 
-                 font=(self.D['FONT_FAMILY'], 60), 
-                 fg=self.P['C_ACCENT'], 
-                 bg=self.P['C_LIGHT']
-                 )
+                      text="     🖼️", 
+                      font=(self.D['FONT_FAMILY'], 60), 
+                      fg=self.P['C_ACCENT'], 
+                      bg=self.P['C_LIGHT']
+                      )
         icon_label.grid(row=0, column=0)
 
-        # 2. Nút Browse 
+        # Nút Browse/Add 
         browse_btn = tk.Button(drop_area, 
-                  text="Browse", 
-                  font=(self.D['FONT_FAMILY'], self.S['ACTION_FONT_SIZE'], "bold"),
-                  bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'],
-                  relief='flat', bd=0, 
-                  activebackground=self.P['C_PRIMARY_DARK'], 
-                  activeforeground=self.P['C_ACCENT'],
-                  padx=15, pady=self.S['ACTION_PADY'], 
-                  command=lambda: print("Browse Clicked"))
+                      text="Browse", 
+                      font=(self.D['FONT_FAMILY'], self.S['ACTION_FONT_SIZE'], "bold"),
+                      bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'],
+                      relief='flat', bd=0, 
+                      activebackground=self.P['C_PRIMARY_DARK'], 
+                      activeforeground=self.P['C_ACCENT'],
+                      padx=15, pady=self.S['ACTION_PADY'], 
+                      command=self._load_files) 
         browse_btn.grid(row=2, column=0, pady=5, padx=20)
 
-        # 3. Dòng chữ hướng dẫn
         tk.Label(drop_area, 
                  text="or drag a file here", 
                  font=(self.D['FONT_FAMILY'], 12), 
@@ -222,65 +681,155 @@ class OMRLayoutDesign:
 
 
     def _create_table_view(self):
-        # --- 3.3. BẢNG (TREEVIEW) - Chỉ hiển thị khi self.has_files_loaded = True ---
         frame = self.content_frame
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_rowconfigure(0, weight=1)
         
-        table_container = tk.Frame(frame, bg=self.P['C_LIGHT'])
+        # Khung chứa Bảng và các nút quản lý file
+        table_and_controls_frame = tk.Frame(frame, bg=self.P['C_LIGHT'])
+        table_and_controls_frame.grid(row=0, column=0, sticky='nsew')
+        
+        table_and_controls_frame.grid_columnconfigure(0, weight=1)
+        table_and_controls_frame.grid_rowconfigure(0, weight=1) # Dành cho Treeview
+
+        # --- NÚT QUẢN LÝ FILE (HÀNG 1) ---
+        file_management_frame = tk.Frame(table_and_controls_frame, bg=self.P['C_LIGHT'])
+        file_management_frame.grid(row=1, column=0, sticky='ew', pady=(5, 0))
+        
+        # Căn chỉnh các nút sang trái
+        file_management_frame.grid_columnconfigure(0, weight=1) 
+        
+        add_btn = tk.Button(file_management_frame, text="Add", 
+                                 font=(self.D['FONT_FAMILY'], 9),
+                                 bg=self.P['C_LIGHT'], fg=self.P['C_SECONDARY_DARK'],
+                                 activeforeground=self.P['C_ACCENT'],
+                                 relief='flat', bd=0, padx=10, pady=self.S['ACTION_PADY'],
+                                 command=self._load_files) 
+        add_btn.grid(row=0, column=1, padx=0, pady=0)
+        
+        remove_btn = tk.Button(file_management_frame, text="Remove", 
+                                 font=(self.D['FONT_FAMILY'], 9),
+                                 bg=self.P['C_LIGHT'], fg=self.P['C_SECONDARY_DARK'],
+                                 activeforeground=self.P['C_ACCENT'],
+                                 relief='flat', bd=0, padx=10, pady=self.S['ACTION_PADY'],
+                                 command=self._remove_selected_files) 
+        remove_btn.grid(row=0, column=2, padx=0, pady=0)
+        
+        clear_btn = tk.Button(file_management_frame, text="Clear", 
+                                 font=(self.D['FONT_FAMILY'], 9),
+                                 bg=self.P['C_LIGHT'], fg=self.P['C_SECONDARY_DARK'],
+                                 activeforeground=self.P['C_ACCENT'],
+                                 relief='flat', bd=0, padx=10, pady=self.S['ACTION_PADY'],
+                                 command=self._clear_all_files) 
+        clear_btn.grid(row=0, column=3, padx=0, pady=0)
+
+        # --- BẢNG (TREEVIEW) (HÀNG 0) ---
+        table_container = tk.Frame(table_and_controls_frame, bg=self.P['C_LIGHT'])
         table_container.grid(row=0, column=0, sticky='nsew')
         
         table_container.grid_columnconfigure(0, weight=1)
         table_container.grid_rowconfigure(0, weight=1)
 
-        # Tạo Scrollbar dọc
         scrollbar_y = ttk.Scrollbar(table_container, orient="vertical")
         scrollbar_y.grid(row=0, column=1, sticky='ns')
         
-        columns = ("name", "col2", "col3", "col4", "status")
-        self.tree = ttk.Treeview(table_container, columns=columns, show="headings", yscrollcommand=scrollbar_y.set)
+        columns = ("name", "total_score", "lc_score", "rc_score", "status")
+        # Khởi tạo Treeview
+        self.tree = ttk.Treeview(table_container, columns=columns, show="headings", yscrollcommand=scrollbar_y.set, selectmode='extended')
         scrollbar_y.config(command=self.tree.yview)
         
-        # Thiết lập Tỉ lệ chiều dài cột (4:1.5:1:1:2.5, Tổng = 10)
-        total_width = 960 
-        col_widths = {
-            "name": int(total_width * 4.0 / 10.0), "col2": int(total_width * 1.5 / 10.0),
-            "col3": int(total_width * 1.0 / 10.0), "col4": int(total_width * 1.0 / 10.0),
-            "status": int(total_width * 2.5 / 10.0),
-        }
-        
-        self.tree.heading("name", text="Image File Name", anchor='w')
-        self.tree.column("name", width=col_widths["name"], minwidth=50, stretch=tk.YES)
-        
-        self.tree.heading("col2", text="Col 2", anchor='center')
-        self.tree.column("col2", width=col_widths["col2"], minwidth=50, stretch=tk.NO)
-        
-        self.tree.heading("col3", text="Col 3", anchor='center')
-        self.tree.column("col3", width=col_widths["col3"], minwidth=50, stretch=tk.NO)
-        
-        self.tree.heading("col4", text="Col 4", anchor='center')
-        self.tree.column("col4", width=col_widths["col4"], minwidth=50, stretch=tk.NO)
-        
+        self.tree.heading("name", text="Name", anchor='center')
+        self.tree.heading("total_score", text="Total", anchor='center')
+        self.tree.heading("lc_score", text="LC", anchor='center')
+        self.tree.heading("rc_score", text="RC", anchor='center')
         self.tree.heading("status", text="Status", anchor='center')
-        self.tree.column("status", width=col_widths["status"], minwidth=50, stretch=tk.NO)
         
-        mock_data = [
-            ("bai_lam_001.jpg", 1, 2, 3, "Done"),
-            ("bai_lam_002.jpg", 4, 5, 6, "Pending"),
-            ("bai_lam_003_error.jpg", 0, 0, 0, "Raise Error"),
-        ]
-        for item in mock_data:
-            self.tree.insert("", "end", values=item)
+        # Đổ dữ liệu vào bảng
+        self._populate_treeview()
 
         self.tree.grid(row=0, column=0, sticky='nsew')
+        
+        # Cần gọi cập nhật kích thước cột lần đầu sau khi Treeview được tạo
+        self.master.after(10, self._resize_treeview_columns)
+
+
+    def _populate_treeview(self):
+        """Đổ dữ liệu từ State Manager vào Treeview."""
+        if self.tree is None: return
+        
+        # Xóa tất cả các mục hiện có
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        image_files_list: List[Path] = self.form_state_manager.get_value('image_files')
+        
+        for img_path in image_files_list:
+            file_name = img_path.name
+            # iid (ID của item) là đường dẫn Path đầy đủ để dễ dàng remove/update
+            initial_values = (file_name, "-", "-", "-", "Pending")
+            self.tree.insert("", "end", iid=str(img_path), values=initial_values)
+
+
+    def _refresh_content_frame(self, only_update_table: bool = False):
+        """Xóa và vẽ lại khu vực nội dung (Drag&Drop hoặc Table View)."""
+        
+        if only_update_table and self.has_files_loaded and self.tree is not None:
+            # Nếu chỉ cập nhật bảng và bảng đang hiển thị
+            self._populate_treeview()
+            self._resize_treeview_columns()
+            return
+
+        # Xóa nội dung hiện tại của content_frame
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+            
+        # Hiển thị nội dung mới
+        if self.has_files_loaded:
+            # Nếu có file, hiển thị bảng và các nút quản lý file
+            self._create_table_view()
+        else:
+            # Nếu không có file, hiển thị khu vực Drag&Drop
+            self.tree = None 
+            self._create_drag_drop_area()
+
+        # Cần cập nhật trạng thái các nút sau khi refresh frame
+        self.master.after(10, self._update_ui_state)
+
+
+    def _resize_treeview_columns(self, event=None):
+        """Cập nhật chiều rộng cột dựa trên chiều rộng hiện tại của cửa sổ."""
+        if self.tree is None or not self.master.winfo_ismapped():
+            return
+
+        # Chiều rộng cửa sổ chính - (H_PAD * 2) - khoảng trống của scrollbar (20)
+        total_width = self.master.winfo_width() - (self.S['H_PAD'] * 2) - 20
+        
+        if total_width < 100:
+            return 
+
+        # Tỉ lệ chiều dài cột (4:1.5:1:1:2.5, Tổng = 10)
+        ratios = {
+            "name": 4.0, "total_score": 1.5,
+            "lc_score": 1.0, "rc_score": 1.0,
+            "status": 2.5,
+        }
+        
+        total_ratio = sum(ratios.values())
+        
+        for col_id, ratio in ratios.items():
+            new_width = int(total_width * ratio / total_ratio)
+            self.tree.column(col_id, width=new_width, minwidth=20) 
+        
+        # Điều chỉnh cột "name" để nó co giãn
+        self.tree.column("name", stretch=tk.YES)
 
 
     def _create_footer_buttons(self):
-        # --- 3.4. FOOTER BUTTONS (BOTTOM RIGHT) ---
         frame = self.footer_frame
         
         # Căn chỉnh các nút sang phải
         frame.grid_columnconfigure(0, weight=1)
         
-        # Nút View Log 
         view_log_btn = tk.Button(frame, text="View Log", 
                                  font=(self.D['FONT_FAMILY'], self.S['ACTION_FONT_SIZE'], "bold"),
                                  bg=self.P['C_SECONDARY_DARK'], fg=self.P['C_LIGHT'],
@@ -290,15 +839,74 @@ class OMRLayoutDesign:
                                  padx=15, pady=self.S['ACTION_PADY']) 
         view_log_btn.grid(row=0, column=1, padx=5, pady=5)
         
-        # Nút Save & Upload 
         upload_btn = tk.Button(frame, text="Save & Upload", 
                                font=(self.D['FONT_FAMILY'], self.S['ACTION_FONT_SIZE'], "bold"),
                                bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'],
                                activebackground=self.P['C_PRIMARY_DARK'],
                                activeforeground=self.P['C_ACCENT'],
                                relief='flat', bd=0, 
-                               padx=15, pady=self.S['ACTION_PADY']) 
+                               padx=15, pady=self.S['ACTION_PADY'],
+                               state='disabled') # Mặc định disabled
         upload_btn.grid(row=0, column=2, padx=5, pady=5)
+
+
+class ScoringThread(Thread):
+    """
+    Luồng chạy ngầm để thực hiện quá trình chấm điểm ảnh (OMR, Warping, Grading)
+    tránh làm đơ giao diện người dùng chính (GUI).
+    """
+    
+    def __init__(self, app_gui: OMRLayoutDesign, image_files: List[Path], 
+                 warp_processor: WarpingProcessor, omr_engine: OMREngine, 
+                 grade_manager: GradeManager, result_dir: Path):
+        
+        super().__init__()
+        self.app_gui = app_gui
+        self.image_files = image_files
+        self.warp_processor = warp_processor
+        self.omr_engine = omr_engine
+        self.grade_manager = grade_manager
+        self.result_dir = result_dir
+
+    def run(self):
+        """Chạy quá trình chấm điểm cho từng file ảnh."""
+        
+        for img_path in self.image_files:
+            result_dict = None
+            error_msg = None
+            base_name = img_path.stem
+            
+            try:
+                # 1. Đọc ảnh (dùng imdecode để hỗ trợ đường dẫn tiếng Việt)
+                img_bgr = cv2.imdecode(np.fromfile(str(img_path), np.uint8), cv2.IMREAD_UNCHANGED)
+                if img_bgr is None:
+                    raise RuntimeError("Không thể đọc/giải mã file ảnh.")
+
+                # 2. Xử lý Warping
+                img_warped_bgr, img_warped_binary = self.warp_processor.process_warping(img_bgr)
+                
+                # 3. Xử lý OMR (Quét đáp án)
+                answers_list, _, image_with_grid = self.omr_engine.process_omr(
+                    img_warped_binary, 
+                    img_warped_bgr
+                )
+
+                # 4. Chấm điểm
+                parts, _ = self.grade_manager.grade_answers(answers_list)
+
+                # 5. Lưu kết quả ảnh & Định dạng kết quả
+                self.grade_manager.save_result_image(base_name, image_with_grid, self.result_dir)
+                result_dict = self.grade_manager.format_result(base_name, parts, answers_list)
+            
+            except Exception as e:
+                error_msg = str(e)
+                print(f"Lỗi khi chấm điểm {img_path.name}: {error_msg}")
+            
+            # Cập nhật giao diện người dùng thông qua callback (chạy trên luồng chính)
+            self.app_gui.master.after(0, self.app_gui.on_file_graded, img_path, result_dict, error_msg)
+
+        # Thông báo hoàn tất
+        self.app_gui.master.after(0, self.app_gui.on_scoring_complete)
 
 
 def run_omr_design():
