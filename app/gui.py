@@ -1,18 +1,13 @@
-# app_gui.py
 import tkinter as tk
 from tkinter import ttk, filedialog, font as tkfont, messagebox
-from typing import Dict, Any, List, Optional, Tuple, Set
+from typing import Dict, Any, List, Optional, Set
 from pathlib import Path
 import json
 import sys 
 import os
-import pandas as pd # pandas không được dùng trực tiếp trong GUI, nhưng vẫn import nếu cần
 
-# Import các module đã chia nhỏ
 from state_manager import FormStateManager
 from thread import ScoringThread
-
-# Import các lớp xử lý cần thiết
 from processing.utils import load_config as load_app_config, load_key, load_scoring_ref, save_results_to_excel
 from processing.warp import WarpingProcessor
 from processing.omr_engine import OMREngine
@@ -21,7 +16,7 @@ from processing.grade import GradeManager
 KEY_PATH = Path("key.json")
 SCORING_REF_PATH = 'scoring_ref.json'
 
-class OMRLayoutDesign:
+class Layout:
     
     def __init__(self, master: tk.Tk):
         # 1. Load configuration first
@@ -183,28 +178,33 @@ class OMRLayoutDesign:
         self.date_entry.config(state=state_input)
 
         # Start Button (Đổi màu/văn bản/trạng thái)
-        start_btn_text = "STOP" if self.is_scoring else "▶"
-        start_btn_color = self.P['C_SECONDARY_DARK'] if self.is_scoring else self.P['C_ACCENT']
+        if self.is_scoring:
+            start_btn_text = "⏳"
+            start_btn_bg = self.P['C_PRIMARY_DARK']
+            start_btn_fg = self.P['C_LIGHT']
+            
+        else:
+            start_btn_text = "▶"
+            start_btn_bg = self.P['C_ACCENT']
+            start_btn_fg = self.P['C_PRIMARY_DARK']
         
         # Tìm lại nút start
         start_btn_container = self.top_controls_frame.winfo_children()[0].winfo_children()[1] # R0, C1
         start_btn = start_btn_container.winfo_children()[0]
 
-        start_btn.config(text=start_btn_text, bg=start_btn_color, 
+        start_btn.config(text=start_btn_text, bg=start_btn_bg, fg=start_btn_fg,
                          activebackground=self.P['C_PRIMARY_DARK'],
                          activeforeground=self.P['C_LIGHT'])
         
         # Nút quản lý file
         if self.has_files_loaded:
             # Các nút Add/Remove/Clear trong table view
-            file_management_frame = self.content_frame.winfo_children()[0].winfo_children()[1]
-            for widget in file_management_frame.winfo_children():
-                if isinstance(widget, tk.Button):
-                    widget.config(state=state_input)
+            if hasattr(self, 'add_btn') and self.add_btn.winfo_exists():
+                self.add_btn.config(state=state_input)
+                self.remove_btn.config(state=state_input)
+                self.clear_btn.config(state=state_input)
         
         # Footer buttons
-        # Nút Upload chỉ kích hoạt sau khi chấm điểm xong
-        # Nút View Log
         footer_widgets = self.footer_frame.winfo_children()
         view_log_btn = footer_widgets[0]
         upload_btn = footer_widgets[1]
@@ -214,57 +214,84 @@ class OMRLayoutDesign:
 
     
     def _on_start_button_clicked(self):
-        """Hàm xử lý khi nút START/STOP được nhấn."""
         
         if self.is_scoring:
             # STOP: Tạm thời không hỗ trợ
             messagebox.showwarning("Warning", "Không thể dừng quá trình chấm điểm hiện tại.")
             return
 
+        # 1. Validate form
+        self.form_state_manager.set_value('test_date', self.test_date_var.get(), skip_validation=True)
         is_valid, error_msg = self.form_state_manager.validate_and_update_state() 
         
-        if is_valid:
-            # 1. Khóa UI
+        if not is_valid:
+            messagebox.showwarning("Validation Failed", f"Warning:\n{error_msg}")
+            return
+        
+        # 2. Snapshot state để tránh lỗi
+        raw_state = dict(self.form_state_manager.state)
+        key_answer = raw_state.get('key')
+        set_name = raw_state.get('set_name')
+        test_id = raw_state.get('test_id')
+        test_date = raw_state.get('test_date')
+        image_files = list(raw_state.get('image_files') or [])
+            
+        # 3. Khóa UI
+        try:
             self._update_ui_state(is_scoring=True)
 
-            # 2. Xóa các kết quả cũ
-            self.form_state_manager.set_value('results', [], skip_validation=True)
-            self._populate_treeview() # Reset bảng trạng thái
+        except Exception:
+            # nếu khóa UI thất bại, không tiếp tục
+            messagebox.showwarning("Error", "Không thể khoá giao diện để bắt đầu.")
+            return
+        # 4. Xóa các kết quả cũ
+        self.form_state_manager.set_value('results', [], skip_validation=True)
+        self._populate_treeview() # Reset bảng trạng thái
 
-            # 3. Chạy Scoring Thread
-            state = self.form_state_manager.state
-            
-            # Khởi tạo các processor
+        # 5. Chạy Scoring Thread
+        try:
             warp_processor = WarpingProcessor(self.app_config)
             omr_engine = OMREngine(self.app_config)
+            # truyền các giá trị snapshot
             grade_manager = GradeManager(
-                key_answer=state['key'], 
-                scoring_ref=self.scoring_ref, 
-                set_name=state['set_name'], 
-                test_id=state['test_id'],
-                test_date=state['test_date']
+                key_answer=key_answer,
+                scoring_ref=self.scoring_ref,
+                set_name=set_name,
+                test_id=test_id,
+                test_date=test_date
             )
+        except Exception as e:
+            # rollback UI lock
+            self._update_ui_state(is_scoring=False)
+            messagebox.showwarning("Error", f"Lỗi khởi tạo engine: {e}")
+            return
             
-            # Tạo thư mục 
-            state = self.form_state_manager.state
-            result_dir_name = (f"{state['test_date']}_{state['set_name']}_{state['test_id']}").replace(" ", "").replace("-", "")
-            result_dir = self.parent_log_dir / result_dir_name
-            result_dir.mkdir(exist_ok=True)
-            self.current_result_dir = result_dir
+        # 6. Tạo thư mục 
+        result_dir_name = (f"{test_date}_{set_name}_{test_id}").replace(" ", "").replace("-", "")
+        result_dir = self.parent_log_dir / result_dir_name
+        result_dir.mkdir(exist_ok=True)
+        self.current_result_dir = result_dir
 
-            # Khởi tạo ScoringThread (Import từ scoring_thread.py)
-            scoring_thread = ScoringThread(
-                app_gui=self, # Truyền tham chiếu đến GUI
-                image_files=state['image_files'],
-                warp_processor=warp_processor,
-                omr_engine=omr_engine,
-                grade_manager=grade_manager,
-                result_dir=result_dir
-            )
+        # 7. Khởi tạo ScoringThread (Import từ scoring_thread.py)
+        scoring_thread = ScoringThread(
+            gui=self, # Truyền tham chiếu đến GUI
+            image_files=image_files,
+            warp_processor=warp_processor,
+            omr_engine=omr_engine,
+            grade_manager=grade_manager,
+            result_dir=result_dir
+        )
+        try:
             scoring_thread.start()
+        except Exception as e:
+            # nếu start lỗi thì unlock UI và báo lỗi
+            self._update_ui_state(is_scoring=False)
+            messagebox.showwarning("Error", f"Không thể khởi động thread chấm điểm: {e}")
+            # optional: cleanup result_dir if empty
+            return
 
-        else:
-            messagebox.showwarning("Validation Failed", f"Warning:\n{error_msg}")
+        # (optional) set a flag formal
+        self.is_scoring = True
 
     # --- UI UPDATE CALLBACKS TỪ THREAD SCORING ---
     
@@ -534,7 +561,6 @@ class OMRLayoutDesign:
                  fg=self.P['C_SECONDARY_DARK'], bg=self.P['C_LIGHT']).pack(anchor='e')
         
     def _create_drag_drop_area(self):
-        # Nút Browse giờ đây sẽ gọi hàm mới
         frame = self.content_frame
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
@@ -571,7 +597,7 @@ class OMRLayoutDesign:
                       bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'],
                       relief='flat', bd=0, 
                       activebackground=self.P['C_PRIMARY_DARK'], 
-                      activeforeground=self.P['C_ACCENT'],
+                      activeforeground=self.P['C_LIGHT'],
                       padx=15, pady=self.S['ACTION_PADY'], 
                       command=self._load_files) 
         browse_btn.grid(row=2, column=0, pady=5, padx=20)
@@ -602,29 +628,29 @@ class OMRLayoutDesign:
         # Căn chỉnh các nút sang trái
         file_management_frame.grid_columnconfigure(0, weight=1) 
         
-        add_btn = tk.Button(file_management_frame, text="Add", 
+        self.add_btn = tk.Button(file_management_frame, text="Add", 
                                  font=(self.D['FONT_FAMILY'], 9),
                                  bg=self.P['C_LIGHT'], fg=self.P['C_SECONDARY_DARK'],
                                  activeforeground=self.P['C_ACCENT'],
                                  relief='flat', bd=0, padx=10, pady=self.S['ACTION_PADY'],
                                  command=self._load_files) 
-        add_btn.grid(row=0, column=1, padx=0, pady=0)
+        self.add_btn.grid(row=0, column=1, padx=0, pady=0)
         
-        remove_btn = tk.Button(file_management_frame, text="Remove", 
+        self.remove_btn = tk.Button(file_management_frame, text="Remove", 
                                  font=(self.D['FONT_FAMILY'], 9),
                                  bg=self.P['C_LIGHT'], fg=self.P['C_SECONDARY_DARK'],
                                  activeforeground=self.P['C_ACCENT'],
                                  relief='flat', bd=0, padx=10, pady=self.S['ACTION_PADY'],
                                  command=self._remove_selected_files) 
-        remove_btn.grid(row=0, column=2, padx=0, pady=0)
+        self.remove_btn.grid(row=0, column=2, padx=0, pady=0)
         
-        clear_btn = tk.Button(file_management_frame, text="Clear", 
+        self.clear_btn = tk.Button(file_management_frame, text="Clear", 
                                  font=(self.D['FONT_FAMILY'], 9),
                                  bg=self.P['C_LIGHT'], fg=self.P['C_SECONDARY_DARK'],
                                  activeforeground=self.P['C_ACCENT'],
                                  relief='flat', bd=0, padx=10, pady=self.S['ACTION_PADY'],
                                  command=self._clear_all_files) 
-        clear_btn.grid(row=0, column=3, padx=0, pady=0)
+        self.clear_btn.grid(row=0, column=3, padx=0, pady=0)
 
         # --- BẢNG (TREEVIEW) (HÀNG 0) ---
         table_container = tk.Frame(table_and_controls_frame, bg=self.P['C_LIGHT'])
@@ -737,7 +763,7 @@ class OMRLayoutDesign:
                                  font=(self.D['FONT_FAMILY'], self.S['ACTION_FONT_SIZE'], "bold"),
                                  bg=self.P['C_SECONDARY_DARK'], fg=self.P['C_LIGHT'],
                                  activebackground=self.P['C_PRIMARY_DARK'], 
-                                 activeforeground=self.P['C_SECONDARY_DARK'],
+                                 activeforeground=self.P['C_ACCENT'],
                                  relief='flat', bd=0, 
                                  padx=15, pady=self.S['ACTION_PADY'],
                                  command=self._on_view_log_clicked) 
@@ -747,7 +773,7 @@ class OMRLayoutDesign:
                                font=(self.D['FONT_FAMILY'], self.S['ACTION_FONT_SIZE'], "bold"),
                                bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'],
                                activebackground=self.P['C_PRIMARY_DARK'],
-                               activeforeground=self.P['C_ACCENT'],
+                               activeforeground=self.P['C_LIGHT'],
                                relief='flat', bd=0, 
                                padx=15, pady=self.S['ACTION_PADY'],
                                state='disabled', # Mặc định disabled
@@ -801,8 +827,6 @@ class OMRLayoutDesign:
             saved_path = save_results_to_excel(
                 results=results,
                 result_dir=result_dir,
-                set_name=state['set_name'],
-                test_id=state['test_id']
             )
             
             messagebox.showinfo("Done", f"Đã lưu kết quả tại:\n{saved_path.resolve()}")

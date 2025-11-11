@@ -1,7 +1,6 @@
 from typing import Tuple, Dict, Any, List
 from pathlib import Path
 import json
-import os
 import pandas as pd
 
 def load_config(filename: Path = Path("config.json")) -> Dict[str, Any]:
@@ -81,16 +80,7 @@ def load_scoring_ref(ref_file_path: str = 'scoring_ref.json') -> Dict[str, Dict[
     except Exception as e:
         raise Exception(f"Lỗi khi tải scoring_ref.json: {e}")
     
-def save_results_to_excel(
-    results: List[Dict[str, Any]], 
-    result_dir: Path, 
-    set_name: str, 
-    test_id: str
-):
-    """
-    Lưu danh sách kết quả (List[Dict]) vào file Excel.
-    Hàm này sẽ append dữ liệu nếu file đã tồn tại.
-    """
+def save_results_to_excel(results: List[Dict[str, Any]], result_dir: Path):
     
     if not results:
         return # Không có gì để lưu
@@ -98,7 +88,7 @@ def save_results_to_excel(
     df_new = pd.DataFrame(results)
     
     # Tên file được tạo từ set_name và test_id
-    excel_path = result_dir / f"{set_name.replace(" ", "")}_{test_id}_Score_Summary.xlsx"
+    excel_path = result_dir / f"{result_dir.name}_summary.xlsx"
     
     if excel_path.exists():
         # Nếu file đã tồn tại, đọc file cũ và nối dữ liệu (append)
@@ -120,7 +110,7 @@ def save_results_to_excel(
         # Đảm bảo thư mục cha tồn tại (dù đã được tạo ở bước chấm điểm)
         result_dir.mkdir(parents=True, exist_ok=True) 
         df_combined.to_excel(excel_path, index=False)
-        print(f"Results saved at: {excel_path}")
+        print(f"Results saved at: {result_dir}")
         
         # Trả về đường dẫn file đã lưu để hiển thị thông báo
         return excel_path 

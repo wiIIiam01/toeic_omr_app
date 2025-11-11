@@ -1,9 +1,9 @@
 import tkinter as tk
-from gui import OMRLayoutDesign
+from gui import Layout
 
 def run_omr_design():
     root = tk.Tk()
-    app = OMRLayoutDesign(root)
+    app = Layout(root)
     root.mainloop()
 
 if __name__ == "__main__":

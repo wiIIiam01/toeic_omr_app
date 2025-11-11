@@ -1,12 +1,13 @@
 import cv2
 import os
 import numpy as np
-import pandas as pd
 from pathlib import Path
-from processing.utils import load_config, load_key, get_user_selection, get_answer_key, load_scoring_ref
+from datetime import datetime
+from processing.utils import load_config, load_key, get_answer_key, load_scoring_ref, save_results_to_excel
 from processing.warp import WarpingProcessor
 from processing.omr_engine import OMREngine
 from processing.grade import GradeManager
+from typing import Dict, Tuple
 
 KEY_PATH = Path("key.json")
 SCORING_REF_PATH = 'scoring_ref.json'
@@ -72,19 +73,20 @@ def main():
         warp_processor = WarpingProcessor(config)
         omr_engine = OMREngine(config)
         
+        current_time = datetime.now().strftime("%Y-%m-%d")
+        
         grade_manager = GradeManager(
             key_answer=key_raw, 
             scoring_ref=scoring_ref,
             set_name=selected_set, 
-            test_id=selected_id
+            test_id=selected_id,
+            test_date=current_time
         )
         
-        base_dir = Path(image_dir).parent
-        folder_name = Path(image_dir).name
-        result_dir = base_dir / f"{folder_name}_GRADED"
+        log_dir = Path.cwd().parent / "log"
+        log_dir.mkdir(exist_ok=True)
+        result_dir = log_dir / f"{current_time}_{selected_set}_{selected_id}".replace(" ", "").replace("-", "")
         result_dir.mkdir(parents=True, exist_ok=True)
-        
-        result_xlsx = result_dir / "result_summary.xlsx"
         all_results_list = []
         
     except Exception as e:
@@ -125,8 +127,7 @@ def main():
             continue
 
     if all_results_list:
-        grade_manager.save_all_to_excel(all_results_list, result_xlsx)
-        print(f"\n✨ Results saved: {result_dir.name}\\{result_xlsx.name}.")
+        save_results_to_excel(all_results_list, result_dir)
 
 if __name__ == "__main__":
     main()

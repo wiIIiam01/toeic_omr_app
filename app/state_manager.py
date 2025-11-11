@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Tuple, Set
+from typing import Dict, Any, Optional, Tuple
 from datetime import datetime
 from processing.utils import get_answer_key
 

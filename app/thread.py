@@ -1,5 +1,5 @@
 from threading import Thread
-from typing import List, Optional, Dict, Any, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 from pathlib import Path
 import cv2
 import numpy as np
@@ -9,20 +9,16 @@ from processing.grade import GradeManager
 
 # Xử lý circular import cho type hinting với lớp GUI chính
 if TYPE_CHECKING:
-    from gui import OMRLayoutDesign
+    from gui import Layout
 
 class ScoringThread(Thread):
-    """
-    Luồng chạy ngầm để thực hiện quá trình chấm điểm ảnh (OMR, Warping, Grading)
-    tránh làm đơ giao diện người dùng chính (GUI).
-    """
 
-    def __init__(self, app_gui: 'OMRLayoutDesign', image_files: List[Path], 
+    def __init__(self, gui: 'Layout', image_files: List[Path], 
                  warp_processor: WarpingProcessor, omr_engine: OMREngine, 
                  grade_manager: GradeManager, result_dir: Path):
         
         super().__init__()
-        self.app_gui = app_gui
+        self.gui = gui
         self.image_files = image_files
         self.warp_processor = warp_processor
         self.omr_engine = omr_engine
@@ -64,7 +60,7 @@ class ScoringThread(Thread):
                 print(f"Lỗi khi chấm điểm {img_path.name}: {error_msg}")
             
             # Cập nhật giao diện người dùng thông qua callback (chạy trên luồng chính)
-            self.app_gui.master.after(0, self.app_gui.on_file_graded, img_path, result_dict, error_msg)
+            self.gui.master.after(0, self.gui.on_file_graded, img_path, result_dict, error_msg)
 
         # Thông báo hoàn tất
-        self.app_gui.master.after(0, self.app_gui.on_scoring_complete)
+        self.gui.master.after(0, self.gui.on_scoring_complete)
