@@ -1,0 +1,39 @@
+TOEIC_OMR_Project/
+│
+├── config/                 # [Independence] Chứa file cấu hình, tách biệt code và dữ liệu
+│   ├── app_config.json     # Cấu hình màu sắc, tham số thuật toán
+│   ├── key.json            # Đáp án
+│   └── scoring_ref.json    # Thang điểm
+│
+├── logs/                   # [Easy to debug] Nơi chứa file log chạy chương trình
+│
+├── src/                    # Source code
+│   ├── __init__.py
+│   │
+│   ├── main.py             # [Entry Point]
+│   │
+│   ├── utils/              # [Modulization] (non-logic)
+│   │   ├── __init__.py
+│   │   ├── logger.py       # Thiết lập logging tập trung
+│   │   ├── file_io.py      # Đọc/Ghi JSON, Excel
+│   │   └── helpers.py      # Các hàm toán học, xử lý bit
+│   │
+│   ├── core/               # [OOP] (Model)
+│   │   ├── __init__.py
+│   │   ├── warp_processor.py   # Xử lý căn chỉnh ảnh
+│   │   ├── omr_engine.py       # Xử lý nhận diện chấm tròn
+│   │   └── grade_manager.py    # Xử lý chấm điểm
+│   │
+│   ├── ui/                 # [Modulization] (View)
+│   │   ├── __init__.py
+│   │   ├── app_window.py       # Cửa sổ chính
+│   │   ├── components.py       # Các widget tái sử dụng (nếu cần)
+│   │   └── state_manager.py    # Quản lý trạng thái form
+│   │
+│   └── workers/            
+│       ├── __init__.py
+│       └── scoring_worker.py   # Tách thread ra khỏi logic UI
+│
+├── tests/                  # [Independency] Unit test (cho tương lai)
+├── requirements.txt        # Danh sách thư viện
+└── README.md
