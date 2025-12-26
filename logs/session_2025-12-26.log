@@ -1,0 +1,1044 @@
+22:24:50 - [INFO] - ==========================================
+22:24:50 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+22:24:50 - [INFO] - ==========================================
+22:24:51 - [DEBUG] - Loaded JSON successfully: app_config.json
+22:24:51 - [DEBUG] - Loaded JSON successfully: key.json
+22:24:51 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+22:24:51 - [DEBUG] - FormStateManager initialized.
+22:24:51 - [INFO] - UI initialized successfully. Entering main loop.
+22:25:06 - [DEBUG] - User selected set: 'ETS 2024'
+22:25:06 - [DEBUG] - State changed: set_name = ETS 2024
+22:25:08 - [DEBUG] - State changed: test_id = 10
+22:25:08 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:11 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:11 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:11 - [INFO] - Auto-set date to today: 2025-12-26
+22:25:11 - [INFO] - Form validation passed. Ready to score.
+22:25:11 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:11 - [DEBUG] - WarpingProcessor initialized with config.
+22:25:11 - [DEBUG] - OMREngine initialized.
+22:25:11 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+22:25:11 - [INFO] - Worker started. Processing 1 files...
+22:25:11 - [DEBUG] - [1/1] Processing: Đinh Thị Vân Anh.jpg
+22:25:11 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:25:12 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+22:25:12 - [INFO] - Warping completed successfully.
+22:25:12 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:25:12 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+22:25:12 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+22:25:12 - [INFO] - Worker finished. Success: 1/1. Time: 0.66s
+22:25:12 - [CRITICAL] - Uncaught Exception: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2074, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 862, in callit
+    func(*args)
+    ~~~~^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 356, in on_file_graded
+    self.table_view.update_single_item(img_path, result_dict, error_msg)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\components.py", line 221, in update_single_item
+    result_dict['LC'].split('/')[0].strip(),
+    ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+22:25:54 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+22:25:54 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:54 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:54 - [INFO] - Auto-set date to today: 2025-12-26
+22:25:54 - [INFO] - Form validation passed. Ready to score.
+22:25:54 - [INFO] - Answer Key found for ETS 2024 - 10
+22:25:54 - [DEBUG] - WarpingProcessor initialized with config.
+22:25:54 - [DEBUG] - OMREngine initialized.
+22:25:54 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+22:25:54 - [INFO] - Worker started. Processing 1 files...
+22:25:54 - [DEBUG] - [1/1] Processing: Đinh Thị Vân Anh.jpg
+22:25:54 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:25:55 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+22:25:55 - [INFO] - Warping completed successfully.
+22:25:55 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:25:55 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+22:25:55 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+22:25:55 - [INFO] - Worker finished. Success: 1/1. Time: 0.61s
+22:25:55 - [CRITICAL] - Uncaught Exception: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2074, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 862, in callit
+    func(*args)
+    ~~~~^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 356, in on_file_graded
+    self.table_view.update_single_item(img_path, result_dict, error_msg)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\components.py", line 221, in update_single_item
+    result_dict['LC'].split('/')[0].strip(),
+    ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+22:26:57 - [INFO] - ==========================================
+22:26:57 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+22:26:57 - [INFO] - ==========================================
+22:26:58 - [DEBUG] - Loaded JSON successfully: app_config.json
+22:26:58 - [DEBUG] - Loaded JSON successfully: key.json
+22:26:58 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+22:26:58 - [DEBUG] - FormStateManager initialized.
+22:26:58 - [INFO] - UI initialized successfully. Entering main loop.
+22:27:03 - [DEBUG] - User selected set: 'ETS 2024'
+22:27:03 - [DEBUG] - State changed: set_name = ETS 2024
+22:27:04 - [DEBUG] - State changed: test_id = 10
+22:27:04 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:05 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:05 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:05 - [INFO] - Auto-set date to today: 2025-12-26
+22:27:05 - [INFO] - Form validation passed. Ready to score.
+22:27:05 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:05 - [DEBUG] - WarpingProcessor initialized with config.
+22:27:05 - [DEBUG] - OMREngine initialized.
+22:27:05 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+22:27:05 - [INFO] - Worker started. Processing 1 files...
+22:27:05 - [DEBUG] - [1/1] Processing: Đinh Thị Vân Anh.jpg
+22:27:05 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:27:05 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+22:27:05 - [INFO] - Warping completed successfully.
+22:27:05 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:27:05 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+22:27:05 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+22:27:05 - [INFO] - Worker finished. Success: 1/1. Time: 0.60s
+22:27:05 - [CRITICAL] - Uncaught Exception: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2074, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 862, in callit
+    func(*args)
+    ~~~~^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 356, in on_file_graded
+    self.table_view.update_single_item(img_path, result_dict, error_msg)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\components.py", line 221, in update_single_item
+    result_dict['LC'].split('/')[0].strip(),
+    ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+22:27:21 - [DEBUG] - State changed: test_date = 2025-12-11
+22:27:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:21 - [INFO] - Form validation passed. Ready to score.
+22:27:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:21 - [DEBUG] - WarpingProcessor initialized with config.
+22:27:21 - [DEBUG] - OMREngine initialized.
+22:27:21 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+22:27:21 - [INFO] - Worker started. Processing 1 files...
+22:27:21 - [DEBUG] - [1/1] Processing: Đinh Thị Vân Anh.jpg
+22:27:21 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:27:21 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+22:27:21 - [INFO] - Warping completed successfully.
+22:27:21 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:27:21 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+22:27:21 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+22:27:21 - [INFO] - Worker finished. Success: 1/1. Time: 0.60s
+22:27:21 - [CRITICAL] - Uncaught Exception: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2074, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 862, in callit
+    func(*args)
+    ~~~~^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 356, in on_file_graded
+    self.table_view.update_single_item(img_path, result_dict, error_msg)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\components.py", line 221, in update_single_item
+    result_dict['LC'].split('/')[0].strip(),
+    ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+22:27:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:27:31 - [INFO] - Answer Key found for ETS 2024 - 10
+22:30:10 - [INFO] - Answer Key found for ETS 2024 - 10
+22:30:11 - [INFO] - Application closed by user.
+22:30:11 - [INFO] - Application Process Terminated.
+22:30:14 - [INFO] - ==========================================
+22:30:14 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+22:30:14 - [INFO] - ==========================================
+22:30:14 - [DEBUG] - Loaded JSON successfully: app_config.json
+22:30:14 - [DEBUG] - Loaded JSON successfully: key.json
+22:30:14 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+22:30:14 - [DEBUG] - FormStateManager initialized.
+22:30:14 - [INFO] - UI initialized successfully. Entering main loop.
+22:30:19 - [DEBUG] - User selected set: 'ETS 2024'
+22:30:19 - [DEBUG] - State changed: set_name = ETS 2024
+22:30:21 - [DEBUG] - State changed: test_id = 10
+22:30:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:30:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:30:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:30:21 - [INFO] - Auto-set date to today: 2025-12-26
+22:30:21 - [INFO] - Form validation passed. Ready to score.
+22:30:21 - [INFO] - Answer Key found for ETS 2024 - 10
+22:30:21 - [DEBUG] - WarpingProcessor initialized with config.
+22:30:21 - [DEBUG] - OMREngine initialized.
+22:30:21 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+22:30:21 - [INFO] - Worker started. Processing 1 files...
+22:30:21 - [DEBUG] - [1/1] Processing: Đinh Thị Vân Anh.jpg
+22:30:21 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:30:22 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+22:30:22 - [INFO] - Warping completed successfully.
+22:30:22 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:30:22 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+22:30:22 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+22:30:22 - [INFO] - Worker finished. Success: 1/1. Time: 0.61s
+22:30:26 - [INFO] - Đã cập nhật kết quả vào: 20251226_ETS2024_10_summary.csv
+22:42:28 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+22:42:28 - [INFO] - Answer Key found for ETS 2024 - 10
+22:42:31 - [INFO] - Answer Key found for ETS 2024 - 10
+22:42:31 - [CRITICAL] - Uncaught Exception: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2074, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 306, in _on_browse_files
+    self._refresh_content_area()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 246, in _refresh_content_area
+    self.table_view.update_data(image_files, results)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\components.py", line 204, in update_data
+    lc = res['LC'].split('/')[0].strip()
+         ^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+22:42:31 - [INFO] - Answer Key found for ETS 2024 - 10
+22:42:36 - [INFO] - Answer Key found for ETS 2024 - 10
+22:42:39 - [INFO] - Answer Key found for ETS 2024 - 10
+22:42:39 - [CRITICAL] - Uncaught Exception: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "C:\Users\WILL\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2074, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 306, in _on_browse_files
+    self._refresh_content_area()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\app_window.py", line 246, in _refresh_content_area
+    self.table_view.update_data(image_files, results)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\WILL\Desktop\ComputerScience\toeic_omr_app\src\ui\components.py", line 204, in update_data
+    lc = res['LC'].split('/')[0].strip()
+         ^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+22:44:40 - [INFO] - Application closed by user.
+22:44:40 - [INFO] - Application Process Terminated.
+22:44:43 - [INFO] - ==========================================
+22:44:43 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+22:44:43 - [INFO] - ==========================================
+22:44:43 - [DEBUG] - Loaded JSON successfully: app_config.json
+22:44:43 - [DEBUG] - Loaded JSON successfully: key.json
+22:44:43 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+22:44:43 - [DEBUG] - FormStateManager initialized.
+22:44:43 - [INFO] - UI initialized successfully. Entering main loop.
+22:44:49 - [DEBUG] - User selected set: 'ETS 2024'
+22:44:49 - [DEBUG] - State changed: set_name = ETS 2024
+22:44:50 - [DEBUG] - State changed: test_id = 10
+22:44:50 - [INFO] - Answer Key found for ETS 2024 - 10
+22:44:52 - [INFO] - Answer Key found for ETS 2024 - 10
+22:44:52 - [INFO] - Answer Key found for ETS 2024 - 10
+22:44:52 - [INFO] - Auto-set date to today: 2025-12-26
+22:44:52 - [INFO] - Form validation passed. Ready to score.
+22:44:52 - [INFO] - Answer Key found for ETS 2024 - 10
+22:44:52 - [DEBUG] - WarpingProcessor initialized with config.
+22:44:52 - [DEBUG] - OMREngine initialized.
+22:44:52 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+22:44:52 - [INFO] - Worker started. Processing 12 files...
+22:44:52 - [DEBUG] - [1/12] Processing: Đinh Thị Vân Anh.jpg
+22:44:52 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:52 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+22:44:52 - [INFO] - Warping completed successfully.
+22:44:52 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:52 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+22:44:53 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+22:44:53 - [DEBUG] - [2/12] Processing: Hoàng Anh Quý.jpg
+22:44:53 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:53 - [DEBUG] - Markers ordered successfully. Centers: [184 333], [3985  361], ...
+22:44:53 - [INFO] - Warping completed successfully.
+22:44:53 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:53 - [INFO] - Grading finished. Score: 340 (LC: 155, RC: 185)
+22:44:53 - [DEBUG] - Saved result image: Hoàng Anh Quý.png
+22:44:53 - [DEBUG] - [3/12] Processing: Huỳnh Ngọc Bảo Châu.jpg
+22:44:53 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:54 - [DEBUG] - Markers ordered successfully. Centers: [116 353], [3897  349], ...
+22:44:54 - [INFO] - Warping completed successfully.
+22:44:54 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:54 - [INFO] - Grading finished. Score: 385 (LC: 185, RC: 200)
+22:44:54 - [DEBUG] - Saved result image: Huỳnh Ngọc Bảo Châu.png
+22:44:54 - [DEBUG] - [4/12] Processing: Lê Thái Sơn.jpg
+22:44:54 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:54 - [DEBUG] - Markers ordered successfully. Centers: [185 356], [3937  332], ...
+22:44:54 - [INFO] - Warping completed successfully.
+22:44:54 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:54 - [INFO] - Grading finished. Score: 560 (LC: 255, RC: 305)
+22:44:54 - [DEBUG] - Saved result image: Lê Thái Sơn.png
+22:44:54 - [DEBUG] - [5/12] Processing: Nguyễn Duy Bảo.jpg
+22:44:54 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:55 - [DEBUG] - Markers ordered successfully. Centers: [160 335], [3898  354], ...
+22:44:55 - [INFO] - Warping completed successfully.
+22:44:55 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:55 - [INFO] - Grading finished. Score: 325 (LC: 180, RC: 145)
+22:44:55 - [DEBUG] - Saved result image: Nguyễn Duy Bảo.png
+22:44:55 - [DEBUG] - [6/12] Processing: Nguyễn Ngọc Anh Quân.jpg
+22:44:55 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:55 - [DEBUG] - Markers ordered successfully. Centers: [161 340], [3897  362], ...
+22:44:55 - [INFO] - Warping completed successfully.
+22:44:55 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:55 - [INFO] - Grading finished. Score: 415 (LC: 235, RC: 180)
+22:44:55 - [DEBUG] - Saved result image: Nguyễn Ngọc Anh Quân.png
+22:44:55 - [DEBUG] - [7/12] Processing: Nguyễn Tấn Đạt.jpg
+22:44:56 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:56 - [DEBUG] - Markers ordered successfully. Centers: [171 328], [3945  319], ...
+22:44:56 - [INFO] - Warping completed successfully.
+22:44:56 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:56 - [INFO] - Grading finished. Score: 435 (LC: 205, RC: 230)
+22:44:56 - [DEBUG] - Saved result image: Nguyễn Tấn Đạt.png
+22:44:56 - [DEBUG] - [8/12] Processing: Nguyễn Văn Huy.jpg
+22:44:56 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:57 - [DEBUG] - Markers ordered successfully. Centers: [151 401], [3890  369], ...
+22:44:57 - [INFO] - Warping completed successfully.
+22:44:57 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:57 - [INFO] - Grading finished. Score: 330 (LC: 185, RC: 145)
+22:44:57 - [DEBUG] - Saved result image: Nguyễn Văn Huy.png
+22:44:57 - [DEBUG] - [9/12] Processing: Phạm Võ Văn Hảo.jpg
+22:44:57 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:57 - [DEBUG] - Markers ordered successfully. Centers: [167 338], [3915  320], ...
+22:44:57 - [INFO] - Warping completed successfully.
+22:44:57 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:57 - [INFO] - Grading finished. Score: 565 (LC: 265, RC: 300)
+22:44:57 - [DEBUG] - Saved result image: Phạm Võ Văn Hảo.png
+22:44:57 - [DEBUG] - [10/12] Processing: Trần An Tường.jpg
+22:44:57 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:58 - [DEBUG] - Markers ordered successfully. Centers: [160 317], [3921  316], ...
+22:44:58 - [INFO] - Warping completed successfully.
+22:44:58 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:58 - [INFO] - Grading finished. Score: 445 (LC: 195, RC: 250)
+22:44:58 - [DEBUG] - Saved result image: Trần An Tường.png
+22:44:58 - [DEBUG] - [11/12] Processing: Trần Thị Kim Chi.jpg
+22:44:58 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:58 - [DEBUG] - Markers ordered successfully. Centers: [184 414], [3880  412], ...
+22:44:58 - [INFO] - Warping completed successfully.
+22:44:58 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:58 - [INFO] - Grading finished. Score: 495 (LC: 285, RC: 210)
+22:44:58 - [DEBUG] - Saved result image: Trần Thị Kim Chi.png
+22:44:58 - [DEBUG] - [12/12] Processing: Trần Thị Kim Vinh.jpg
+22:44:59 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:44:59 - [DEBUG] - Markers ordered successfully. Centers: [242 387], [3927  360], ...
+22:44:59 - [INFO] - Warping completed successfully.
+22:44:59 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:44:59 - [INFO] - Grading finished. Score: 400 (LC: 195, RC: 205)
+22:44:59 - [DEBUG] - Saved result image: Trần Thị Kim Vinh.png
+22:44:59 - [INFO] - Worker finished. Success: 12/12. Time: 7.16s
+22:45:19 - [INFO] - Đã cập nhật kết quả vào: 20251226_ETS2024_10_summary.csv
+22:45:30 - [DEBUG] - State changed: image_files = []
+22:45:30 - [INFO] - Answer Key found for ETS 2024 - 10
+22:45:30 - [INFO] - Answer Key found for ETS 2024 - 10
+22:45:36 - [INFO] - Answer Key found for ETS 2024 - 10
+22:45:38 - [DEBUG] - User selected set: 'New Economy 2018'
+22:45:38 - [DEBUG] - State changed: set_name = New Economy 2018
+22:45:38 - [INFO] - Answer Key found for New Economy 2018 - 10
+22:45:38 - [DEBUG] - State changed: test_id = Test
+22:45:40 - [DEBUG] - State changed: test_id = 9
+22:45:40 - [INFO] - Answer Key found for New Economy 2018 - 9
+22:45:44 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+22:45:44 - [INFO] - Answer Key found for New Economy 2018 - 9
+22:45:44 - [INFO] - Answer Key found for New Economy 2018 - 9
+22:45:44 - [INFO] - Auto-set date to today: 2025-12-26
+22:45:44 - [INFO] - Form validation passed. Ready to score.
+22:45:44 - [INFO] - Answer Key found for New Economy 2018 - 9
+22:45:44 - [DEBUG] - WarpingProcessor initialized with config.
+22:45:44 - [DEBUG] - OMREngine initialized.
+22:45:44 - [DEBUG] - GradeManager initialized for Test ID: 9 (Length: 200)
+22:45:44 - [INFO] - Worker started. Processing 14 files...
+22:45:44 - [DEBUG] - [1/14] Processing: Do Ngoc Phuong Anh.jpg
+22:45:44 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:44 - [DEBUG] - Markers ordered successfully. Centers: [161 378], [3899  384], ...
+22:45:44 - [INFO] - Warping completed successfully.
+22:45:44 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:44 - [INFO] - Grading finished. Score: 465 (LC: 275, RC: 190)
+22:45:44 - [DEBUG] - Saved result image: Do Ngoc Phuong Anh.png
+22:45:44 - [DEBUG] - [2/14] Processing: Ho Thanh Lam.jpg
+22:45:44 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:44 - [DEBUG] - Markers ordered successfully. Centers: [183 427], [3906  450], ...
+22:45:44 - [INFO] - Warping completed successfully.
+22:45:44 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:44 - [INFO] - Grading finished. Score: 475 (LC: 250, RC: 225)
+22:45:44 - [DEBUG] - Saved result image: Ho Thanh Lam.png
+22:45:44 - [DEBUG] - [3/14] Processing: Ngo Thi Bich Ly.jpg
+22:45:45 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:45 - [DEBUG] - Markers ordered successfully. Centers: [163 351], [3865  369], ...
+22:45:45 - [INFO] - Warping completed successfully.
+22:45:45 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:45 - [INFO] - Grading finished. Score: 340 (LC: 140, RC: 200)
+22:45:45 - [DEBUG] - Saved result image: Ngo Thi Bich Ly.png
+22:45:45 - [DEBUG] - [4/14] Processing: Nguyễn Đình Mỹ Uyên.jpg
+22:45:45 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:45 - [DEBUG] - Markers ordered successfully. Centers: [128 239], [3940  252], ...
+22:45:45 - [INFO] - Warping completed successfully.
+22:45:45 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:45 - [INFO] - Grading finished. Score: 715 (LC: 375, RC: 340)
+22:45:45 - [DEBUG] - Saved result image: Nguyễn Đình Mỹ Uyên.png
+22:45:45 - [DEBUG] - [5/14] Processing: Nguyễn Thị Phương Thảo.jpg
+22:45:45 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:45 - [DEBUG] - Markers ordered successfully. Centers: [159 398], [3888  403], ...
+22:45:45 - [INFO] - Warping completed successfully.
+22:45:45 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:45 - [INFO] - Grading finished. Score: 550 (LC: 300, RC: 250)
+22:45:45 - [DEBUG] - Saved result image: Nguyễn Thị Phương Thảo.png
+22:45:45 - [DEBUG] - [6/14] Processing: Nguyễn Võ Ngọc My.jpg
+22:45:45 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:45 - [DEBUG] - Markers ordered successfully. Centers: [160 341], [3856  361], ...
+22:45:45 - [INFO] - Warping completed successfully.
+22:45:46 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:46 - [INFO] - Grading finished. Score: 630 (LC: 335, RC: 295)
+22:45:46 - [DEBUG] - Saved result image: Nguyễn Võ Ngọc My.png
+22:45:46 - [DEBUG] - [7/14] Processing: Phạm Phan Trâm Anh.jpg
+22:45:46 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:46 - [DEBUG] - Markers ordered successfully. Centers: [145 444], [3904  433], ...
+22:45:46 - [INFO] - Warping completed successfully.
+22:45:46 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:46 - [INFO] - Grading finished. Score: 870 (LC: 465, RC: 405)
+22:45:46 - [DEBUG] - Saved result image: Phạm Phan Trâm Anh.png
+22:45:46 - [DEBUG] - [8/14] Processing: Phạm Thị Diệu Hiền.jpg
+22:45:46 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:46 - [DEBUG] - Markers ordered successfully. Centers: [ 83 411], [3743  420], ...
+22:45:46 - [INFO] - Warping completed successfully.
+22:45:46 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:46 - [INFO] - Grading finished. Score: 540 (LC: 305, RC: 235)
+22:45:46 - [DEBUG] - Saved result image: Phạm Thị Diệu Hiền.png
+22:45:46 - [DEBUG] - [9/14] Processing: Phan Thị Bích Thuỷ.jpg
+22:45:46 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:46 - [DEBUG] - Markers ordered successfully. Centers: [125 368], [3906  395], ...
+22:45:46 - [INFO] - Warping completed successfully.
+22:45:46 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:46 - [INFO] - Grading finished. Score: 435 (LC: 230, RC: 205)
+22:45:46 - [DEBUG] - Saved result image: Phan Thị Bích Thuỷ.png
+22:45:46 - [DEBUG] - [10/14] Processing: Trần Kiều Thanh Ngọc.jpg
+22:45:47 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:47 - [DEBUG] - Markers ordered successfully. Centers: [184 295], [3924  296], ...
+22:45:47 - [INFO] - Warping completed successfully.
+22:45:47 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:47 - [INFO] - Grading finished. Score: 500 (LC: 280, RC: 220)
+22:45:47 - [DEBUG] - Saved result image: Trần Kiều Thanh Ngọc.png
+22:45:47 - [DEBUG] - [11/14] Processing: Trần Mai Văn Thành.jpg
+22:45:47 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:47 - [DEBUG] - Markers ordered successfully. Centers: [209 326], [3888  346], ...
+22:45:47 - [INFO] - Warping completed successfully.
+22:45:47 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:47 - [INFO] - Grading finished. Score: 325 (LC: 200, RC: 125)
+22:45:47 - [DEBUG] - Saved result image: Trần Mai Văn Thành.png
+22:45:47 - [DEBUG] - [12/14] Processing: Võ Minh Trí.jpg
+22:45:47 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:47 - [DEBUG] - Markers ordered successfully. Centers: [166 345], [3921  358], ...
+22:45:47 - [INFO] - Warping completed successfully.
+22:45:47 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:47 - [INFO] - Grading finished. Score: 445 (LC: 260, RC: 185)
+22:45:47 - [DEBUG] - Saved result image: Võ Minh Trí.png
+22:45:47 - [DEBUG] - [13/14] Processing: Võ Song Hương.jpg
+22:45:47 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:48 - [DEBUG] - Markers ordered successfully. Centers: [141 325], [3875  318], ...
+22:45:48 - [INFO] - Warping completed successfully.
+22:45:48 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:48 - [INFO] - Grading finished. Score: 570 (LC: 275, RC: 295)
+22:45:48 - [DEBUG] - Saved result image: Võ Song Hương.png
+22:45:48 - [DEBUG] - [14/14] Processing: Võ Xuân Trường.jpg
+22:45:48 - [INFO] - Processing image for warping. Input size: 4080x3060
+22:45:48 - [DEBUG] - Markers ordered successfully. Centers: [181 325], [3908  335], ...
+22:45:48 - [INFO] - Warping completed successfully.
+22:45:48 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+22:45:48 - [INFO] - Grading finished. Score: 405 (LC: 245, RC: 160)
+22:45:48 - [DEBUG] - Saved result image: Võ Xuân Trường.png
+22:45:48 - [INFO] - Worker finished. Success: 14/14. Time: 4.08s
+22:45:55 - [INFO] - Đã cập nhật kết quả vào: 20251226_NewEconomy2018_9_summary.csv
+23:14:52 - [INFO] - ==========================================
+23:14:52 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+23:14:52 - [INFO] - ==========================================
+23:14:52 - [DEBUG] - Loaded JSON successfully: app_config.json
+23:14:52 - [DEBUG] - Loaded JSON successfully: key.json
+23:14:52 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+23:14:52 - [DEBUG] - FormStateManager initialized.
+23:14:52 - [INFO] - UI initialized successfully. Entering main loop.
+23:15:28 - [DEBUG] - User selected set: 'ETS 2024'
+23:15:28 - [DEBUG] - State changed: set_name = ETS 2024
+23:15:29 - [DEBUG] - State changed: test_id = 10
+23:15:29 - [INFO] - Answer Key found for ETS 2024 - 10
+23:15:46 - [DEBUG] - State changed: test_date = 2025-12-19
+23:15:46 - [INFO] - Answer Key found for ETS 2024 - 10
+23:15:48 - [INFO] - Answer Key found for ETS 2024 - 10
+23:15:48 - [INFO] - Answer Key found for ETS 2024 - 10
+23:15:48 - [INFO] - Form validation passed. Ready to score.
+23:15:48 - [INFO] - Answer Key found for ETS 2024 - 10
+23:15:48 - [DEBUG] - WarpingProcessor initialized with config.
+23:15:48 - [DEBUG] - OMREngine initialized.
+23:15:48 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+23:15:48 - [INFO] - Worker started. Processing 6 files...
+23:15:48 - [DEBUG] - [1/6] Processing: Đỗ Nhật An.jpg
+23:15:48 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:15:48 - [DEBUG] - Markers ordered successfully. Centers: [145 387], [3877  381], ...
+23:15:48 - [INFO] - Warping completed successfully.
+23:15:48 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:15:48 - [INFO] - Grading finished. Score: 355 (LC: 175, RC: 180)
+23:15:48 - [DEBUG] - Saved result image: Đỗ Nhật An.png
+23:15:48 - [DEBUG] - [2/6] Processing: Lê Thị Minh Huyền.jpg
+23:15:49 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:15:49 - [DEBUG] - Markers ordered successfully. Centers: [159 389], [3932  390], ...
+23:15:49 - [INFO] - Warping completed successfully.
+23:15:49 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:15:49 - [INFO] - Grading finished. Score: 355 (LC: 205, RC: 150)
+23:15:49 - [DEBUG] - Saved result image: Lê Thị Minh Huyền.png
+23:15:49 - [DEBUG] - [3/6] Processing: Ngô Khải Như Ý.jpg
+23:15:49 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:15:49 - [DEBUG] - Markers ordered successfully. Centers: [166 441], [3913  444], ...
+23:15:49 - [INFO] - Warping completed successfully.
+23:15:49 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:15:49 - [INFO] - Grading finished. Score: 420 (LC: 215, RC: 205)
+23:15:49 - [DEBUG] - Saved result image: Ngô Khải Như Ý.png
+23:15:49 - [DEBUG] - [4/6] Processing: Nguyễn Đức Tài.jpg
+23:15:49 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:15:49 - [DEBUG] - Markers ordered successfully. Centers: [139 338], [3947  348], ...
+23:15:49 - [INFO] - Warping completed successfully.
+23:15:49 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:15:49 - [INFO] - Grading finished. Score: 260 (LC: 120, RC: 140)
+23:15:49 - [DEBUG] - Saved result image: Nguyễn Đức Tài.png
+23:15:49 - [DEBUG] - [5/6] Processing: Nguyễn Trần Khánh Trang.jpg
+23:15:49 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:15:50 - [DEBUG] - Markers ordered successfully. Centers: [142 348], [3925  336], ...
+23:15:50 - [INFO] - Warping completed successfully.
+23:15:50 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:15:50 - [INFO] - Grading finished. Score: 375 (LC: 205, RC: 170)
+23:15:50 - [DEBUG] - Saved result image: Nguyễn Trần Khánh Trang.png
+23:15:50 - [DEBUG] - [6/6] Processing: Trần Thị Kiều My.jpg
+23:15:50 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:15:50 - [DEBUG] - Markers ordered successfully. Centers: [179 362], [3903  374], ...
+23:15:50 - [INFO] - Warping completed successfully.
+23:15:50 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:15:50 - [INFO] - Grading finished. Score: 440 (LC: 220, RC: 220)
+23:15:50 - [DEBUG] - Saved result image: Trần Thị Kiều My.png
+23:15:50 - [INFO] - Worker finished. Success: 6/6. Time: 1.81s
+23:15:58 - [INFO] - Đã cập nhật kết quả vào: 20251219_ETS2024_10_summary.csv
+23:16:04 - [DEBUG] - State changed: image_files = []
+23:16:04 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:04 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:10 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:17 - [DEBUG] - State changed: test_date = 2025-12-11
+23:16:17 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:22 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:22 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:22 - [INFO] - Form validation passed. Ready to score.
+23:16:22 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:22 - [DEBUG] - WarpingProcessor initialized with config.
+23:16:22 - [DEBUG] - OMREngine initialized.
+23:16:22 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+23:16:22 - [INFO] - Worker started. Processing 12 files...
+23:16:22 - [DEBUG] - [1/12] Processing: Đinh Thị Vân Anh.jpg
+23:16:22 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:22 - [DEBUG] - Markers ordered successfully. Centers: [170 340], [3883  345], ...
+23:16:22 - [INFO] - Warping completed successfully.
+23:16:23 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:23 - [INFO] - Grading finished. Score: 365 (LC: 200, RC: 165)
+23:16:23 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+23:16:23 - [DEBUG] - [2/12] Processing: Hoàng Anh Quý.jpg
+23:16:23 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:23 - [DEBUG] - Markers ordered successfully. Centers: [184 333], [3985  361], ...
+23:16:23 - [INFO] - Warping completed successfully.
+23:16:23 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:23 - [INFO] - Grading finished. Score: 340 (LC: 155, RC: 185)
+23:16:23 - [DEBUG] - Saved result image: Hoàng Anh Quý.png
+23:16:23 - [DEBUG] - [3/12] Processing: Huỳnh Ngọc Bảo Châu.jpg
+23:16:23 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:24 - [DEBUG] - Markers ordered successfully. Centers: [116 353], [3897  349], ...
+23:16:24 - [INFO] - Warping completed successfully.
+23:16:24 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:24 - [INFO] - Grading finished. Score: 385 (LC: 185, RC: 200)
+23:16:24 - [DEBUG] - Saved result image: Huỳnh Ngọc Bảo Châu.png
+23:16:24 - [DEBUG] - [4/12] Processing: Lê Thái Sơn.jpg
+23:16:24 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:24 - [DEBUG] - Markers ordered successfully. Centers: [185 356], [3937  332], ...
+23:16:24 - [INFO] - Warping completed successfully.
+23:16:24 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:24 - [INFO] - Grading finished. Score: 560 (LC: 255, RC: 305)
+23:16:24 - [DEBUG] - Saved result image: Lê Thái Sơn.png
+23:16:24 - [DEBUG] - [5/12] Processing: Nguyễn Duy Bảo.jpg
+23:16:24 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:25 - [DEBUG] - Markers ordered successfully. Centers: [160 335], [3898  354], ...
+23:16:25 - [INFO] - Warping completed successfully.
+23:16:25 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:25 - [INFO] - Grading finished. Score: 325 (LC: 180, RC: 145)
+23:16:25 - [DEBUG] - Saved result image: Nguyễn Duy Bảo.png
+23:16:25 - [DEBUG] - [6/12] Processing: Nguyễn Ngọc Anh Quân.jpg
+23:16:25 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:25 - [DEBUG] - Markers ordered successfully. Centers: [161 340], [3897  362], ...
+23:16:25 - [INFO] - Warping completed successfully.
+23:16:25 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:25 - [INFO] - Grading finished. Score: 415 (LC: 235, RC: 180)
+23:16:26 - [DEBUG] - Saved result image: Nguyễn Ngọc Anh Quân.png
+23:16:26 - [DEBUG] - [7/12] Processing: Nguyễn Tấn Đạt.jpg
+23:16:26 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:26 - [DEBUG] - Markers ordered successfully. Centers: [171 328], [3945  319], ...
+23:16:26 - [INFO] - Warping completed successfully.
+23:16:26 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:26 - [INFO] - Grading finished. Score: 435 (LC: 205, RC: 230)
+23:16:26 - [DEBUG] - Saved result image: Nguyễn Tấn Đạt.png
+23:16:26 - [DEBUG] - [8/12] Processing: Nguyễn Văn Huy.jpg
+23:16:26 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:27 - [DEBUG] - Markers ordered successfully. Centers: [151 401], [3890  369], ...
+23:16:27 - [INFO] - Warping completed successfully.
+23:16:27 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:27 - [INFO] - Grading finished. Score: 330 (LC: 185, RC: 145)
+23:16:27 - [DEBUG] - Saved result image: Nguyễn Văn Huy.png
+23:16:27 - [DEBUG] - [9/12] Processing: Phạm Võ Văn Hảo.jpg
+23:16:27 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:27 - [DEBUG] - Markers ordered successfully. Centers: [167 338], [3915  320], ...
+23:16:27 - [INFO] - Warping completed successfully.
+23:16:27 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:27 - [INFO] - Grading finished. Score: 565 (LC: 265, RC: 300)
+23:16:27 - [DEBUG] - Saved result image: Phạm Võ Văn Hảo.png
+23:16:27 - [DEBUG] - [10/12] Processing: Trần An Tường.jpg
+23:16:27 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:28 - [DEBUG] - Markers ordered successfully. Centers: [160 317], [3921  316], ...
+23:16:28 - [INFO] - Warping completed successfully.
+23:16:28 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:28 - [INFO] - Grading finished. Score: 445 (LC: 195, RC: 250)
+23:16:28 - [DEBUG] - Saved result image: Trần An Tường.png
+23:16:28 - [DEBUG] - [11/12] Processing: Trần Thị Kim Chi.jpg
+23:16:28 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:28 - [DEBUG] - Markers ordered successfully. Centers: [184 414], [3880  412], ...
+23:16:28 - [INFO] - Warping completed successfully.
+23:16:28 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:28 - [INFO] - Grading finished. Score: 495 (LC: 285, RC: 210)
+23:16:29 - [DEBUG] - Saved result image: Trần Thị Kim Chi.png
+23:16:29 - [DEBUG] - [12/12] Processing: Trần Thị Kim Vinh.jpg
+23:16:29 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:16:29 - [DEBUG] - Markers ordered successfully. Centers: [242 387], [3927  360], ...
+23:16:29 - [INFO] - Warping completed successfully.
+23:16:29 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:16:29 - [INFO] - Grading finished. Score: 400 (LC: 195, RC: 205)
+23:16:29 - [DEBUG] - Saved result image: Trần Thị Kim Vinh.png
+23:16:29 - [INFO] - Worker finished. Success: 12/12. Time: 7.20s
+23:16:33 - [INFO] - Đã cập nhật kết quả vào: 20251211_ETS2024_10_summary.csv
+23:16:38 - [DEBUG] - State changed: image_files = []
+23:16:38 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:38 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:44 - [INFO] - Answer Key found for ETS 2024 - 10
+23:16:47 - [DEBUG] - User selected set: 'New Economy 2018'
+23:16:47 - [DEBUG] - State changed: set_name = New Economy 2018
+23:16:47 - [INFO] - Answer Key found for New Economy 2018 - 10
+23:16:47 - [DEBUG] - State changed: test_id = Test
+23:16:48 - [DEBUG] - State changed: test_id = 9
+23:16:48 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:01 - [DEBUG] - State changed: test_date = 2025-11-02
+23:17:01 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:06 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:06 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:06 - [INFO] - Form validation passed. Ready to score.
+23:17:06 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:06 - [DEBUG] - WarpingProcessor initialized with config.
+23:17:06 - [DEBUG] - OMREngine initialized.
+23:17:06 - [DEBUG] - GradeManager initialized for Test ID: 9 (Length: 200)
+23:17:06 - [INFO] - Worker started. Processing 14 files...
+23:17:06 - [DEBUG] - [1/14] Processing: Do Ngoc Phuong Anh.jpg
+23:17:06 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:06 - [DEBUG] - Markers ordered successfully. Centers: [161 378], [3899  384], ...
+23:17:06 - [INFO] - Warping completed successfully.
+23:17:07 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:07 - [INFO] - Grading finished. Score: 465 (LC: 275, RC: 190)
+23:17:07 - [DEBUG] - Saved result image: Do Ngoc Phuong Anh.png
+23:17:07 - [DEBUG] - [2/14] Processing: Ho Thanh Lam.jpg
+23:17:07 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:07 - [DEBUG] - Markers ordered successfully. Centers: [183 427], [3906  450], ...
+23:17:07 - [INFO] - Warping completed successfully.
+23:17:07 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:07 - [INFO] - Grading finished. Score: 475 (LC: 250, RC: 225)
+23:17:07 - [DEBUG] - Saved result image: Ho Thanh Lam.png
+23:17:07 - [DEBUG] - [3/14] Processing: Ngo Thi Bich Ly.jpg
+23:17:07 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:07 - [DEBUG] - Markers ordered successfully. Centers: [163 351], [3865  369], ...
+23:17:07 - [INFO] - Warping completed successfully.
+23:17:07 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:07 - [INFO] - Grading finished. Score: 340 (LC: 140, RC: 200)
+23:17:07 - [DEBUG] - Saved result image: Ngo Thi Bich Ly.png
+23:17:07 - [DEBUG] - [4/14] Processing: Nguyễn Đình Mỹ Uyên.jpg
+23:17:07 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:07 - [DEBUG] - Markers ordered successfully. Centers: [128 239], [3940  252], ...
+23:17:07 - [INFO] - Warping completed successfully.
+23:17:07 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:07 - [INFO] - Grading finished. Score: 715 (LC: 375, RC: 340)
+23:17:07 - [DEBUG] - Saved result image: Nguyễn Đình Mỹ Uyên.png
+23:17:07 - [DEBUG] - [5/14] Processing: Nguyễn Thị Phương Thảo.jpg
+23:17:08 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:08 - [DEBUG] - Markers ordered successfully. Centers: [159 398], [3888  403], ...
+23:17:08 - [INFO] - Warping completed successfully.
+23:17:08 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:08 - [INFO] - Grading finished. Score: 550 (LC: 300, RC: 250)
+23:17:08 - [DEBUG] - Saved result image: Nguyễn Thị Phương Thảo.png
+23:17:08 - [DEBUG] - [6/14] Processing: Nguyễn Võ Ngọc My.jpg
+23:17:08 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:08 - [DEBUG] - Markers ordered successfully. Centers: [160 341], [3856  361], ...
+23:17:08 - [INFO] - Warping completed successfully.
+23:17:08 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:08 - [INFO] - Grading finished. Score: 630 (LC: 335, RC: 295)
+23:17:08 - [DEBUG] - Saved result image: Nguyễn Võ Ngọc My.png
+23:17:08 - [DEBUG] - [7/14] Processing: Phạm Phan Trâm Anh.jpg
+23:17:08 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:08 - [DEBUG] - Markers ordered successfully. Centers: [145 444], [3904  433], ...
+23:17:08 - [INFO] - Warping completed successfully.
+23:17:08 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:08 - [INFO] - Grading finished. Score: 870 (LC: 465, RC: 405)
+23:17:08 - [DEBUG] - Saved result image: Phạm Phan Trâm Anh.png
+23:17:08 - [DEBUG] - [8/14] Processing: Phạm Thị Diệu Hiền.jpg
+23:17:08 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:08 - [DEBUG] - Markers ordered successfully. Centers: [ 83 411], [3743  420], ...
+23:17:08 - [INFO] - Warping completed successfully.
+23:17:09 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:09 - [INFO] - Grading finished. Score: 540 (LC: 305, RC: 235)
+23:17:09 - [DEBUG] - Saved result image: Phạm Thị Diệu Hiền.png
+23:17:09 - [DEBUG] - [9/14] Processing: Phan Thị Bích Thuỷ.jpg
+23:17:09 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:09 - [DEBUG] - Markers ordered successfully. Centers: [125 368], [3906  395], ...
+23:17:09 - [INFO] - Warping completed successfully.
+23:17:09 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:09 - [INFO] - Grading finished. Score: 435 (LC: 230, RC: 205)
+23:17:09 - [DEBUG] - Saved result image: Phan Thị Bích Thuỷ.png
+23:17:09 - [DEBUG] - [10/14] Processing: Trần Kiều Thanh Ngọc.jpg
+23:17:09 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:09 - [DEBUG] - Markers ordered successfully. Centers: [184 295], [3924  296], ...
+23:17:09 - [INFO] - Warping completed successfully.
+23:17:09 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:09 - [INFO] - Grading finished. Score: 500 (LC: 280, RC: 220)
+23:17:09 - [DEBUG] - Saved result image: Trần Kiều Thanh Ngọc.png
+23:17:09 - [DEBUG] - [11/14] Processing: Trần Mai Văn Thành.jpg
+23:17:09 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:09 - [DEBUG] - Markers ordered successfully. Centers: [209 326], [3888  346], ...
+23:17:09 - [INFO] - Warping completed successfully.
+23:17:09 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:09 - [INFO] - Grading finished. Score: 325 (LC: 200, RC: 125)
+23:17:09 - [DEBUG] - Saved result image: Trần Mai Văn Thành.png
+23:17:09 - [DEBUG] - [12/14] Processing: Võ Minh Trí.jpg
+23:17:09 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:10 - [DEBUG] - Markers ordered successfully. Centers: [166 345], [3921  358], ...
+23:17:10 - [INFO] - Warping completed successfully.
+23:17:10 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:10 - [INFO] - Grading finished. Score: 445 (LC: 260, RC: 185)
+23:17:10 - [DEBUG] - Saved result image: Võ Minh Trí.png
+23:17:10 - [DEBUG] - [13/14] Processing: Võ Song Hương.jpg
+23:17:10 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:10 - [DEBUG] - Markers ordered successfully. Centers: [141 325], [3875  318], ...
+23:17:10 - [INFO] - Warping completed successfully.
+23:17:10 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:10 - [INFO] - Grading finished. Score: 570 (LC: 275, RC: 295)
+23:17:10 - [DEBUG] - Saved result image: Võ Song Hương.png
+23:17:10 - [DEBUG] - [14/14] Processing: Võ Xuân Trường.jpg
+23:17:10 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:10 - [DEBUG] - Markers ordered successfully. Centers: [181 325], [3908  335], ...
+23:17:10 - [INFO] - Warping completed successfully.
+23:17:10 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:10 - [INFO] - Grading finished. Score: 405 (LC: 245, RC: 160)
+23:17:10 - [DEBUG] - Saved result image: Võ Xuân Trường.png
+23:17:10 - [INFO] - Worker finished. Success: 14/14. Time: 4.03s
+23:17:20 - [DEBUG] - State changed: image_files = []
+23:17:20 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:20 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:27 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:17:32 - [DEBUG] - User selected set: 'ETS 2024'
+23:17:32 - [DEBUG] - State changed: set_name = ETS 2024
+23:17:32 - [INFO] - Answer Key found for ETS 2024 - 9
+23:17:32 - [DEBUG] - State changed: test_id = Test
+23:17:33 - [DEBUG] - State changed: test_id = 9
+23:17:33 - [INFO] - Answer Key found for ETS 2024 - 9
+23:17:39 - [DEBUG] - State changed: test_date = 2025-12-25
+23:17:39 - [INFO] - Answer Key found for ETS 2024 - 9
+23:17:41 - [INFO] - Answer Key found for ETS 2024 - 9
+23:17:41 - [INFO] - Answer Key found for ETS 2024 - 9
+23:17:41 - [INFO] - Form validation passed. Ready to score.
+23:17:41 - [INFO] - Answer Key found for ETS 2024 - 9
+23:17:41 - [DEBUG] - WarpingProcessor initialized with config.
+23:17:41 - [DEBUG] - OMREngine initialized.
+23:17:41 - [DEBUG] - GradeManager initialized for Test ID: 9 (Length: 200)
+23:17:41 - [INFO] - Worker started. Processing 9 files...
+23:17:41 - [DEBUG] - [1/9] Processing: Đinh Thị Vân Anh.jpg
+23:17:41 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:41 - [DEBUG] - Markers ordered successfully. Centers: [165 357], [3949  373], ...
+23:17:41 - [INFO] - Warping completed successfully.
+23:17:41 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:41 - [INFO] - Grading finished. Score: 405 (LC: 215, RC: 190)
+23:17:41 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+23:17:41 - [DEBUG] - [2/9] Processing: Hoàng Anh Quý.jpg
+23:17:41 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:42 - [DEBUG] - Markers ordered successfully. Centers: [144 381], [3946  361], ...
+23:17:42 - [INFO] - Warping completed successfully.
+23:17:42 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:42 - [INFO] - Grading finished. Score: 305 (LC: 150, RC: 155)
+23:17:42 - [DEBUG] - Saved result image: Hoàng Anh Quý.png
+23:17:42 - [DEBUG] - [3/9] Processing: Huỳnh Ngọc Bảo Châu.jpg
+23:17:42 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:42 - [DEBUG] - Markers ordered successfully. Centers: [161 427], [3913  407], ...
+23:17:42 - [INFO] - Warping completed successfully.
+23:17:42 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:42 - [INFO] - Grading finished. Score: 465 (LC: 235, RC: 230)
+23:17:42 - [DEBUG] - Saved result image: Huỳnh Ngọc Bảo Châu.png
+23:17:42 - [DEBUG] - [4/9] Processing: Nguyễn Duy Bảo.jpg
+23:17:42 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:42 - [DEBUG] - Markers ordered successfully. Centers: [183 396], [3960  385], ...
+23:17:42 - [INFO] - Warping completed successfully.
+23:17:42 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:42 - [INFO] - Grading finished. Score: 340 (LC: 185, RC: 155)
+23:17:42 - [DEBUG] - Saved result image: Nguyễn Duy Bảo.png
+23:17:42 - [DEBUG] - [5/9] Processing: Nguyễn Ngọc Anh Quân.jpg
+23:17:42 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:43 - [DEBUG] - Markers ordered successfully. Centers: [175 397], [3922  357], ...
+23:17:43 - [INFO] - Warping completed successfully.
+23:17:43 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:43 - [INFO] - Grading finished. Score: 485 (LC: 250, RC: 235)
+23:17:43 - [DEBUG] - Saved result image: Nguyễn Ngọc Anh Quân.png
+23:17:43 - [DEBUG] - [6/9] Processing: Nguyễn Văn Huy.jpg
+23:17:43 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:43 - [DEBUG] - Markers ordered successfully. Centers: [159 348], [3928  364], ...
+23:17:43 - [INFO] - Warping completed successfully.
+23:17:43 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:43 - [INFO] - Grading finished. Score: 360 (LC: 205, RC: 155)
+23:17:43 - [DEBUG] - Saved result image: Nguyễn Văn Huy.png
+23:17:43 - [DEBUG] - [7/9] Processing: Phạm Võ Văn Hảo.jpg
+23:17:43 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:43 - [DEBUG] - Markers ordered successfully. Centers: [134 472], [3876  461], ...
+23:17:43 - [INFO] - Warping completed successfully.
+23:17:43 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:43 - [INFO] - Grading finished. Score: 540 (LC: 280, RC: 260)
+23:17:43 - [DEBUG] - Saved result image: Phạm Võ Văn Hảo.png
+23:17:43 - [DEBUG] - [8/9] Processing: Trần Thị Kim Chi.jpg
+23:17:43 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:44 - [DEBUG] - Markers ordered successfully. Centers: [173 358], [3933  368], ...
+23:17:44 - [INFO] - Warping completed successfully.
+23:17:44 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:44 - [INFO] - Grading finished. Score: 450 (LC: 240, RC: 210)
+23:17:44 - [DEBUG] - Saved result image: Trần Thị Kim Chi.png
+23:17:44 - [DEBUG] - [9/9] Processing: Trần Thị Kim Vinh.jpg
+23:17:44 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:17:44 - [DEBUG] - Markers ordered successfully. Centers: [144 331], [3937  323], ...
+23:17:44 - [INFO] - Warping completed successfully.
+23:17:44 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:17:44 - [INFO] - Grading finished. Score: 435 (LC: 185, RC: 250)
+23:17:44 - [DEBUG] - Saved result image: Trần Thị Kim Vinh.png
+23:17:44 - [INFO] - Worker finished. Success: 9/9. Time: 2.93s
+23:19:12 - [INFO] - Đã cập nhật kết quả vào: 20251225_ETS2024_9_summary.csv
+23:19:15 - [INFO] - Application closed by user.
+23:19:15 - [INFO] - Application Process Terminated.
+23:20:14 - [INFO] - ==========================================
+23:20:14 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+23:20:14 - [INFO] - ==========================================
+23:20:14 - [DEBUG] - Loaded JSON successfully: app_config.json
+23:20:14 - [DEBUG] - Loaded JSON successfully: key.json
+23:20:14 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+23:20:14 - [DEBUG] - FormStateManager initialized.
+23:20:15 - [INFO] - UI initialized successfully. Entering main loop.
+23:20:25 - [DEBUG] - User selected set: 'New Economy 2018'
+23:20:25 - [DEBUG] - State changed: set_name = New Economy 2018
+23:20:26 - [DEBUG] - State changed: test_id = 9
+23:20:26 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:20:31 - [DEBUG] - State changed: test_date = 2025-11-02
+23:20:31 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:20:32 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:20:32 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:20:32 - [INFO] - Form validation passed. Ready to score.
+23:20:32 - [INFO] - Answer Key found for New Economy 2018 - 9
+23:20:32 - [DEBUG] - WarpingProcessor initialized with config.
+23:20:32 - [DEBUG] - OMREngine initialized.
+23:20:32 - [DEBUG] - GradeManager initialized for Test ID: 9 (Length: 200)
+23:20:32 - [INFO] - Worker started. Processing 14 files...
+23:20:32 - [DEBUG] - [1/14] Processing: Do Ngoc Phuong Anh.jpg
+23:20:32 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:32 - [DEBUG] - Markers ordered successfully. Centers: [161 378], [3899  384], ...
+23:20:32 - [INFO] - Warping completed successfully.
+23:20:32 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:32 - [INFO] - Grading finished. Score: 465 (LC: 275, RC: 190)
+23:20:33 - [DEBUG] - Saved result image: Do Ngoc Phuong Anh.png
+23:20:33 - [DEBUG] - [2/14] Processing: Ho Thanh Lam.jpg
+23:20:33 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:33 - [DEBUG] - Markers ordered successfully. Centers: [183 427], [3906  450], ...
+23:20:33 - [INFO] - Warping completed successfully.
+23:20:33 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:33 - [INFO] - Grading finished. Score: 475 (LC: 250, RC: 225)
+23:20:33 - [DEBUG] - Saved result image: Ho Thanh Lam.png
+23:20:33 - [DEBUG] - [3/14] Processing: Ngo Thi Bich Ly.jpg
+23:20:33 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:33 - [DEBUG] - Markers ordered successfully. Centers: [163 351], [3865  369], ...
+23:20:33 - [INFO] - Warping completed successfully.
+23:20:33 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:33 - [INFO] - Grading finished. Score: 340 (LC: 140, RC: 200)
+23:20:33 - [DEBUG] - Saved result image: Ngo Thi Bich Ly.png
+23:20:33 - [DEBUG] - [4/14] Processing: Nguyễn Đình Mỹ Uyên.jpg
+23:20:33 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:33 - [DEBUG] - Markers ordered successfully. Centers: [128 239], [3940  252], ...
+23:20:33 - [INFO] - Warping completed successfully.
+23:20:33 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:33 - [INFO] - Grading finished. Score: 715 (LC: 375, RC: 340)
+23:20:33 - [DEBUG] - Saved result image: Nguyễn Đình Mỹ Uyên.png
+23:20:33 - [DEBUG] - [5/14] Processing: Nguyễn Thị Phương Thảo.jpg
+23:20:33 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:34 - [DEBUG] - Markers ordered successfully. Centers: [159 398], [3888  403], ...
+23:20:34 - [INFO] - Warping completed successfully.
+23:20:34 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:34 - [INFO] - Grading finished. Score: 550 (LC: 300, RC: 250)
+23:20:34 - [DEBUG] - Saved result image: Nguyễn Thị Phương Thảo.png
+23:20:34 - [DEBUG] - [6/14] Processing: Nguyễn Võ Ngọc My.jpg
+23:20:34 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:34 - [DEBUG] - Markers ordered successfully. Centers: [160 341], [3856  361], ...
+23:20:34 - [INFO] - Warping completed successfully.
+23:20:34 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:34 - [INFO] - Grading finished. Score: 630 (LC: 335, RC: 295)
+23:20:34 - [DEBUG] - Saved result image: Nguyễn Võ Ngọc My.png
+23:20:34 - [DEBUG] - [7/14] Processing: Phạm Phan Trâm Anh.jpg
+23:20:34 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:34 - [DEBUG] - Markers ordered successfully. Centers: [145 444], [3904  433], ...
+23:20:34 - [INFO] - Warping completed successfully.
+23:20:34 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:34 - [INFO] - Grading finished. Score: 870 (LC: 465, RC: 405)
+23:20:34 - [DEBUG] - Saved result image: Phạm Phan Trâm Anh.png
+23:20:34 - [DEBUG] - [8/14] Processing: Phạm Thị Diệu Hiền.jpg
+23:20:34 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:34 - [DEBUG] - Markers ordered successfully. Centers: [ 83 411], [3743  420], ...
+23:20:34 - [INFO] - Warping completed successfully.
+23:20:34 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:34 - [INFO] - Grading finished. Score: 540 (LC: 305, RC: 235)
+23:20:35 - [DEBUG] - Saved result image: Phạm Thị Diệu Hiền.png
+23:20:35 - [DEBUG] - [9/14] Processing: Phan Thị Bích Thuỷ.jpg
+23:20:35 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:35 - [DEBUG] - Markers ordered successfully. Centers: [125 368], [3906  395], ...
+23:20:35 - [INFO] - Warping completed successfully.
+23:20:35 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:35 - [INFO] - Grading finished. Score: 435 (LC: 230, RC: 205)
+23:20:35 - [DEBUG] - Saved result image: Phan Thị Bích Thuỷ.png
+23:20:35 - [DEBUG] - [10/14] Processing: Trần Kiều Thanh Ngọc.jpg
+23:20:35 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:35 - [DEBUG] - Markers ordered successfully. Centers: [184 295], [3924  296], ...
+23:20:35 - [INFO] - Warping completed successfully.
+23:20:35 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:35 - [INFO] - Grading finished. Score: 500 (LC: 280, RC: 220)
+23:20:35 - [DEBUG] - Saved result image: Trần Kiều Thanh Ngọc.png
+23:20:35 - [DEBUG] - [11/14] Processing: Trần Mai Văn Thành.jpg
+23:20:35 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:35 - [DEBUG] - Markers ordered successfully. Centers: [209 326], [3888  346], ...
+23:20:35 - [INFO] - Warping completed successfully.
+23:20:35 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:35 - [INFO] - Grading finished. Score: 325 (LC: 200, RC: 125)
+23:20:35 - [DEBUG] - Saved result image: Trần Mai Văn Thành.png
+23:20:35 - [DEBUG] - [12/14] Processing: Võ Minh Trí.jpg
+23:20:35 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:36 - [DEBUG] - Markers ordered successfully. Centers: [166 345], [3921  358], ...
+23:20:36 - [INFO] - Warping completed successfully.
+23:20:36 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:36 - [INFO] - Grading finished. Score: 445 (LC: 260, RC: 185)
+23:20:36 - [DEBUG] - Saved result image: Võ Minh Trí.png
+23:20:36 - [DEBUG] - [13/14] Processing: Võ Song Hương.jpg
+23:20:36 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:36 - [DEBUG] - Markers ordered successfully. Centers: [141 325], [3875  318], ...
+23:20:36 - [INFO] - Warping completed successfully.
+23:20:36 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:36 - [INFO] - Grading finished. Score: 570 (LC: 275, RC: 295)
+23:20:36 - [DEBUG] - Saved result image: Võ Song Hương.png
+23:20:36 - [DEBUG] - [14/14] Processing: Võ Xuân Trường.jpg
+23:20:36 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:20:36 - [DEBUG] - Markers ordered successfully. Centers: [181 325], [3908  335], ...
+23:20:36 - [INFO] - Warping completed successfully.
+23:20:36 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:20:36 - [INFO] - Grading finished. Score: 405 (LC: 245, RC: 160)
+23:20:36 - [DEBUG] - Saved result image: Võ Xuân Trường.png
+23:20:36 - [INFO] - Worker finished. Success: 14/14. Time: 4.03s
+23:20:39 - [INFO] - Đã cập nhật kết quả vào: 20251102_NewEconomy2018_9_summary.csv
+23:20:44 - [INFO] - Application closed by user.
+23:20:44 - [INFO] - Application Process Terminated.
+23:56:55 - [INFO] - ==========================================
+23:56:55 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.0    
+23:56:55 - [INFO] - ==========================================
+23:56:55 - [DEBUG] - Loaded JSON successfully: app_config.json
+23:56:55 - [DEBUG] - Loaded JSON successfully: key.json
+23:56:55 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+23:56:55 - [DEBUG] - FormStateManager initialized.
+23:56:56 - [INFO] - UI initialized successfully. Entering main loop.
+23:57:13 - [DEBUG] - User selected set: 'ETS 2024'
+23:57:13 - [DEBUG] - State changed: set_name = ETS 2024
+23:57:14 - [DEBUG] - State changed: test_id = 9
+23:57:14 - [INFO] - Answer Key found for ETS 2024 - 9
+23:57:21 - [DEBUG] - State changed: test_date = 2025-12-25
+23:57:21 - [INFO] - Answer Key found for ETS 2024 - 9
+23:57:21 - [INFO] - Answer Key found for ETS 2024 - 9
+23:57:21 - [INFO] - Form validation passed. Ready to score.
+23:57:21 - [INFO] - Answer Key found for ETS 2024 - 9
+23:57:21 - [DEBUG] - WarpingProcessor initialized with config.
+23:57:21 - [DEBUG] - OMREngine initialized.
+23:57:21 - [DEBUG] - GradeManager initialized for Test ID: 9 (Length: 200)
+23:57:21 - [INFO] - Worker started. Processing 9 files...
+23:57:21 - [DEBUG] - [1/9] Processing: Đinh Thị Vân Anh.jpg
+23:57:21 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:22 - [DEBUG] - Markers ordered successfully. Centers: [122 366], [3906  372], ...
+23:57:22 - [INFO] - Warping completed successfully.
+23:57:22 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:22 - [INFO] - Grading finished. Score: 410 (LC: 215, RC: 195)
+23:57:22 - [DEBUG] - Saved result image: Đinh Thị Vân Anh.png
+23:57:22 - [DEBUG] - [2/9] Processing: Hoàng Anh Quý.jpg
+23:57:22 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:22 - [DEBUG] - Markers ordered successfully. Centers: [106 296], [3933  336], ...
+23:57:22 - [INFO] - Warping completed successfully.
+23:57:22 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:22 - [INFO] - Grading finished. Score: 305 (LC: 150, RC: 155)
+23:57:22 - [DEBUG] - Saved result image: Hoàng Anh Quý.png
+23:57:22 - [DEBUG] - [3/9] Processing: Huỳnh Ngọc Bảo Châu.jpg
+23:57:22 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:22 - [DEBUG] - Markers ordered successfully. Centers: [161 427], [3913  407], ...
+23:57:22 - [INFO] - Warping completed successfully.
+23:57:22 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:22 - [INFO] - Grading finished. Score: 465 (LC: 235, RC: 230)
+23:57:22 - [DEBUG] - Saved result image: Huỳnh Ngọc Bảo Châu.png
+23:57:22 - [DEBUG] - [4/9] Processing: Nguyễn Duy Bảo.jpg
+23:57:22 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:23 - [DEBUG] - Markers ordered successfully. Centers: [111 357], [3971  390], ...
+23:57:23 - [INFO] - Warping completed successfully.
+23:57:23 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:23 - [INFO] - Grading finished. Score: 340 (LC: 185, RC: 155)
+23:57:23 - [DEBUG] - Saved result image: Nguyễn Duy Bảo.png
+23:57:23 - [DEBUG] - [5/9] Processing: Nguyễn Ngọc Anh Quân.jpg
+23:57:23 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:23 - [DEBUG] - Markers ordered successfully. Centers: [175 397], [3922  357], ...
+23:57:23 - [INFO] - Warping completed successfully.
+23:57:23 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:23 - [INFO] - Grading finished. Score: 485 (LC: 250, RC: 235)
+23:57:23 - [DEBUG] - Saved result image: Nguyễn Ngọc Anh Quân.png
+23:57:23 - [DEBUG] - [6/9] Processing: Nguyễn Văn Huy.jpg
+23:57:23 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:23 - [DEBUG] - Markers ordered successfully. Centers: [115 334], [3883  340], ...
+23:57:23 - [INFO] - Warping completed successfully.
+23:57:23 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:23 - [INFO] - Grading finished. Score: 360 (LC: 205, RC: 155)
+23:57:24 - [DEBUG] - Saved result image: Nguyễn Văn Huy.png
+23:57:24 - [DEBUG] - [7/9] Processing: Phạm Võ Văn Hảo.jpg
+23:57:24 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:24 - [DEBUG] - Markers ordered successfully. Centers: [134 472], [3876  461], ...
+23:57:24 - [INFO] - Warping completed successfully.
+23:57:24 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:24 - [INFO] - Grading finished. Score: 540 (LC: 280, RC: 260)
+23:57:24 - [DEBUG] - Saved result image: Phạm Võ Văn Hảo.png
+23:57:24 - [DEBUG] - [8/9] Processing: Trần Thị Kim Chi.jpg
+23:57:24 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:24 - [DEBUG] - Markers ordered successfully. Centers: [173 358], [3933  368], ...
+23:57:24 - [INFO] - Warping completed successfully.
+23:57:24 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:24 - [INFO] - Grading finished. Score: 450 (LC: 240, RC: 210)
+23:57:24 - [DEBUG] - Saved result image: Trần Thị Kim Chi.png
+23:57:24 - [DEBUG] - [9/9] Processing: Trần Thị Kim Vinh.jpg
+23:57:24 - [INFO] - Processing image for warping. Input size: 4080x3060
+23:57:24 - [DEBUG] - Markers ordered successfully. Centers: [144 331], [3937  323], ...
+23:57:24 - [INFO] - Warping completed successfully.
+23:57:24 - [INFO] - OMR Processed successfully. Extracted 200 answers.
+23:57:24 - [INFO] - Grading finished. Score: 435 (LC: 185, RC: 250)
+23:57:24 - [DEBUG] - Saved result image: Trần Thị Kim Vinh.png
+23:57:24 - [INFO] - Worker finished. Success: 9/9. Time: 3.27s
+23:57:25 - [INFO] - Answer Key found for ETS 2024 - 9
+23:57:37 - [INFO] - Answer Key found for ETS 2024 - 9
+23:57:41 - [INFO] - Answer Key found for ETS 2024 - 9
+00:00:19 - [INFO] - Đã cập nhật kết quả vào: 20251225_ETS2024_9_summary.csv
+00:00:19 - [INFO] - Answer Key found for ETS 2024 - 9
+00:00:22 - [INFO] - Answer Key found for ETS 2024 - 9
+00:00:23 - [INFO] - Answer Key found for ETS 2024 - 9
+00:02:30 - [INFO] - Answer Key found for ETS 2024 - 9
+00:02:32 - [INFO] - Application closed by user.
+00:02:32 - [INFO] - Application Process Terminated.

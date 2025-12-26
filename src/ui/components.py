@@ -200,10 +200,7 @@ class FileTableView(tk.Frame):
             
             if base_name in results_map:
                 res = results_map[base_name]
-                # Parse lại chuỗi điểm "450 / 495" -> lấy "450"
-                lc = res['LC'].split('/')[0].strip()
-                rc = res['RC'].split('/')[0].strip()
-                val = (file_name, res['Total'], lc, rc, "✅ Done")
+                val = (file_name, res['Total'], res['LC'], res['RC'], "✅ Done")
                 self.tree.insert("", "end", iid=iid, values=val)
             else:
                 val = (file_name, "-", "-", "-", "Pending")
@@ -218,8 +215,8 @@ class FileTableView(tk.Frame):
              values = (
                 img_path.name, 
                 result_dict['Total'], 
-                result_dict['LC'].split('/')[0].strip(),
-                result_dict['RC'].split('/')[0].strip(),
+                result_dict['LC'],
+                result_dict['RC'],
                 "✅ Done"
             )
              self.tree.item(iid, values=values)

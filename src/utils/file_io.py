@@ -114,3 +114,43 @@ class FileHandler:
         except Exception as e:
             app_logger.error(f"Failed to save Excel: {e}")
             raise
+        
+    @staticmethod
+    def save_results_to_csv(results: List[Dict[str, Any]], result_dir: Path, file_name_prefix: str = "") -> Optional[Path]:
+        """
+        Lưu kết quả ra CSV. Sử dụng mode 'a' để tối ưu hiệu suất.
+        """
+        if not results:
+            app_logger.warning("Không có kết quả để lưu.")
+            return None
+
+        try:
+            result_dir.mkdir(parents=True, exist_ok=True)
+            prefix = file_name_prefix if file_name_prefix else result_dir.name
+            csv_path = result_dir / f"{prefix}_summary.csv"
+
+            df_new = pd.DataFrame(results)
+            
+            # Đảm bảo cột Date luôn là string để thống nhất dữ liệu
+            if 'Date' in df_new.columns:
+                df_new['Date'] = df_new['Date'].astype(str)
+
+            file_exists = csv_path.exists()
+
+            # Logic ghi file:
+            # - Nếu file tồn tại: mode='a' (ghi tiếp), header=False (không ghi lại tiêu đề cột)
+            # - Nếu file chưa có: mode='w' (ghi mới), header=True
+            df_new.to_csv(
+                csv_path, 
+                mode='a' if file_exists else 'w', 
+                index=False, 
+                header=not file_exists, 
+                encoding='utf-8-sig' # Đảm bảo mở bằng Excel không lỗi font tiếng Việt
+            )
+            
+            app_logger.info(f"Đã cập nhật kết quả vào: {csv_path.name}")
+            return csv_path
+
+        except Exception as e:
+            app_logger.error(f"Lỗi khi lưu CSV: {e}")
+            raise

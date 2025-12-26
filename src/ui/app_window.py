@@ -391,7 +391,7 @@ class OMRApplication:
         results = self.state_manager.get_value('results')
         if not results: return
         try:
-            path = FileHandler.save_results_to_excel(results, self.current_result_dir)
+            path = FileHandler.save_results_to_csv(results, self.current_result_dir)
             if path: messagebox.showinfo("Saved", f"Đã lưu: {path}")
         except Exception as e:
             messagebox.showerror("Lỗi", str(e))
