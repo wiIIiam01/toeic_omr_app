@@ -29,8 +29,14 @@ class WarpingProcessor:
 
     def _preprocess_bubble(self, img_gray: np.ndarray) -> np.ndarray:
         """Chuyển ảnh xám thành nhị phân để quét đáp án."""
-        thresh_val = self.preprocessing_cfg.get('threshold_value', self.DEFAULT_THRESHOLD)
-        _, img_binary = cv2.threshold(img_gray, thresh_val, 255, cv2.THRESH_BINARY_INV)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        img_gray = clahe.apply(img_gray)
+        _, img_binary = cv2.threshold(
+            img_gray, 
+            0, 
+            255, 
+            cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
+        )
         return img_binary
 
     def _find_and_order_markers(self, img_binary_marker: np.ndarray) -> List[Tuple[int, int, int, int]]:

@@ -33,7 +33,7 @@ def setup_exception_handling(root):
 def main():
     """Hàm khởi chạy chính."""
     app_logger.info("==========================================")
-    app_logger.info("   STARTING TOEIC OMR SCORING APP v2.0    ")
+    app_logger.info("   STARTING TOEIC OMR SCORING APP v2.1    ")
     app_logger.info("==========================================")
     
     # 1. Khởi tạo Root Tkinter

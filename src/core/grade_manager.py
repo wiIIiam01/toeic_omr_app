@@ -117,8 +117,8 @@ class GradeManager:
         app_logger.info(f"Grading finished. Score: {total_score} (LC: {lc_score}, RC: {rc_score})")
         return parts_stats, correct_vector
 
-    def format_result(self, base_name: str, parts: Dict[str, int], answers_list: List[str]) -> Dict[str, Any]:
-        """Tạo dictionary kết quả để lưu vào Excel."""
+    def format_result(self, base_name: str, parts: Dict[str, int], answers_list: List[str], conf_stats: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Tạo dictionary kết quả để lưu vào CSV."""
         answers_string = ''.join(answers_list)
         
         # Format theo yêu cầu báo cáo
@@ -139,6 +139,13 @@ class GradeManager:
             "Part 7": parts['Part 7'],
             "Reference": answers_string
         }
+        # 1. Dành cho UI
+        row_dict['Confidence'] = conf_stats.get('confidence', 0.0)
+        row_dict['LowestConf'] = conf_stats.get('lowest_conf', 0.0)
+        
+        # 2. Dành cho Báo cáo
+        row_dict['ConfidenceDetails'] = conf_stats.get('confidences_list', []) 
+
         return row_dict
         
     def save_result_image(self, base_name: str, image: np.ndarray, result_dir: Path) -> bool:

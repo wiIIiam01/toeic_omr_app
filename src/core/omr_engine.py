@@ -2,11 +2,9 @@ import cv2
 import numpy as np
 from typing import Tuple, Dict, Any, List
 from src.utils.logger import app_logger
-from src.utils.helpers import OMRUtils
 
 class OMREngine:
 
-    # --- CÁC HẰNG SỐ CẤU HÌNH CỨNG (HARDCODED SPECS) ---
     SCAN_THICKNESS = 50 
     
     # Thông số lọc nhiễu cho vạch định vị (Top Marks)
@@ -16,31 +14,28 @@ class OMREngine:
     # Thông số lọc nhiễu cho hàng (Side Marks)
     Y_W_MIN = 22; Y_W_MAX = 32
     Y_H_MIN = 4; Y_H_MAX = 14 
-
+ 
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.OMR_CFG = config.get('ALGORITHM_CONFIG', {}).get('omr_engine', {})
         self.VIS_CFG = config.get('ALGORITHM_CONFIG', {}).get('visualization', {})
         app_logger.debug("OMREngine initialized.")
 
-    def _detect_bubble_fill(self, img_binary: np.ndarray, center_x: int, center_y: int, R: int) -> Tuple[int, float]:
+    def _fill_density(self, img_binary: np.ndarray, center_x: int, center_y: int, R: int) -> float:
         """
-        Logic xác định ô tô/không tô.
+        Lấy giá trị density (độ đậm) của ô.
         """
         H, W = img_binary.shape
-        min_fill_percentage = self.OMR_CFG.get('min_fill_percentage', 0.40)
-
         r_start = max(0, center_y - R)
         r_end = min(H, center_y + R)
         c_start = max(0, center_x - R)
         c_end = min(W, center_x + R)
     
-        roi_h = r_end - r_start
-        roi_w = c_end - c_start
-    
         roi = img_binary[r_start:r_end, c_start:c_end]
 
-        if roi.size == 0: return 0, 0.0
+        if roi.size == 0: return 0.0
+        
+        roi_h = r_end - r_start
+        roi_w = c_end - c_start
 
         mask = np.zeros((roi_h, roi_w), dtype=np.uint8)
         roi_center_x = roi_w // 2
@@ -53,11 +48,64 @@ class OMREngine:
         filled_pixels_in_circle = np.sum(masked_roi == 255) 
     
         if total_circle_pixels == 0:
-            return 0, 0.0
+            return 0.0
         
-        fill_ratio = filled_pixels_in_circle / total_circle_pixels
-        is_filled = 1 if fill_ratio >= min_fill_percentage else 0
-        return is_filled, fill_ratio
+        return filled_pixels_in_circle / total_circle_pixels
+    
+    def _read_answers(self, density_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Input: Ma trận density của 25x32 bubbles
+        Output: 
+            - answers_grid: (25, 8) chứa ký tự 'A', 'B'...
+            - confidences_grid: (25, 8) chứa float
+        """
+        rows, cols = density_matrix.shape
+        
+        # 1. Reshape thành (Rows, Groups, 4 Answers)
+        # Giữ nguyên cấu trúc không gian của ảnh
+        questions_grid = density_matrix.reshape(rows, -1, 4) 
+        
+        # 2. Sắp xếp trên trục cuối cùng (axis=2)
+        sorted_idx = np.argsort(questions_grid, axis=2)
+        sorted_d = np.take_along_axis(questions_grid, sorted_idx, axis=2)
+
+        d_min = sorted_d[:, :, 0]
+        d_2nd = sorted_d[:, :, 2]
+        d_max = sorted_d[:, :, 3]
+        
+        range_val = d_max - d_min
+        std_dev = np.std(questions_grid, axis=2)
+
+        THRESHOLD_RANGE = 0.15
+        has_answer_mask = range_val >= THRESHOLD_RANGE
+
+        # Tính Confidence
+        conf_filled = (d_max - d_2nd) / (range_val + 1e-9)
+        MIN_SIGMA = 0.05
+        conf_filled = np.where(std_dev < MIN_SIGMA, 0.0, conf_filled)
+        
+        PENALTY = 10.0
+        conf_empty = 1.0 - (std_dev * PENALTY)
+        
+        confidences = np.where(has_answer_mask, conf_filled, conf_empty)
+        confidences = np.clip(confidences, 0.0, 1.0) 
+
+        # Chọn ký tự
+        char_map = np.array(['A', 'B', 'C', 'D'])
+        max_col_indices = sorted_idx[:, :, 3]
+        predicted_chars = char_map[max_col_indices]
+        
+        answers = np.where(has_answer_mask, predicted_chars, '0')
+
+        return answers, confidences
+    
+    def _draw_centered_text(self, img, text, x, y, font_scale, color, thickness):
+        """Hàm hỗ trợ vẽ text căn giữa tại toạ độ (x, y)"""
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
+        text_x = int(x - text_size[0] / 2)
+        text_y = int(y + text_size[1] / 2)
+        cv2.putText(img, text, (text_x, text_y), font, font_scale, color, thickness)
 
     def _find_top_marks(self, img_warped_marker: np.ndarray) -> List[Dict[str, int]]:
         """
@@ -112,8 +160,7 @@ class OMREngine:
         """
         NEW_BUBBLE_W = np.mean([item['w'] for item in valid_top_marks])
         NEW_BUBBLE_H = np.mean([item['h'] for item in valid_top_marks])
-        R = int((NEW_BUBBLE_W + NEW_BUBBLE_H) / 4 - 1)
-        return R
+        return int((NEW_BUBBLE_W + NEW_BUBBLE_H) / 4 - 1)
 
     def _interpolate_x_original(self, valid_top_marks: List[Dict[str, int]]) -> List[int]:
         """
@@ -145,7 +192,7 @@ class OMREngine:
         FINAL_X_INDICES_32 = [int(x) for x in N]
         return FINAL_X_INDICES_32
 
-    def process_omr(self, img_warped_marker: np.ndarray, img_warped_binary: np.ndarray, img_warped_bgr: np.ndarray) -> Tuple[List[str], np.ndarray, np.ndarray]:
+    def process_omr(self, img_warped_marker: np.ndarray, img_warped_binary: np.ndarray, img_warped_bgr: np.ndarray) -> Tuple[List[str], np.ndarray, Dict[str, Any]]:
         """
         Hàm chính điều phối quy trình OMR.
         """
@@ -156,60 +203,80 @@ class OMREngine:
             X_CENTERS = self._interpolate_x_original(valid_top_marks)
             Y_CENTERS = self._find_left_marks(img_warped_marker)
             
-            # 2. Detect Bubble Fill
+            # 2. Detect Density
             rows = len(Y_CENTERS)
             cols = len(X_CENTERS)
-            
-            result_matrix = np.zeros((rows, cols), dtype=int)
+
             density_matrix = np.zeros((rows, cols), dtype=float)
 
             for i, center_y in enumerate(Y_CENTERS): 
                 for j, center_x in enumerate(X_CENTERS): 
-                    is_filled, density = self._detect_bubble_fill(img_warped_binary, center_x, center_y, R)
-                    result_matrix[i, j] = is_filled
+                    density = self._fill_density(img_warped_binary, center_x, center_y, R)
                     density_matrix[i, j] = density
 
-            # 3. Mapping & Visualize
-            image_with_grid = img_warped_bgr.copy() 
-            answers_list = []
-            groups = cols // 4
-            
-            # Config visualize
-            threshold_high = self.VIS_CFG.get('threshold_high_density', 0.5)
-            threshold_medium = self.VIS_CFG.get('threshold_medium_density', 0.4)
+            # 3. XỬ LÝ VECTOR HÓA (Nhận về Grid 25x8)
+            answers_grid, conf_grid = self._read_answers(density_matrix)
+
+            # 4. VISUALIZE (Duyệt theo đúng tọa độ r, g)
             color_high = tuple(self.VIS_CFG.get('color_high', [0, 255, 0]))
-            color_medium = tuple(self.VIS_CFG.get('color_medium', [0, 255, 255]))
-            color_low = tuple(self.VIS_CFG.get('color_low', [0, 165, 255]))
-
-            for g in range(groups): 
-                col_start = g * 4
-                col_indices = list(range(col_start, col_start + 4))
-                for r in range(rows): 
-                    bits = tuple(int(result_matrix[r, c]) for c in col_indices)
-                    densities = [density_matrix[r, c] for c in col_indices]
+            color_medium = tuple(self.VIS_CFG.get('color_medium', [0, 215, 255]))
+            color_low = tuple(self.VIS_CFG.get('color_low', [0, 80, 255]))
+            color_text = tuple(self.VIS_CFG.get('color_text', [0, 0, 0]))
+            color_text_alert = tuple(self.VIS_CFG.get('color_text_alert', [0, 0, 255]))
+            
+            image_with_grid = img_warped_bgr.copy() 
+            
+            groups = cols // 4 
+            
+            for r in range(rows):       # Duyệt hàng
+                for g in range(groups): # Duyệt nhóm
                     
-                    # Logic chuyển đổi bits -> char (Dùng helper chung)
-                    ch, final_bits = OMRUtils.bits_to_char(bits, densities)
-                    answers_list.append(ch)
+                    # Truy xuất trực tiếp theo tọa độ (r, g) -> Cực kỳ an toàn
+                    ans_char = answers_grid[r, g]
+                    confidence = conf_grid[r, g]
+                    conf_text = f"{int(confidence * 100)}"
                     
-                    # Visualize
-                    if ch in ('A', 'B', 'C', 'D'):
-                        marked_col_idx = col_indices[final_bits.index(1)] 
-                        x = X_CENTERS[marked_col_idx]
+                    # Lấy tọa độ X, Y để vẽ
+                    col_start = g * 4
+                    col_indices = list(range(col_start, col_start + 4))
+                    
+                    if ans_char in ('A', 'B', 'C', 'D'):
+                        char_map_idx = {'A': 0, 'B': 1, 'C': 2, 'D': 3}.get(ans_char)
+                        marked_col = col_indices[char_map_idx]
+                        x = X_CENTERS[marked_col]
                         y = Y_CENTERS[r]
-                        density = density_matrix[r, marked_col_idx]
+                        
+                        # Logic màu sắc
+                        if confidence >= 0.7: bubble_color = color_high
+                        elif confidence >= 0.25: bubble_color = color_medium
+                        else: bubble_color = color_low
 
-                        if density >= threshold_high:
-                            cv2.circle(image_with_grid, (x, y), R - 2, color_high, -1)
-                        elif density >= threshold_medium:
-                            cv2.circle(image_with_grid, (x, y), R - 2, color_medium, -1)
-                        else:
-                            cv2.circle(image_with_grid, (x, y), R - 2, color_low, -1)
-                    elif ch == '0':
-                        pass
+                        cv2.circle(image_with_grid, (x, y), R - 2, bubble_color, -1)
+                        self._draw_centered_text(image_with_grid, conf_text, x, y, 0.4, color_text, 1)
 
-            app_logger.info(f"OMR Processed successfully. Extracted {len(answers_list)} answers.")
-            return answers_list, result_matrix, image_with_grid
+                    else: 
+                        col_A = col_indices[0]
+                        x_A = X_CENTERS[col_A]
+                        y_A = Y_CENTERS[r]
+                        self._draw_centered_text(image_with_grid, conf_text, x_A, y_A, 0.4, color_text_alert, 1)
+
+            # 5. XUẤT KẾT QUẢ (FLATTEN ĐỂ TRẢ VỀ LIST)
+            # Input: (25 hàng, 8 nhóm) -> Transpose thành (8 nhóm, 25 hàng) -> Flatten thành 200 câu
+            answers_list = answers_grid.T.flatten().tolist()
+            confidences_list = conf_grid.T.flatten().tolist()
+
+            # Thống kê
+            stats = {
+                'confidences_list': confidences_list,
+                'confidence': float(np.mean(confidences_list)) if confidences_list else 0.0,
+                'lowest_conf': float(np.min(confidences_list)) if confidences_list else 0.0,
+                'lowest_conf_index': int(np.argmin(confidences_list)) if confidences_list else -1
+            }
+            
+            app_logger.info(f"OMR Success. Answers: {len(answers_list)} | "
+                            f"Avg Conf: {stats['confidence']:.2f} | "
+                            f"Min Conf: {stats['lowest_conf']:.2f}")
+            return answers_list, image_with_grid, stats
 
         except Exception as e:
             app_logger.error(f"Error in OMR Processing: {e}")

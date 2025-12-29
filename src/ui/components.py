@@ -81,8 +81,12 @@ class FileTableView(tk.Frame):
         self.on_remove = on_remove
         self.on_clear = on_clear
         
+        self.data_map = {}
+        self.on_row_click = None
+        
         self.tree: Optional[ttk.Treeview] = None
         self._setup_ui()
+        self.tree.bind("<Double-1>", self._on_double_click)
         
         # Bind sự kiện resize để tính toán cột y như logic cũ
         self.bind("<Configure>", self._resize_treeview_columns)
@@ -90,6 +94,16 @@ class FileTableView(tk.Frame):
     def _setup_ui(self):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
+        style = ttk.Style()
+        style.configure("Treeview", 
+                        background=self.P['C_LIGHT'],
+                        fieldbackground=self.P['C_LIGHT'],
+                        foreground="black")
+        
+        # Cấu hình màu khi chọn (Selected)
+        style.map('Treeview', 
+                  background=[('selected', self.P['C_SECONDARY_DARK'])],
+                  foreground=[('selected', 'white')])
         
         # Khung chứa Bảng và các nút quản lý file
         table_and_controls_frame = tk.Frame(self, bg=self.P['C_LIGHT'])
@@ -141,7 +155,7 @@ class FileTableView(tk.Frame):
         scrollbar_y = ttk.Scrollbar(table_container, orient="vertical")
         scrollbar_y.grid(row=0, column=1, sticky='ns')
         
-        columns = ("name", "total_score", "lc_score", "rc_score", "status")
+        columns = ("name", "total_score", "lc_score", "rc_score", "confidence", "status")
         self.tree = ttk.Treeview(table_container, columns=columns, show="headings", 
                                  yscrollcommand=scrollbar_y.set, selectmode='extended')
         scrollbar_y.config(command=self.tree.yview)
@@ -150,9 +164,14 @@ class FileTableView(tk.Frame):
         self.tree.heading("total_score", text="Total", anchor='center')
         self.tree.heading("lc_score", text="LC", anchor='center')
         self.tree.heading("rc_score", text="RC", anchor='center')
+        self.tree.heading("confidence", text="Conf.", anchor='center')
         self.tree.heading("status", text="Status", anchor='center')
         
         self.tree.grid(row=0, column=0, sticky='nsew')
+        
+        self.tree.tag_configure('warning', background='#EFE3D3', foreground='#393E46')
+        self.tree.tag_configure('success', foreground=self.P['C_SECONDARY_DARK']) 
+        self.tree.tag_configure('failed', foreground='red')
 
     def _resize_treeview_columns(self, event=None):
         """
@@ -168,9 +187,9 @@ class FileTableView(tk.Frame):
 
         # Tỉ lệ chiều dài cột (4:1.5:1:1:2.5, Tổng = 10)
         ratios = {
-            "name": 4.0, "total_score": 1.5,
-            "lc_score": 1.0, "rc_score": 1.0,
-            "status": 2.5,
+            "name": 4.0, "total_score": 1.2,
+            "lc_score": 0.75, "rc_score": 0.75,
+            "confidence": 0.8, "status": 2.5,
         }
         
         total_ratio = sum(ratios.values())
@@ -181,6 +200,11 @@ class FileTableView(tk.Frame):
         
         # Điều chỉnh cột "name" để nó co giãn
         self.tree.column("name", stretch=tk.YES)
+        
+    def _on_double_click(self, event):
+        item_id = self.tree.identify_row(event.y)
+        if item_id and self.on_row_click:
+            self.on_row_click(item_id)
 
     def update_data(self, image_files: List[Path], results_list: List[Dict]):
         """Cập nhật dữ liệu bảng."""
@@ -189,8 +213,6 @@ class FileTableView(tk.Frame):
             self.tree.delete(item)
             
         # Tạo map kết quả để tra cứu nhanh theo tên file
-        # (Ở gui.py cũ dùng logic on_file_graded để update từng dòng, 
-        # nhưng ở đây ta refresh lại toàn bộ khi chuyển view)
         results_map = {res['Name']: res for res in results_list}
 
         for img_path in image_files:
@@ -200,10 +222,23 @@ class FileTableView(tk.Frame):
             
             if base_name in results_map:
                 res = results_map[base_name]
-                val = (file_name, res['Total'], res['LC'], res['RC'], "✅ Done")
-                self.tree.insert("", "end", iid=iid, values=val)
+                self.data_map[str(img_path)] = res
+                avg_conf = res.get('Confidence', 0.0)
+                min_conf = res.get('LowestConf', 0.0)
+                
+                if min_conf < 0.25:
+                    status = "⚠️ Review Needed"
+                    tag = 'warning'
+                else:
+                    status = "✅ Done"
+                    tag = 'success'
+                    
+                conf_str = f"{int(avg_conf * 100)}%"
+                
+                val = (file_name, res['Total'], res['LC'], res['RC'], conf_str, status)
+                self.tree.insert("", "end", iid=iid, values=val, tags = (tag,))
             else:
-                val = (file_name, "-", "-", "-", "Pending")
+                val = (file_name, "-", "-", "-", "-", "Pending")
                 self.tree.insert("", "end", iid=iid, values=val)
 
     def update_single_item(self, img_path: Path, result_dict: Optional[Dict], error_msg: Optional[str]):
@@ -212,19 +247,34 @@ class FileTableView(tk.Frame):
         if not self.tree.exists(iid): return
         
         if result_dict:
-             values = (
+            avg_conf = result_dict.get('Confidence', 0.0)
+            min_conf = result_dict.get('LowestConf', 0.0)
+            
+            if min_conf < 0.25:
+                status_text = "⚠️ Review Needed"
+                tag = 'warning'
+            else:
+                status_text = "✅ Done"
+                tag = 'success'
+                
+            values = (
                 img_path.name, 
                 result_dict['Total'], 
                 result_dict['LC'],
                 result_dict['RC'],
-                "✅ Done"
+                f"{int(avg_conf * 100)}%",
+                status_text
             )
-             self.tree.item(iid, values=values)
+            self.data_map[iid] = result_dict
+            self.tree.item(iid, values=values)
+            self.tree.item(iid, tags=(tag,))
         else:
             values = (img_path.name, "-", "-", "-", f"❌ Failed: {error_msg}")
             self.tree.item(iid, values=values)
-            self.tree.tag_configure('failed', foreground='red')
             self.tree.item(iid, tags=('failed',))
+            
+    def get_item_data(self, iid):
+        return self.data_map.get(iid)
 
     def _internal_remove(self):
         selected_iids = self.tree.selection()

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, font as tkfont, filedialog
 from pathlib import Path
 from typing import Dict, Any, Optional, List
+import numpy as np
 import sys
 import os
 
@@ -10,7 +11,8 @@ from .components import DragDropArea, FileTableView
 
 from src.utils import app_logger, FileHandler
 from src.core import WarpingProcessor, OMREngine, GradeManager
-from src.workers import ScoringWorker 
+from src.workers import ScoringWorker
+from .review_window import ReviewWindow
 
 # Đường dẫn (Relative path từ thư mục chạy main.py - tức là thư mục gốc dự án)
 # Cấu trúc mới: config nằm ở root/config
@@ -181,11 +183,11 @@ class OMRApplication:
         info_area = tk.Frame(frame, bg=self.P['C_LIGHT'])
         info_area.grid(row=0, column=1, rowspan=2, sticky='nse') 
         
-        tk.Label(info_area, text="TOEIC OMR SCORING v2.0", 
+        tk.Label(info_area, text="TOEIC OMR SCORING v2.1", 
                  font=(self.D['FONT_FAMILY'], 12, "bold"), 
                  fg=self.P['C_PRIMARY_DARK'], bg=self.P['C_LIGHT']).pack(anchor='e')
         
-        tk.Label(info_area, text="Refactored & Modularized", 
+        tk.Label(info_area, text="by William Phong Nguyen", 
                  font=(self.D['FONT_FAMILY'], 10), 
                  fg=self.P['C_SECONDARY_DARK'], bg=self.P['C_LIGHT']).pack(anchor='e')
 
@@ -240,6 +242,7 @@ class OMRApplication:
                 on_clear=self._on_clear_files,
                 config=config_bundle
             )
+            self.table_view.on_row_click = self.open_review_modal
             self.table_view.pack(fill='both', expand=True)
             # Load initial data
             results = self.state_manager.get_value('results')
@@ -252,6 +255,107 @@ class OMRApplication:
             )
             self.drag_area.pack(fill='both', expand=True)
             self.table_view = None
+            
+    def open_review_modal(self, iid):
+        # 1. Lấy dữ liệu từ bảng
+        result_data = self.table_view.get_item_data(iid)
+        if not result_data: return
+
+        # 2. Tái tạo đường dẫn ảnh kết quả
+        try:
+            res_date = result_data.get('Date', '')
+            res_set = result_data.get('Set', '')
+            res_id = result_data.get('Test', '')
+            
+            folder_name = f"{res_date}_{res_set}_{res_id}".replace(" ", "").replace("-", "")
+            res_dir = self.parent_log_dir / folder_name
+            
+            img_name = Path(iid).stem + ".png"
+            img_path = res_dir / img_name
+            
+        except Exception:
+            messagebox.showerror("Lỗi", "Không tìm thấy đường dẫn ảnh kết quả.")
+            return
+
+        # 3. Mở cửa sổ
+        ReviewWindow(
+            parent=self.master, # Dùng master làm parent
+            student_name=result_data.get('Name', 'Unknown'),
+            img_path=img_path,
+            current_answers=result_data.get('Reference', ''),
+            confidence_list=result_data.get('ConfidenceDetails', []),
+            on_save_callback=lambda new_ans: self.handle_review_save(iid, result_data, new_ans)
+        )
+
+    # [THÊM MỚI] Hàm Lưu & Chấm lại
+    def handle_review_save(self, iid, old_result, new_answers_str):
+        print(f"Updating result for {old_result['Name']}...")
+
+        # 1. CẬP NHẬT CONFIDENCE
+        # Logic: Nếu giáo viên đã sửa tay câu nào -> Câu đó Confidence = 100% (1.0)
+        old_conf_list = old_result.get('ConfidenceDetails', [])
+        old_ans_str = old_result.get('Reference', '')
+        
+        # Copy list cũ để sửa
+        new_conf_list = list(old_conf_list)
+
+        # So sánh chuỗi cũ và mới
+        for i in range(len(new_answers_str)):
+            # Nếu ký tự khác nhau (đã sửa) -> Set Confidence = 1.0
+            if i < len(old_ans_str) and new_answers_str[i] != old_ans_str[i]:
+                new_conf_list[i] = 1.0
+                
+            elif new_conf_list[i] < 0.25:
+                new_conf_list[i] = 1.0
+
+        # Tính lại thống kê
+        new_stats = {
+            'confidence': float(np.mean(new_conf_list)) if new_conf_list else 0.0,
+            'lowest_conf': float(np.min(new_conf_list)) if new_conf_list else 0.0,
+            'confidences_list': new_conf_list
+        }
+
+        # 2. CHẤM LẠI ĐIỂM (RE-GRADE)
+        try:
+            # Lấy Key đúng dựa trên Set/Test của bài thi đó
+            set_name = old_result['Set']
+            test_id = old_result['Test']
+            test_date = old_result['Date']
+            
+            current_key_str = self.all_keys.get(set_name, {}).get(test_id, "")
+            
+            # Khởi tạo GradeManager tạm
+            gm = GradeManager(current_key_str, self.scoring_ref, set_name, test_id, test_date)
+            
+            # Chấm lại
+            parts_stats, _ = gm.grade_answers(list(new_answers_str))
+            
+            # Format kết quả mới (kèm stats mới)
+            new_result_dict = gm.format_result(old_result['Name'], parts_stats, list(new_answers_str), new_stats)
+
+            # 3. CẬP NHẬT DỮ LIỆU CHỜ SAVE (STATE MANAGER)
+            # Tìm và thay thế dict cũ trong list results
+            all_results = self.state_manager.get_value('results')
+            found_index = -1
+            for idx, item in enumerate(all_results):
+                # So khớp bằng Name (hoặc có thể dùng ID nếu có)
+                if item['Name'] == old_result['Name']:
+                    found_index = idx
+                    break
+            
+            if found_index != -1:
+                all_results[found_index] = new_result_dict
+                # (Không cần gọi set_value vì list là tham chiếu, nhưng gọi để trigger observer nếu có)
+                # self.state_manager.set_value('results', all_results) 
+
+            # 4. CẬP NHẬT GIAO DIỆN
+            self.table_view.update_single_item(Path(iid), new_result_dict, None)
+            
+            messagebox.showinfo("Cập nhật", "Đã lưu thay đổi và chấm lại điểm!")
+
+        except Exception as e:
+            app_logger.error(f"Re-grade failed: {e}")
+            messagebox.showerror("Lỗi", f"Không thể chấm lại: {e}")
 
     # --- EVENT HANDLERS ---
     def _on_set_changed(self, event):

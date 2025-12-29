@@ -57,9 +57,7 @@ class ScoringWorker(Thread):
             try:
                 app_logger.debug(f"[{index+1}/{total_files}] Processing: {img_path.name}")
                 
-                # 1. Đọc ảnh (Hỗ trợ đường dẫn Unicode/Tiếng Việt)
-                # cv2.imread không hỗ trợ tốt đường dẫn tiếng Việt trên Windows, 
-                # nên dùng np.fromfile -> cv2.imdecode
+                # 1. Đọc ảnh
                 stream = np.fromfile(str(img_path), np.uint8)
                 img_bgr = cv2.imdecode(stream, cv2.IMREAD_UNCHANGED)
                 
@@ -70,7 +68,7 @@ class ScoringWorker(Thread):
                 img_warped_bgr, img_warped_binary, img_warped_marker = self.warp_processor.process_warping(img_bgr)
                 
                 # 3. Xử lý OMR (Quét đáp án)
-                answers_list, _, image_with_grid = self.omr_engine.process_omr(
+                answers_list, image_with_grid, conf_stats = self.omr_engine.process_omr(
                     img_warped_marker,
                     img_warped_binary, 
                     img_warped_bgr
@@ -84,7 +82,7 @@ class ScoringWorker(Thread):
                 self.grade_manager.save_result_image(base_name, image_with_grid, self.result_dir)
                 
                 # Tạo dict kết quả để hiển thị lên bảng
-                result_dict = self.grade_manager.format_result(base_name, parts_stats, answers_list)
+                result_dict = self.grade_manager.format_result(base_name, parts_stats, answers_list, conf_stats)
                 
                 success_count += 1
             
@@ -93,8 +91,6 @@ class ScoringWorker(Thread):
                 app_logger.error(f"Error processing {img_path.name}: {error_msg}")
             
             # Cập nhật giao diện (Thread-safe Call)
-            # Chúng ta KHÔNG được gọi trực tiếp update UI từ đây, mà phải dùng after() hoặc queue.
-            # Ở đây ta dùng after(0, callback, args...) của Tkinter widget.
             self.gui_app.master.after(0, self.gui_app.on_file_graded, img_path, result_dict, error_msg)
 
         elapsed_time = time.time() - start_time
