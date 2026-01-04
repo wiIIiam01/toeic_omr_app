@@ -74,6 +74,7 @@ class FileTableView(tk.Frame):
         self.P = config['PALETTE']
         self.S = config['SIZES_AND_PADDING']
         self.D = config['DEFAULT_SETTINGS']
+        self.CONF_THRESHOLD = config['conf_threshold']
         
         super().__init__(parent, bg=self.P['C_LIGHT'])
         
@@ -225,8 +226,12 @@ class FileTableView(tk.Frame):
                 self.data_map[str(img_path)] = res
                 avg_conf = res.get('Confidence', 0.0)
                 min_conf = res.get('LowestConf', 0.0)
+                is_reviewed = res.get('is_reviewed', False)
                 
-                if min_conf < 0.25:
+                if is_reviewed:
+                    status = "✅ Done"
+                    tag = 'success'
+                elif min_conf < self.CONF_THRESHOLD:
                     status = "⚠️ Review Needed"
                     tag = 'warning'
                 else:
@@ -249,12 +254,16 @@ class FileTableView(tk.Frame):
         if result_dict:
             avg_conf = result_dict.get('Confidence', 0.0)
             min_conf = result_dict.get('LowestConf', 0.0)
+            is_reviewed = result_dict.get('is_reviewed', False)
             
-            if min_conf < 0.25:
-                status_text = "⚠️ Review Needed"
+            if is_reviewed:
+                status = "✅ Done"
+                tag = 'success'
+            elif min_conf < self.CONF_THRESHOLD:
+                status = "⚠️ Review Needed"
                 tag = 'warning'
             else:
-                status_text = "✅ Done"
+                status = "✅ Done"
                 tag = 'success'
                 
             values = (
@@ -263,7 +272,7 @@ class FileTableView(tk.Frame):
                 result_dict['LC'],
                 result_dict['RC'],
                 f"{int(avg_conf * 100)}%",
-                status_text
+                status
             )
             self.data_map[iid] = result_dict
             self.tree.item(iid, values=values)

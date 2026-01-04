@@ -16,6 +16,7 @@ class FormStateManager:
     UNSELECTED_SET = "Select Set"
     UNSELECTED_ID = "Test"
     UNSELECTED_DATE_HINT = "Test Date (YYYY-MM-DD)"
+    UNSELECTED_CLASS_HINT = "Class"
 
     def __init__(self, all_keys_data: Dict[str, Dict[str, str]]):
         self.all_keys_data = all_keys_data
@@ -25,6 +26,7 @@ class FormStateManager:
             'set_name': self.UNSELECTED_SET,
             'test_id': self.UNSELECTED_ID,
             'test_date': self.UNSELECTED_DATE_HINT,
+            'class_name': self.UNSELECTED_CLASS_HINT,
             'image_files': [], # List[Path]
             
             # Outputs
@@ -104,6 +106,10 @@ class FormStateManager:
         # 2. Kiểm tra Test ID
         if self.state['test_id'] == self.UNSELECTED_ID or not self.state['test_id']:
             return False, "Vui lòng chọn Mã đề."
+        
+        cls = self.state['class_name'].strip()
+        if cls == self.UNSELECTED_CLASS_HINT or not cls:
+            return False, "Vui lòng nhập Tên Lớp."
 
         # 3. Kiểm tra Answer Key
         if not self.state['key']:

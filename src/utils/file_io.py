@@ -74,49 +74,7 @@ class FileHandler:
             raise
 
     @staticmethod
-    def save_results_to_excel(results: List[Dict[str, Any]], result_dir: Path, file_name_prefix: str = "") -> Optional[Path]:
-        """
-        Lưu kết quả ra Excel. Tự động nối (append) nếu file đã tồn tại.
-        """
-        if not results:
-            app_logger.warning("No results to save.")
-            return None
-
-        try:
-            result_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Tự động lấy tên từ thư mục nếu không truyền prefix
-            prefix = file_name_prefix if file_name_prefix else result_dir.name
-            excel_path = result_dir / f"{prefix}_summary.xlsx"
-
-            df_new = pd.DataFrame(results)
-            # Ép kiểu Date sang string để tránh lỗi Excel format khi merge
-            if 'Date' in df_new.columns:
-                df_new['Date'] = df_new['Date'].astype(str)
-
-            if excel_path.exists():
-                app_logger.info(f"Appending to existing Excel: {excel_path}")
-                try:
-                    df_old = pd.read_excel(excel_path)
-                    if 'Date' in df_old.columns:
-                        df_old['Date'] = df_old['Date'].astype(str)
-                    df_combined = pd.concat([df_old, df_new], ignore_index=True)
-                except Exception as e:
-                    app_logger.warning(f"Could not read existing Excel ({e}). Overwriting.")
-                    df_combined = df_new
-            else:
-                df_combined = df_new
-
-            df_combined.to_excel(excel_path, index=False)
-            app_logger.info(f"Results saved to: {excel_path}")
-            return excel_path
-
-        except Exception as e:
-            app_logger.error(f"Failed to save Excel: {e}")
-            raise
-        
-    @staticmethod
-    def save_results_to_csv(results: List[Dict[str, Any]], result_dir: Path, file_name_prefix: str = "") -> Optional[Path]:
+    def save_results(results: List[Dict[str, Any]]) -> Optional[Path]:
         """
         Lưu kết quả ra CSV. Sử dụng mode 'a' để tối ưu hiệu suất.
         """
@@ -125,31 +83,37 @@ class FileHandler:
             return None
 
         try:
-            result_dir.mkdir(parents=True, exist_ok=True)
-            prefix = file_name_prefix if file_name_prefix else result_dir.name
-            csv_path = result_dir / f"{prefix}_summary.csv"
+            master_dir = Path("data")
+            master_dir.mkdir(exist_ok=True)
+            master_path = master_dir / "master.csv"
 
             df_new = pd.DataFrame(results)
+            
+            EXCLUDED_FIELDS = ['Reference', 'Confidence', 'LowestConf', 'LowestConfidence']
+            cols_to_drop = [col for col in EXCLUDED_FIELDS if col in df_new.columns]
+            if cols_to_drop:
+                df_new.drop(columns=cols_to_drop, inplace=True)
             
             # Đảm bảo cột Date luôn là string để thống nhất dữ liệu
             if 'Date' in df_new.columns:
                 df_new['Date'] = df_new['Date'].astype(str)
 
-            file_exists = csv_path.exists()
+            if master_path.exists():
+                df_old = pd.read_csv(master_path)                
+                df_final = pd.concat([df_old, df_new], ignore_index=True)
+                
+                # KEY LOGIC: Lọc trùng. 
+                subset_keys = ['Date', 'Class', 'Name', 'Set', 'Test']
+                valid_keys = [k for k in subset_keys if k in df_final.columns]
+                
+                if valid_keys:
+                    df_final.drop_duplicates(subset=valid_keys, keep='last', inplace=True)
+            else:
+                df_final = df_new
 
-            # Logic ghi file:
-            # - Nếu file tồn tại: mode='a' (ghi tiếp), header=False (không ghi lại tiêu đề cột)
-            # - Nếu file chưa có: mode='w' (ghi mới), header=True
-            df_new.to_csv(
-                csv_path, 
-                mode='a' if file_exists else 'w', 
-                index=False, 
-                header=not file_exists, 
-                encoding='utf-8-sig' # Đảm bảo mở bằng Excel không lỗi font tiếng Việt
-            )
-            
-            app_logger.info(f"Đã cập nhật kết quả vào: {csv_path.name}")
-            return csv_path
+            df_final.to_csv(master_path, index=False, encoding='utf-8-sig')
+            app_logger.info(f"Updated Master Data: {master_path}")
+            return str(master_path)
 
         except Exception as e:
             app_logger.error(f"Lỗi khi lưu CSV: {e}")

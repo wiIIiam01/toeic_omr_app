@@ -35,6 +35,8 @@ class OMRApplication:
             self.P = self.gui_cfg['PALETTE'] 
             self.S = self.gui_cfg['SIZES_AND_PADDING']
             self.D = self.gui_cfg['DEFAULT_SETTINGS']
+            
+            self.conf_threshold = self.app_cfg['conf_threshold']
 
             self.all_keys = FileHandler.load_key(KEY_PATH)
             self.scoring_ref = FileHandler.load_scoring_ref(SCORING_REF_PATH)
@@ -109,6 +111,7 @@ class OMRApplication:
         self.var_set_name = tk.StringVar(value=self.state_manager.UNSELECTED_SET)
         self.var_test_id = tk.StringVar(value=self.state_manager.UNSELECTED_ID)
         self.var_test_date = tk.StringVar(value=self.state_manager.UNSELECTED_DATE_HINT)
+        self.var_class = tk.StringVar(value=self.state_manager.UNSELECTED_CLASS_HINT)
 
     def _create_top_controls(self):
         """
@@ -130,8 +133,10 @@ class OMRApplication:
         input_area = tk.Frame(input_and_start_frame, bg=self.P['C_LIGHT'])
         input_area.grid(row=0, column=0, rowspan=2, sticky='nsew') 
         
-        input_area.grid_columnconfigure(0, weight=7, uniform="inputs") 
-        input_area.grid_columnconfigure(1, weight=3, uniform="inputs")
+        input_area.grid_columnconfigure(0, weight=5, uniform="inputs") #Set
+        input_area.grid_columnconfigure(1, weight=2, uniform="inputs") #Test
+        input_area.grid_columnconfigure(2, weight=3, uniform="inputs") #Class
+
         
         # --- HÀNG 0: SET NAME & TEST ID/TEST ---
         self.set_combo = ttk.Combobox(input_area, textvariable=self.var_set_name,
@@ -144,15 +149,21 @@ class OMRApplication:
         self.id_combo = ttk.Combobox(input_area, textvariable=self.var_test_id,
                                      values=[], 
                                      state='disabled')
-        self.id_combo.grid(row=0, column=1, padx=(5, 0), pady=(0, self.S['INPUT_PADY']), sticky='ew') 
+        self.id_combo.grid(row=0, column=1, padx=(5, 5), pady=(0, self.S['INPUT_PADY']), sticky='ew') 
+        
+        self.class_entry = ttk.Entry(input_area, textvariable=self.var_class)
+        self.class_entry.grid(row=0, column=2, padx=(5, 0), pady=(0, self.S['INPUT_PADY']), sticky='ew')
         
         # Bind events sau khi tạo xong widget để tránh lỗi Reference
         self.set_combo.bind('<<ComboboxSelected>>', self._on_set_changed)
         self.id_combo.bind('<<ComboboxSelected>>', self._on_id_changed)
         
+        self.class_entry.bind('<FocusIn>', self._on_class_focus_in)
+        self.class_entry.bind('<FocusOut>', self._on_class_focus_out)
+        
         # --- HÀNG 1: DATE INPUT ---
-        self.date_entry = ttk.Entry(input_area, textvariable=self.var_test_date, width=50) 
-        self.date_entry.grid(row=1, column=0, columnspan=2, padx=(0, 0), 
+        self.date_entry = ttk.Entry(input_area, textvariable=self.var_test_date) 
+        self.date_entry.grid(row=1, column=0, columnspan=3, padx=(0, 0), 
                              pady=(self.S['INPUT_PADY'], 0), sticky='ew')
         self.date_entry.bind('<FocusIn>', self._on_date_focus_in)
         self.date_entry.bind('<FocusOut>', self._on_date_focus_out)
@@ -183,7 +194,7 @@ class OMRApplication:
         info_area = tk.Frame(frame, bg=self.P['C_LIGHT'])
         info_area.grid(row=0, column=1, rowspan=2, sticky='nse') 
         
-        tk.Label(info_area, text="TOEIC OMR SCORING v2.1", 
+        tk.Label(info_area, text="TOEIC OMR SCORING v2.2", 
                  font=(self.D['FONT_FAMILY'], 12, "bold"), 
                  fg=self.P['C_PRIMARY_DARK'], bg=self.P['C_LIGHT']).pack(anchor='e')
         
@@ -224,7 +235,12 @@ class OMRApplication:
         has_files = len(image_files) > 0
         
         # Config bundle để truyền xuống components (giả lập self.P, self.S...)
-        config_bundle = {'PALETTE': self.P, 'SIZES_AND_PADDING': self.S, 'DEFAULT_SETTINGS': self.D}
+        config_bundle = {
+            'PALETTE': self.P,
+            'SIZES_AND_PADDING': self.S,
+            'DEFAULT_SETTINGS': self.D,
+            'conf_threshold': self.conf_threshold
+        }
 
         if refresh_table_only and has_files and hasattr(self, 'table_view'):
             results = self.state_manager.get_value('results')
@@ -266,8 +282,9 @@ class OMRApplication:
             res_date = result_data.get('Date', '')
             res_set = result_data.get('Set', '')
             res_id = result_data.get('Test', '')
+            res_class = result_data.get('Class', '')
             
-            folder_name = f"{res_date}_{res_set}_{res_id}".replace(" ", "").replace("-", "")
+            folder_name = f"{res_date}_{res_set}_{res_id}_{res_class}".replace(" ", "").replace("-", "")
             res_dir = self.parent_log_dir / folder_name
             
             img_name = Path(iid).stem + ".png"
@@ -282,80 +299,63 @@ class OMRApplication:
             parent=self.master, # Dùng master làm parent
             student_name=result_data.get('Name', 'Unknown'),
             img_path=img_path,
-            current_answers=result_data.get('Reference', ''),
-            confidence_list=result_data.get('ConfidenceDetails', []),
+            current_answers=result_data.get('ground_truth', ''),
+            confidence_list=result_data.get('conf', []),
             on_save_callback=lambda new_ans: self.handle_review_save(iid, result_data, new_ans)
         )
 
-    # [THÊM MỚI] Hàm Lưu & Chấm lại
     def handle_review_save(self, iid, old_result, new_answers_str):
-        print(f"Updating result for {old_result['Name']}...")
-
-        # 1. CẬP NHẬT CONFIDENCE
-        # Logic: Nếu giáo viên đã sửa tay câu nào -> Câu đó Confidence = 100% (1.0)
-        old_conf_list = old_result.get('ConfidenceDetails', [])
-        old_ans_str = old_result.get('Reference', '')
-        
-        # Copy list cũ để sửa
-        new_conf_list = list(old_conf_list)
-
-        # So sánh chuỗi cũ và mới
-        for i in range(len(new_answers_str)):
-            # Nếu ký tự khác nhau (đã sửa) -> Set Confidence = 1.0
-            if i < len(old_ans_str) and new_answers_str[i] != old_ans_str[i]:
-                new_conf_list[i] = 1.0
-                
-            elif new_conf_list[i] < 0.25:
-                new_conf_list[i] = 1.0
-
-        # Tính lại thống kê
-        new_stats = {
-            'confidence': float(np.mean(new_conf_list)) if new_conf_list else 0.0,
-            'lowest_conf': float(np.min(new_conf_list)) if new_conf_list else 0.0,
-            'confidences_list': new_conf_list
-        }
-
-        # 2. CHẤM LẠI ĐIỂM (RE-GRADE)
         try:
-            # Lấy Key đúng dựa trên Set/Test của bài thi đó
-            set_name = old_result['Set']
-            test_id = old_result['Test']
-            test_date = old_result['Date']
+            # 1. CHẤM LẠI ĐIỂM (Chỉ tính toán số liệu mới)
+            set_name = old_result.get('Set', '')
+            test_id = old_result.get('Test', '')
             
+            # Lấy Key string
             current_key_str = self.all_keys.get(set_name, {}).get(test_id, "")
             
-            # Khởi tạo GradeManager tạm
-            gm = GradeManager(current_key_str, self.scoring_ref, set_name, test_id, test_date)
+            gm = GradeManager(
+                key_answer=current_key_str,
+                scoring_ref=self.scoring_ref,
+                set_name=set_name, test_id=test_id
+            )
             
-            # Chấm lại
+            # parts_stats chứa: {'Total': 900, 'LC': 400, 'Part 1': 5...}
             parts_stats, _ = gm.grade_answers(list(new_answers_str))
-            
-            # Format kết quả mới (kèm stats mới)
-            new_result_dict = gm.format_result(old_result['Name'], parts_stats, list(new_answers_str), new_stats)
 
-            # 3. CẬP NHẬT DỮ LIỆU CHỜ SAVE (STATE MANAGER)
-            # Tìm và thay thế dict cũ trong list results
+            # 2. CẬP NHẬT TRỰC TIẾP VÀO old_result (Không tạo dict mới)            
+            # A. Cập nhật Điểm tổng
+            old_result['Total'] = parts_stats['Total']
+            old_result['LC'] = parts_stats['LC']
+            old_result['RC'] = parts_stats['RC']
+            
+            for i in range(1, 8):
+                old_result[f'part_{i}'] = parts_stats.get(f'part_{i}', 0)
+            
+            # C. Cập nhật Đáp án chốt (Ground Truth)
+            old_result['ground_truth'] = new_answers_str
+            old_result['Reference'] = new_answers_str # Giữ key này để UI hiển thị đúng
+            
+            # D. Đánh dấu đã review
+            old_result['is_reviewed'] = True
+            
+
+            # 3. ĐỒNG BỘ DỮ LIỆU
             all_results = self.state_manager.get_value('results')
-            found_index = -1
+            
             for idx, item in enumerate(all_results):
-                # So khớp bằng Name (hoặc có thể dùng ID nếu có)
-                if item['Name'] == old_result['Name']:
-                    found_index = idx
+                if item.get('Name') == old_result.get('Name'):
+                    all_results[idx] = old_result
                     break
             
-            if found_index != -1:
-                all_results[found_index] = new_result_dict
-                # (Không cần gọi set_value vì list là tham chiếu, nhưng gọi để trigger observer nếu có)
-                # self.state_manager.set_value('results', all_results) 
-
-            # 4. CẬP NHẬT GIAO DIỆN
-            self.table_view.update_single_item(Path(iid), new_result_dict, None)
+            # 4. REFRESH GIAO DIỆN
+            self.table_view.update_single_item(Path(iid), old_result, None)
             
-            messagebox.showinfo("Cập nhật", "Đã lưu thay đổi và chấm lại điểm!")
+            app_logger.info(f"Updated score for: {old_result.get('Name')}")
 
         except Exception as e:
-            app_logger.error(f"Re-grade failed: {e}")
-            messagebox.showerror("Lỗi", f"Không thể chấm lại: {e}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Lỗi", f"Không thể lưu: {e}")
 
     # --- EVENT HANDLERS ---
     def _on_set_changed(self, event):
@@ -386,12 +386,28 @@ class OMRApplication:
     def _on_date_focus_in(self, event):
         if self.var_test_date.get() == self.state_manager.UNSELECTED_DATE_HINT:
             self.var_test_date.set('')
+            self.date_entry.config(foreground=self.P['C_PRIMARY_DARK']) # Đổi màu chữ về xám
+
 
     def _on_date_focus_out(self, event):
         current = self.var_test_date.get()
         if not current.strip():
             self.var_test_date.set(self.state_manager.UNSELECTED_DATE_HINT)
+            self.date_entry.config(foreground='grey') # Đổi màu chữ về xám
+
         self.state_manager.set_value('test_date', self.var_test_date.get())
+        
+    def _on_class_focus_in(self, event):
+        if self.var_class.get() == self.state_manager.UNSELECTED_CLASS_HINT:
+            self.var_class.set('')
+            self.class_entry.config(foreground=self.P['C_PRIMARY_DARK']) # Đổi màu chữ về đen
+
+    def _on_class_focus_out(self, event):
+        current = self.var_class.get()
+        if not current.strip():
+            self.var_class.set(self.state_manager.UNSELECTED_CLASS_HINT)
+            self.class_entry.config(foreground='grey') # Đổi màu chữ về xám
+        self.state_manager.set_value('class_name', self.var_class.get())
 
     def _on_browse_files(self):
         files = filedialog.askopenfilenames(
@@ -424,7 +440,7 @@ class OMRApplication:
 
     def _on_start_clicked(self):
         if self.is_scoring: return
-        
+        self.state_manager.set_value('class_name', self.var_class.get())
         self.state_manager.set_value('test_date', self.var_test_date.get())
         is_valid, msg = self.state_manager.validate_and_update_state()
         if not is_valid:
@@ -435,7 +451,7 @@ class OMRApplication:
         state = self.state_manager.state
         
         # Logic tạo thư mục (Logic gốc)
-        result_name = f"{state['test_date']}_{state['set_name']}_{state['test_id']}".replace(" ", "").replace("-", "")
+        result_name = f"{state['test_date']}_{state['set_name']}_{state['test_id']}_{state['class_name']}".replace(" ", "").replace("-", "")
         self.current_result_dir = self.parent_log_dir / result_name
         self.current_result_dir.mkdir(exist_ok=True)
         
@@ -447,7 +463,7 @@ class OMRApplication:
         try:
             warp = WarpingProcessor(self.app_cfg)
             omr = OMREngine(self.app_cfg)
-            grade = GradeManager(state['key'], self.scoring_ref, state['set_name'], state['test_id'], state['test_date'])
+            grade = GradeManager(state['key'], self.scoring_ref, state['set_name'], state['test_id'], state['test_date'], state['class_name'])
             
             self.worker = ScoringWorker(self, state['image_files'], warp, omr, grade, self.current_result_dir)
             self.worker.start()
@@ -495,7 +511,7 @@ class OMRApplication:
         results = self.state_manager.get_value('results')
         if not results: return
         try:
-            path = FileHandler.save_results_to_csv(results, self.current_result_dir)
-            if path: messagebox.showinfo("Saved", f"Đã lưu: {path}")
+            path = FileHandler.save_results(results)
+            if path: messagebox.showinfo("Saved", f"Đã lưu kết quả: {path}")
         except Exception as e:
             messagebox.showerror("Lỗi", str(e))

@@ -34,6 +34,6 @@ TOEIC_OMR_Project/
 │       ├── __init__.py
 │       └── scoring_worker.py   # Tách thread ra khỏi logic UI
 │
-├── tests/                  # [Independency] Unit test (cho tương lai)
+├── tests/                  
 ├── requirements.txt        # Danh sách thư viện
 └── README.md

@@ -139,7 +139,7 @@ class ReviewWindow(tk.Toplevel):
         # Duyệt qua tất cả câu hỏi
         for i, (ans, conf) in enumerate(zip(self.answers, self.confidences)):
             # Chỉ hiện những câu Confidence < Threshold
-            if conf < self.CONF_THRESHOLD:
+            if conf < self.CONF_THRESHOLD or (ans == '0' and conf < self.CONF_THRESHOLD*2):
                 self._create_question_row(i, ans, conf, row_idx)
                 row_idx += 1
                 count += 1

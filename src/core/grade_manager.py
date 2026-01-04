@@ -14,7 +14,7 @@ class GradeManager:
     """
 
     def __init__(self, key_answer: str, scoring_ref: Dict[str, Dict[int, int]], 
-                 set_name: str, test_id: str, test_date: str = ""):
+                 set_name: str, test_id: str, test_date: str = "", class_name: str = ""):
         """
         Args:
             key_answer: Chuỗi đáp án chuẩn (VD: "ABCD...").
@@ -25,6 +25,7 @@ class GradeManager:
         self.scoring_ref = scoring_ref
         self.set_name = set_name
         self.test_id = test_id
+        self.class_name = class_name
         self.test_date = test_date
         
         app_logger.debug(f"GradeManager initialized for Test ID: {test_id} (Length: {len(self.key)})")
@@ -97,7 +98,7 @@ class GradeManager:
             segment = correct_vector[s:e]
             correct_count = int(sum(segment))
             
-            parts_stats[f"Part {idx}"] = correct_count
+            parts_stats[f"part_{idx}"] = correct_count
             
             # Cộng dồn vào LC (Part 1-4) hoặc RC (Part 5-7)
             if idx <= 4:
@@ -117,35 +118,37 @@ class GradeManager:
         app_logger.info(f"Grading finished. Score: {total_score} (LC: {lc_score}, RC: {rc_score})")
         return parts_stats, correct_vector
 
-    def format_result(self, base_name: str, parts: Dict[str, int], answers_list: List[str], conf_stats: Dict[str, Any] = None) -> Dict[str, Any]:
+    def format_result(self, base_name: str, parts: Dict[str, int], answers_list: List[str], conf_stats: Dict[str, Any] = None, process_time: float=0.0) -> Dict[str, Any]:
         """Tạo dictionary kết quả để lưu vào CSV."""
         answers_string = ''.join(answers_list)
         
         # Format theo yêu cầu báo cáo
         row_dict = {
             "Date": self.test_date,
+            "Class": self.class_name,
             "Set": self.set_name,
             "Test": self.test_id,
             "Name": base_name,
             "Total": parts['Total'],
             "LC": parts['LC'],
             "RC": parts['RC'],
-            "Part 1": parts['Part 1'],
-            "Part 2": parts['Part 2'],
-            "Part 3": parts['Part 3'],
-            "Part 4": parts['Part 4'],
-            "Part 5": parts['Part 5'],
-            "Part 6": parts['Part 6'],
-            "Part 7": parts['Part 7'],
-            "Reference": answers_string
+            "part_1": parts['part_1'],
+            "part_2": parts['part_2'],
+            "part_3": parts['part_3'],
+            "part_4": parts['part_4'],
+            "part_5": parts['part_5'],
+            "part_6": parts['part_6'],
+            "part_7": parts['part_7'],
+            "detected_ans": answers_string,
+            "conf": conf_stats.get('confidences_list', []),
+            "process_time": process_time,
+            "ground_truth": answers_string,
+            "is_reviewed": False
         }
         # 1. Dành cho UI
         row_dict['Confidence'] = conf_stats.get('confidence', 0.0)
         row_dict['LowestConf'] = conf_stats.get('lowest_conf', 0.0)
         
-        # 2. Dành cho Báo cáo
-        row_dict['ConfidenceDetails'] = conf_stats.get('confidences_list', []) 
-
         return row_dict
         
     def save_result_image(self, base_name: str, image: np.ndarray, result_dir: Path) -> bool:

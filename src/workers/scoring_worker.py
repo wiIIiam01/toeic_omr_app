@@ -55,6 +55,7 @@ class ScoringWorker(Thread):
             base_name = img_path.stem
             
             try:
+                file_start_time = time.perf_counter()
                 app_logger.debug(f"[{index+1}/{total_files}] Processing: {img_path.name}")
                 
                 # 1. Đọc ảnh
@@ -81,8 +82,11 @@ class ScoringWorker(Thread):
                 # Lưu ảnh có vẽ lưới chấm điểm để đối chiếu
                 self.grade_manager.save_result_image(base_name, image_with_grid, self.result_dir)
                 
+                file_end_time = time.perf_counter()
+                process_duration = file_end_time - file_start_time
+                
                 # Tạo dict kết quả để hiển thị lên bảng
-                result_dict = self.grade_manager.format_result(base_name, parts_stats, answers_list, conf_stats)
+                result_dict = self.grade_manager.format_result(base_name, parts_stats, answers_list, conf_stats, process_duration)
                 
                 success_count += 1
             
