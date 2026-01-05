@@ -278,7 +278,7 @@ class FileTableView(tk.Frame):
             self.tree.item(iid, values=values)
             self.tree.item(iid, tags=(tag,))
         else:
-            values = (img_path.name, "-", "-", "-", f"❌ Failed: {error_msg}")
+            values = (img_path.name, "-", "-", "-", "-", f"❌ Failed: {error_msg}")
             self.tree.item(iid, values=values)
             self.tree.item(iid, tags=('failed',))
             
