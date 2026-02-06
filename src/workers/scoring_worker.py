@@ -24,7 +24,8 @@ class ScoringWorker(Thread):
                  image_files: List[Path], 
                  warp_processor: WarpingProcessor, 
                  omr_engine: OMREngine, 
-                 grade_manager: GradeManager, 
+                 grade_manager: GradeManager,
+                 answer_key: str, 
                  result_dir: Path):
         
         super().__init__()
@@ -33,6 +34,7 @@ class ScoringWorker(Thread):
         self.warp_processor = warp_processor
         self.omr_engine = omr_engine
         self.grade_manager = grade_manager
+        self.answer_key = answer_key
         self.result_dir = result_dir
         
         # Đặt thread là daemon để nó tự động tắt khi chương trình chính tắt
@@ -70,6 +72,7 @@ class ScoringWorker(Thread):
                 
                 # 3. Xử lý OMR (Quét đáp án)
                 answers_list, image_with_grid, conf_stats = self.omr_engine.process_omr(
+                    self.answer_key,
                     img_warped_marker,
                     img_warped_binary, 
                     img_warped_bgr

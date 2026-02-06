@@ -192,7 +192,7 @@ class OMREngine:
         FINAL_X_INDICES_32 = [int(x) for x in N]
         return FINAL_X_INDICES_32
 
-    def process_omr(self, img_warped_marker: np.ndarray, img_warped_binary: np.ndarray, img_warped_bgr: np.ndarray) -> Tuple[List[str], np.ndarray, Dict[str, Any]]:
+    def process_omr(self, answer_key: str, img_warped_marker: np.ndarray, img_warped_binary: np.ndarray, img_warped_bgr: np.ndarray) -> Tuple[List[str], np.ndarray, Dict[str, Any]]:
         """
         Hàm chính điều phối quy trình OMR.
         """
@@ -223,6 +223,8 @@ class OMREngine:
             color_low = tuple(self.VIS_CFG.get('color_low', [0, 80, 255]))
             color_text = tuple(self.VIS_CFG.get('color_text', [0, 0, 0]))
             color_text_alert = tuple(self.VIS_CFG.get('color_text_alert', [0, 0, 255]))
+            color_correct = (0, 255, 0)
+            color_wrong = (0, 80, 255)
             
             image_with_grid = img_warped_bgr.copy() 
             
@@ -231,8 +233,28 @@ class OMREngine:
             for r in range(rows):       # Duyệt hàng
                 for g in range(groups): # Duyệt nhóm
                     
-                    # Truy xuất trực tiếp theo tọa độ (r, g) -> Cực kỳ an toàn
+                    q_idx = (g * rows) + r
                     ans_char = answers_grid[r, g]
+                        
+                    if q_idx < len(answer_key):
+                        correct_char = answer_key[q_idx]
+                        
+                        if correct_char in ['A', 'B', 'C', 'D']:
+                            # Tìm toạ độ vẽ
+                            key_char_idx = {'A': 0, 'B': 1, 'C': 2, 'D': 3}.get(correct_char)
+                            key_col = (g * 4) + key_char_idx
+                            
+                            x_key = X_CENTERS[key_col]
+                            y_key = Y_CENTERS[r]
+                            
+                            if correct_char == ans_char:
+                                color = color_correct
+                            else:
+                                color = color_wrong
+                            # Vẽ vòng tròn rỗng (thickness = 2), bán kính to hơn bubble chút (R+4)
+                            cv2.circle(image_with_grid, (x_key, y_key), R-3, color, 2)
+                
+                    # Truy xuất trực tiếp theo tọa độ (r, g) -> Cực kỳ an toàn
                     confidence = conf_grid[r, g]
                     conf_text = f"{int(confidence * 100)}"
                     

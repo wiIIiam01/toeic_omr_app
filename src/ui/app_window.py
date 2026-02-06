@@ -465,7 +465,7 @@ class OMRApplication:
             omr = OMREngine(self.app_cfg)
             grade = GradeManager(state['key'], self.scoring_ref, state['set_name'], state['test_id'], state['test_date'], state['class_name'])
             
-            self.worker = ScoringWorker(self, state['image_files'], warp, omr, grade, self.current_result_dir)
+            self.worker = ScoringWorker(self, state['image_files'], warp, omr, grade, state['key'], self.current_result_dir)
             self.worker.start()
         except Exception as e:
             self._set_ui_busy(False)

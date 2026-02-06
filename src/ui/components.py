@@ -176,7 +176,7 @@ class FileTableView(tk.Frame):
 
     def _resize_treeview_columns(self, event=None):
         """
-        Logic co giãn cột thông minh (Pixel-perfect logic từ gui.py).
+        Logic co giãn cột.
         """
         if self.tree is None: return
 
