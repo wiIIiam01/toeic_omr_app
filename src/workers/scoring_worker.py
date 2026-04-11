@@ -79,7 +79,7 @@ class ScoringWorker(Thread):
                 )
 
                 # 4. Chấm điểm
-                parts_stats, _ = self.grade_manager.grade_answers(answers_list)
+                parts_stats = self.grade_manager.grade_answers(answers_list)
 
                 # 5. Lưu ảnh kết quả & Format dữ liệu
                 # Lưu ảnh có vẽ lưới chấm điểm để đối chiếu

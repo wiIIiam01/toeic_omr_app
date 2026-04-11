@@ -13,7 +13,7 @@ class OMREngine:
     
     # Thông số lọc nhiễu cho hàng (Side Marks)
     Y_W_MIN = 22; Y_W_MAX = 32
-    Y_H_MIN = 4; Y_H_MAX = 14 
+    Y_H_MIN = 4; Y_H_MAX = 28 
  
     def __init__(self, config: Dict[str, Any]):
         self.config = config

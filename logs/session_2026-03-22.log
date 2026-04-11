@@ -1,0 +1,388 @@
+17:17:14 - [INFO] - ==========================================
+17:17:14 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+17:17:14 - [INFO] - ==========================================
+17:17:15 - [DEBUG] - Loaded JSON successfully: app_config.json
+17:17:15 - [DEBUG] - Loaded JSON successfully: key.json
+17:17:15 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+17:17:15 - [DEBUG] - FormStateManager initialized.
+17:17:15 - [INFO] - UI initialized successfully. Entering main loop.
+17:17:25 - [DEBUG] - User selected set: 'ETS 2026'
+17:17:25 - [DEBUG] - State changed: set_name = ETS 2026
+17:17:27 - [DEBUG] - State changed: test_id = 10
+17:17:27 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:29 - [DEBUG] - State changed: class_name = te
+17:17:29 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:29 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:29 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:29 - [INFO] - Auto-set date to today: 2026-03-22
+17:17:29 - [INFO] - Form validation passed. Ready to score.
+17:17:29 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:29 - [DEBUG] - WarpingProcessor initialized with config.
+17:17:29 - [DEBUG] - OMREngine initialized.
+17:17:29 - [DEBUG] - GradeManager initialized for Test ID: 10 (Length: 200)
+17:17:29 - [INFO] - Worker started. Processing 1 files...
+17:17:29 - [DEBUG] - [1/1] Processing: Nguyễn Văn Phong.jpg
+17:17:29 - [INFO] - Processing image for warping. Input size: 4080x3060
+17:17:30 - [DEBUG] - Markers ordered successfully. Centers: [140 332], [3914  318], ...
+17:17:30 - [INFO] - Warping completed successfully.
+17:17:30 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.79
+17:17:30 - [INFO] - Grading finished. Score: 945 (LC: 495, RC: 450)
+17:17:30 - [DEBUG] - Saved result image: Nguyễn Văn Phong.png
+17:17:30 - [INFO] - Worker finished. Success: 1/1. Time: 0.60s
+17:17:30 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:32 - [INFO] - Updated Master Data: data\master.csv
+17:17:33 - [INFO] - Answer Key found for ETS 2026 - 10
+17:17:35 - [INFO] - Answer Key found for ETS 2026 - 10
+17:35:16 - [INFO] - Answer Key found for ETS 2026 - 10
+17:43:06 - [INFO] - Answer Key found for ETS 2026 - 10
+17:43:08 - [INFO] - Answer Key found for ETS 2026 - 10
+17:43:11 - [INFO] - Application closed by user.
+17:43:11 - [INFO] - Application Process Terminated.
+18:29:49 - [INFO] - ==========================================
+18:29:49 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+18:29:49 - [INFO] - ==========================================
+18:29:49 - [DEBUG] - Loaded JSON successfully: app_config.json
+18:29:49 - [DEBUG] - Loaded JSON successfully: key.json
+18:29:49 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+18:29:49 - [DEBUG] - FormStateManager initialized.
+18:29:50 - [INFO] - UI initialized successfully. Entering main loop.
+18:29:56 - [DEBUG] - User selected set: 'ETS 2026'
+18:29:56 - [DEBUG] - State changed: set_name = ETS 2026
+18:30:13 - [INFO] - Application closed by user.
+18:30:13 - [INFO] - Application Process Terminated.
+18:38:17 - [INFO] - ==========================================
+18:38:17 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+18:38:17 - [INFO] - ==========================================
+18:38:17 - [DEBUG] - Loaded JSON successfully: app_config.json
+18:38:17 - [DEBUG] - Loaded JSON successfully: key.json
+18:38:17 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+18:38:17 - [DEBUG] - FormStateManager initialized.
+18:38:17 - [INFO] - UI initialized successfully. Entering main loop.
+18:38:21 - [DEBUG] - User selected set: 'ETS 2026'
+18:38:21 - [DEBUG] - State changed: set_name = ETS 2026
+18:38:23 - [DEBUG] - State changed: test_id = 6
+18:38:23 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:27 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:30 - [DEBUG] - State changed: class_name = t
+18:38:30 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:30 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:30 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:30 - [INFO] - Auto-set date to today: 2026-03-22
+18:38:30 - [INFO] - Form validation passed. Ready to score.
+18:38:30 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:30 - [DEBUG] - WarpingProcessor initialized with config.
+18:38:30 - [DEBUG] - OMREngine initialized.
+18:38:30 - [ERROR] - Lỗi không tìm thấy config\skill_matrices\ETS2026_6.json
+18:38:30 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+18:38:30 - [INFO] - Worker started. Processing 1 files...
+18:38:30 - [DEBUG] - [1/1] Processing: Nguyễn Văn Phong.jpg
+18:38:30 - [INFO] - Processing image for warping. Input size: 4080x3060
+18:38:30 - [DEBUG] - Markers ordered successfully. Centers: [140 332], [3914  318], ...
+18:38:30 - [INFO] - Warping completed successfully.
+18:38:30 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.79
+18:38:30 - [INFO] - Grading finished. Score: 270 (LC: 155, RC: 115)
+18:38:30 - [DEBUG] - Saved result image: Nguyễn Văn Phong.png
+18:38:30 - [INFO] - Worker finished. Success: 1/1. Time: 0.34s
+18:38:30 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:35 - [INFO] - Updated Master Data: data\master.csv
+18:38:35 - [INFO] - Answer Key found for ETS 2026 - 6
+18:38:37 - [INFO] - Answer Key found for ETS 2026 - 6
+18:39:36 - [INFO] - Updated Master Data: data\master.csv
+18:39:37 - [INFO] - Answer Key found for ETS 2026 - 6
+18:39:41 - [INFO] - Answer Key found for ETS 2026 - 6
+18:39:50 - [INFO] - Answer Key found for ETS 2026 - 6
+18:39:51 - [INFO] - Application closed by user.
+18:39:51 - [INFO] - Application Process Terminated.
+18:39:57 - [INFO] - ==========================================
+18:39:57 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+18:39:57 - [INFO] - ==========================================
+18:39:57 - [DEBUG] - Loaded JSON successfully: app_config.json
+18:39:57 - [DEBUG] - Loaded JSON successfully: key.json
+18:39:57 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+18:39:57 - [DEBUG] - FormStateManager initialized.
+18:39:58 - [INFO] - UI initialized successfully. Entering main loop.
+18:40:02 - [DEBUG] - User selected set: 'ETS 2026'
+18:40:02 - [DEBUG] - State changed: set_name = ETS 2026
+18:40:04 - [DEBUG] - State changed: test_id = 6
+18:40:04 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:06 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:07 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:08 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:11 - [DEBUG] - State changed: class_name = t
+18:40:11 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:11 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:11 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:11 - [INFO] - Auto-set date to today: 2026-03-22
+18:40:11 - [INFO] - Form validation passed. Ready to score.
+18:40:11 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:11 - [DEBUG] - WarpingProcessor initialized with config.
+18:40:11 - [DEBUG] - OMREngine initialized.
+18:40:11 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+18:40:11 - [INFO] - Worker started. Processing 1 files...
+18:40:11 - [DEBUG] - [1/1] Processing: Nguyễn Văn Phong.jpg
+18:40:11 - [INFO] - Processing image for warping. Input size: 4080x3060
+18:40:11 - [DEBUG] - Markers ordered successfully. Centers: [140 332], [3914  318], ...
+18:40:11 - [INFO] - Warping completed successfully.
+18:40:11 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.79
+18:40:11 - [INFO] - Grading finished. Score: 270 (LC: 155, RC: 115)
+18:40:11 - [DEBUG] - Saved result image: Nguyễn Văn Phong.png
+18:40:11 - [INFO] - Worker finished. Success: 1/1. Time: 0.34s
+18:40:11 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:17 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:19 - [INFO] - Answer Key found for ETS 2026 - 6
+18:40:21 - [INFO] - Updated Master Data: data\master.csv
+19:19:02 - [DEBUG] - State changed: image_files = []
+19:19:02 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:02 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:05 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:07 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:07 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+19:19:07 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:07 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:07 - [INFO] - Auto-set date to today: 2026-03-22
+19:19:07 - [INFO] - Form validation passed. Ready to score.
+19:19:07 - [INFO] - Answer Key found for ETS 2026 - 6
+19:19:07 - [DEBUG] - WarpingProcessor initialized with config.
+19:19:07 - [DEBUG] - OMREngine initialized.
+19:19:07 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+19:19:07 - [INFO] - Worker started. Processing 1 files...
+19:19:07 - [DEBUG] - [1/1] Processing: IMG_20260322_191831.jpg
+19:19:07 - [INFO] - Processing image for warping. Input size: 4080x3060
+19:19:07 - [DEBUG] - Markers ordered successfully. Centers: [224 449], [3916  436], ...
+19:19:07 - [INFO] - Warping completed successfully.
+19:19:07 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.76 | Min Conf: 0.16
+19:19:07 - [INFO] - Grading finished. Score: 25 (LC: 20, RC: 5)
+19:19:07 - [DEBUG] - Saved result image: IMG_20260322_191831.png
+19:19:07 - [INFO] - Worker finished. Success: 1/1. Time: 0.29s
+19:19:09 - [DEBUG] - Loaded JSON successfully: app_config.json
+19:24:35 - [DEBUG] - Loaded JSON successfully: app_config.json
+19:35:51 - [DEBUG] - State changed: image_files = []
+19:35:51 - [INFO] - Answer Key found for ETS 2026 - 6
+19:35:57 - [INFO] - Answer Key found for ETS 2026 - 6
+19:35:58 - [INFO] - Answer Key found for ETS 2026 - 6
+19:35:58 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+19:35:58 - [INFO] - Answer Key found for ETS 2026 - 6
+19:35:58 - [INFO] - Answer Key found for ETS 2026 - 6
+19:35:58 - [INFO] - Auto-set date to today: 2026-03-22
+19:35:58 - [INFO] - Form validation passed. Ready to score.
+19:35:58 - [INFO] - Answer Key found for ETS 2026 - 6
+19:35:58 - [DEBUG] - WarpingProcessor initialized with config.
+19:35:58 - [DEBUG] - OMREngine initialized.
+19:35:58 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+19:35:58 - [INFO] - Worker started. Processing 1 files...
+19:35:58 - [DEBUG] - [1/1] Processing: IMG_20260322_193532.jpg
+19:35:58 - [INFO] - Processing image for warping. Input size: 4080x3060
+19:35:59 - [DEBUG] - Markers ordered successfully. Centers: [171 432], [3892  442], ...
+19:35:59 - [INFO] - Warping completed successfully.
+19:35:59 - [ERROR] - Error in OMR Processing: ❌ LỖI TEMPLATE: Biên trái tìm thấy 17 hàng. YÊU CẦU 25.
+19:35:59 - [ERROR] - Error processing IMG_20260322_193532.jpg: ❌ LỖI TEMPLATE: Biên trái tìm thấy 17 hàng. YÊU CẦU 25.
+19:35:59 - [INFO] - Worker finished. Success: 0/1. Time: 0.48s
+19:38:34 - [INFO] - Application closed by user.
+19:38:34 - [INFO] - Application Process Terminated.
+19:38:36 - [INFO] - ==========================================
+19:38:36 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+19:38:36 - [INFO] - ==========================================
+19:38:36 - [DEBUG] - Loaded JSON successfully: app_config.json
+19:38:36 - [DEBUG] - Loaded JSON successfully: key.json
+19:38:36 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+19:38:36 - [DEBUG] - FormStateManager initialized.
+19:38:37 - [INFO] - UI initialized successfully. Entering main loop.
+19:38:42 - [DEBUG] - User selected set: 'ETS 2024'
+19:38:42 - [DEBUG] - State changed: set_name = ETS 2024
+19:38:44 - [DEBUG] - User selected set: 'ETS 2026'
+19:38:44 - [DEBUG] - State changed: set_name = ETS 2026
+19:38:46 - [DEBUG] - State changed: test_id = 6
+19:38:46 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:47 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:50 - [DEBUG] - State changed: class_name = r
+19:38:50 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:50 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:50 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:50 - [INFO] - Auto-set date to today: 2026-03-22
+19:38:50 - [INFO] - Form validation passed. Ready to score.
+19:38:50 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:50 - [DEBUG] - WarpingProcessor initialized with config.
+19:38:50 - [DEBUG] - OMREngine initialized.
+19:38:50 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+19:38:50 - [INFO] - Worker started. Processing 1 files...
+19:38:50 - [DEBUG] - [1/1] Processing: IMG_20260322_193532.jpg
+19:38:50 - [INFO] - Processing image for warping. Input size: 4080x3060
+19:38:51 - [DEBUG] - Markers ordered successfully. Centers: [171 432], [3892  442], ...
+19:38:51 - [INFO] - Warping completed successfully.
+19:38:51 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.76 | Min Conf: 0.47
+19:38:51 - [INFO] - Grading finished. Score: 20 (LC: 20, RC: 0)
+19:38:51 - [DEBUG] - Saved result image: IMG_20260322_193532.png
+19:38:51 - [INFO] - Worker finished. Success: 1/1. Time: 0.57s
+19:38:51 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:55 - [INFO] - Answer Key found for ETS 2026 - 6
+19:38:56 - [DEBUG] - Loaded JSON successfully: app_config.json
+19:39:18 - [INFO] - Updated Master Data: data\master.csv
+20:24:40 - [DEBUG] - State changed: class_name = MockTest
+20:24:40 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:43 - [DEBUG] - State changed: image_files = []
+20:24:43 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:43 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:44 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:50 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:51 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:51 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+20:24:51 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:51 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:51 - [INFO] - Auto-set date to today: 2026-03-22
+20:24:51 - [INFO] - Form validation passed. Ready to score.
+20:24:51 - [INFO] - Answer Key found for ETS 2026 - 6
+20:24:51 - [DEBUG] - WarpingProcessor initialized with config.
+20:24:51 - [DEBUG] - OMREngine initialized.
+20:24:51 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:24:51 - [INFO] - Worker started. Processing 7 files...
+20:24:51 - [DEBUG] - [1/7] Processing: Tran Si Nhan.jpg
+20:24:51 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:51 - [DEBUG] - Markers ordered successfully. Centers: [253 399], [3891  377], ...
+20:24:51 - [INFO] - Warping completed successfully.
+20:24:51 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.82
+20:24:51 - [INFO] - Grading finished. Score: 735 (LC: 395, RC: 340)
+20:24:51 - [DEBUG] - Saved result image: Tran Si Nhan.png
+20:24:51 - [DEBUG] - [2/7] Processing: Vo Quoc Tinh.jpg
+20:24:51 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:52 - [DEBUG] - Markers ordered successfully. Centers: [210 472], [3847  453], ...
+20:24:52 - [INFO] - Warping completed successfully.
+20:24:52 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.74
+20:24:52 - [INFO] - Grading finished. Score: 555 (LC: 305, RC: 250)
+20:24:52 - [DEBUG] - Saved result image: Vo Quoc Tinh.png
+20:24:52 - [DEBUG] - [3/7] Processing: Dinh Thi Van Anh.jpg
+20:24:52 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:52 - [DEBUG] - Markers ordered successfully. Centers: [263 509], [3907  496], ...
+20:24:52 - [INFO] - Warping completed successfully.
+20:24:52 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.84
+20:24:52 - [INFO] - Grading finished. Score: 465 (LC: 275, RC: 190)
+20:24:52 - [DEBUG] - Saved result image: Dinh Thi Van Anh.png
+20:24:52 - [DEBUG] - [4/7] Processing: Tran Kieu Thanh Ngoc.jpg
+20:24:52 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:52 - [DEBUG] - Markers ordered successfully. Centers: [124 469], [3779  380], ...
+20:24:52 - [INFO] - Warping completed successfully.
+20:24:52 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.89 | Min Conf: 0.09
+20:24:52 - [INFO] - Grading finished. Score: 685 (LC: 380, RC: 305)
+20:24:53 - [DEBUG] - Saved result image: Tran Kieu Thanh Ngoc.png
+20:24:53 - [DEBUG] - [5/7] Processing: Nguyen Ngoc Khanh Giang.jpg
+20:24:53 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:53 - [DEBUG] - Markers ordered successfully. Centers: [215 424], [3872  389], ...
+20:24:53 - [INFO] - Warping completed successfully.
+20:24:53 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.91 | Min Conf: 0.54
+20:24:53 - [INFO] - Grading finished. Score: 595 (LC: 330, RC: 265)
+20:24:53 - [DEBUG] - Saved result image: Nguyen Ngoc Khanh Giang.png
+20:24:53 - [DEBUG] - [6/7] Processing: Le Ngo Tri Toan.jpg
+20:24:53 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:53 - [DEBUG] - Markers ordered successfully. Centers: [184 452], [3819  398], ...
+20:24:53 - [INFO] - Warping completed successfully.
+20:24:53 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.91 | Min Conf: 0.72
+20:24:53 - [INFO] - Grading finished. Score: 755 (LC: 360, RC: 395)
+20:24:53 - [DEBUG] - Saved result image: Le Ngo Tri Toan.png
+20:24:53 - [DEBUG] - [7/7] Processing: Tran Tuan Dat.jpg
+20:24:53 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:24:53 - [DEBUG] - Markers ordered successfully. Centers: [197 418], [3836  384], ...
+20:24:53 - [INFO] - Warping completed successfully.
+20:24:53 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.91 | Min Conf: 0.15
+20:24:53 - [INFO] - Grading finished. Score: 590 (LC: 305, RC: 285)
+20:24:54 - [DEBUG] - Saved result image: Tran Tuan Dat.png
+20:24:54 - [INFO] - Worker finished. Success: 7/7. Time: 2.69s
+20:24:54 - [INFO] - Answer Key found for ETS 2026 - 6
+20:25:08 - [INFO] - Answer Key found for ETS 2026 - 6
+20:25:08 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:25:25 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:25:25 - [INFO] - Grading finished. Score: 685 (LC: 380, RC: 305)
+20:25:25 - [INFO] - Updated score for: Tran Kieu Thanh Ngoc
+20:25:28 - [INFO] - Updated Master Data: data\master.csv
+20:30:57 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:31:13 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:31:13 - [INFO] - Grading finished. Score: 555 (LC: 305, RC: 250)
+20:31:13 - [INFO] - Updated score for: Vo Quoc Tinh
+20:34:54 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:35:00 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:35:00 - [INFO] - Grading finished. Score: 590 (LC: 305, RC: 285)
+20:35:00 - [INFO] - Updated score for: Tran Tuan Dat
+20:39:40 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:39:45 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:39:45 - [INFO] - Grading finished. Score: 595 (LC: 330, RC: 265)
+20:39:45 - [INFO] - Updated score for: Nguyen Ngoc Khanh Giang
+20:43:52 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:44:18 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:44:18 - [INFO] - Grading finished. Score: 735 (LC: 395, RC: 340)
+20:44:18 - [INFO] - Updated score for: Tran Si Nhan
+20:47:37 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:47:43 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:47:49 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:47:49 - [INFO] - Grading finished. Score: 755 (LC: 360, RC: 395)
+20:47:49 - [INFO] - Updated score for: Le Ngo Tri Toan
+20:58:09 - [DEBUG] - State changed: image_files = []
+20:58:09 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:09 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:15 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:16 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:16 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+20:58:16 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:16 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:16 - [INFO] - Auto-set date to today: 2026-03-22
+20:58:16 - [INFO] - Form validation passed. Ready to score.
+20:58:16 - [INFO] - Answer Key found for ETS 2026 - 6
+20:58:16 - [DEBUG] - WarpingProcessor initialized with config.
+20:58:16 - [DEBUG] - OMREngine initialized.
+20:58:16 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:58:16 - [INFO] - Worker started. Processing 3 files...
+20:58:16 - [DEBUG] - [1/3] Processing: Mong Thuy.jpg
+20:58:16 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:58:16 - [DEBUG] - Markers ordered successfully. Centers: [216 383], [3892  434], ...
+20:58:16 - [INFO] - Warping completed successfully.
+20:58:16 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.72
+20:58:16 - [INFO] - Grading finished. Score: 505 (LC: 235, RC: 270)
+20:58:16 - [DEBUG] - Saved result image: Mong Thuy.png
+20:58:16 - [DEBUG] - [2/3] Processing: Ta Thiet Giap.jpg
+20:58:16 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:58:17 - [DEBUG] - Markers ordered successfully. Centers: [177 380], [3809  411], ...
+20:58:17 - [INFO] - Warping completed successfully.
+20:58:17 - [ERROR] - Error in OMR Processing: ❌ LỖI TEMPLATE: Biên trên tìm thấy 6 bubble. YÊU CẦU 9.
+20:58:17 - [ERROR] - Error processing Ta Thiet Giap.jpg: ❌ LỖI TEMPLATE: Biên trên tìm thấy 6 bubble. YÊU CẦU 9.
+20:58:17 - [DEBUG] - [3/3] Processing: Vo Trong Hoang.jpg
+20:58:17 - [INFO] - Processing image for warping. Input size: 4080x3060
+20:58:17 - [DEBUG] - Markers ordered successfully. Centers: [172 314], [3848  352], ...
+20:58:17 - [INFO] - Warping completed successfully.
+20:58:17 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.82
+20:58:17 - [INFO] - Grading finished. Score: 320 (LC: 175, RC: 145)
+20:58:17 - [DEBUG] - Saved result image: Vo Trong Hoang.png
+20:58:17 - [INFO] - Worker finished. Success: 2/3. Time: 1.16s
+20:58:20 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:58:24 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:58:24 - [INFO] - Grading finished. Score: 505 (LC: 235, RC: 270)
+20:58:24 - [INFO] - Updated score for: Mong Thuy
+20:58:25 - [DEBUG] - Loaded JSON successfully: app_config.json
+20:58:28 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+20:58:28 - [INFO] - Grading finished. Score: 320 (LC: 175, RC: 145)
+20:58:28 - [INFO] - Updated score for: Vo Trong Hoang
+20:58:29 - [INFO] - Updated Master Data: data\master.csv
+21:09:53 - [DEBUG] - State changed: image_files = []
+21:09:53 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:53 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:58 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:58 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:58 - [DEBUG] - State changed: test_date = Test Date (YYYY-MM-DD)
+21:09:58 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:58 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:58 - [INFO] - Auto-set date to today: 2026-03-22
+21:09:58 - [INFO] - Form validation passed. Ready to score.
+21:09:58 - [INFO] - Answer Key found for ETS 2026 - 6
+21:09:59 - [DEBUG] - WarpingProcessor initialized with config.
+21:09:59 - [DEBUG] - OMREngine initialized.
+21:09:59 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+21:09:59 - [INFO] - Worker started. Processing 1 files...
+21:09:59 - [DEBUG] - [1/1] Processing: IMG_20260322_210927.jpg
+21:09:59 - [INFO] - Processing image for warping. Input size: 4080x3060
+21:09:59 - [DEBUG] - Markers ordered successfully. Centers: [120 235], [3885  197], ...
+21:09:59 - [INFO] - Warping completed successfully.
+21:09:59 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.87 | Min Conf: 0.42
+21:09:59 - [INFO] - Grading finished. Score: 675 (LC: 375, RC: 300)
+21:09:59 - [DEBUG] - Saved result image: IMG_20260322_210927.png
+21:09:59 - [INFO] - Worker finished. Success: 1/1. Time: 0.96s
+21:10:02 - [DEBUG] - Loaded JSON successfully: app_config.json
+21:10:17 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+21:10:17 - [INFO] - Grading finished. Score: 675 (LC: 375, RC: 300)
+21:10:17 - [INFO] - Updated score for: IMG_20260322_210927
+21:10:20 - [INFO] - Updated Master Data: data\master.csv

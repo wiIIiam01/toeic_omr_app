@@ -1,0 +1,136 @@
+11:25:30 - [INFO] - ==========================================
+11:25:30 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+11:25:30 - [INFO] - ==========================================
+11:25:30 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:25:30 - [DEBUG] - Loaded JSON successfully: key.json
+11:25:30 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+11:25:30 - [DEBUG] - FormStateManager initialized.
+11:25:31 - [INFO] - UI initialized successfully. Entering main loop.
+11:25:36 - [DEBUG] - User selected set: 'ETS 2026'
+11:25:36 - [DEBUG] - State changed: set_name = ETS 2026
+11:25:37 - [DEBUG] - State changed: test_id = 1
+11:25:37 - [INFO] - Answer Key found for ETS 2026 - 1
+11:25:41 - [INFO] - Answer Key found for ETS 2026 - 1
+11:25:52 - [INFO] - Answer Key found for ETS 2026 - 1
+11:25:55 - [DEBUG] - State changed: class_name = 
+11:25:55 - [INFO] - Answer Key found for ETS 2026 - 1
+11:25:55 - [INFO] - Answer Key found for ETS 2026 - 1
+11:25:55 - [INFO] - Answer Key found for ETS 2026 - 1
+11:25:55 - [WARNING] - Validation failed: Vui lòng nhập Tên Lớp.
+11:25:55 - [DEBUG] - State changed: class_name = Class
+11:25:55 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:02 - [DEBUG] - State changed: class_name = Ms. Huyền
+11:26:02 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:02 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:02 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:02 - [INFO] - Auto-set date to today: 2026-03-12
+11:26:02 - [INFO] - Form validation passed. Ready to score.
+11:26:02 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:02 - [DEBUG] - WarpingProcessor initialized with config.
+11:26:02 - [DEBUG] - OMREngine initialized.
+11:26:02 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:26:02 - [INFO] - Worker started. Processing 9 files...
+11:26:02 - [DEBUG] - [1/9] Processing: Thục Nghi.jpg
+11:26:02 - [INFO] - Processing image for warping. Input size: 2562x1929
+11:26:02 - [DEBUG] - Markers ordered successfully. Centers: [ 78 262], [2479  294], ...
+11:26:02 - [INFO] - Warping completed successfully.
+11:26:02 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.89 | Min Conf: 0.72
+11:26:02 - [INFO] - Grading finished. Score: 485 (LC: 295, RC: 190)
+11:26:02 - [DEBUG] - Saved result image: Thục Nghi.png
+11:26:02 - [DEBUG] - [2/9] Processing: Tuyết Anh.jpg
+11:26:03 - [INFO] - Processing image for warping. Input size: 2428x1829
+11:26:03 - [DEBUG] - Markers ordered successfully. Centers: [ 88 275], [2343  262], ...
+11:26:03 - [INFO] - Warping completed successfully.
+11:26:03 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.89 | Min Conf: 0.74
+11:26:03 - [INFO] - Grading finished. Score: 540 (LC: 305, RC: 235)
+11:26:03 - [DEBUG] - Saved result image: Tuyết Anh.png
+11:26:03 - [DEBUG] - [3/9] Processing: Quyên.jpg
+11:26:03 - [INFO] - Processing image for warping. Input size: 2560x1742
+11:26:03 - [DEBUG] - Markers ordered successfully. Centers: [148 189], [2441  210], ...
+11:26:03 - [INFO] - Warping completed successfully.
+11:26:03 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.84 | Min Conf: 0.05
+11:26:03 - [INFO] - Grading finished. Score: 445 (LC: 230, RC: 215)
+11:26:03 - [DEBUG] - Saved result image: Quyên.png
+11:26:03 - [DEBUG] - [4/9] Processing: Tú.jpg
+11:26:03 - [INFO] - Processing image for warping. Input size: 2374x1749
+11:26:03 - [DEBUG] - Markers ordered successfully. Centers: [107 216], [2290  226], ...
+11:26:03 - [INFO] - Warping completed successfully.
+11:26:03 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.88 | Min Conf: 0.60
+11:26:03 - [INFO] - Grading finished. Score: 470 (LC: 300, RC: 170)
+11:26:03 - [DEBUG] - Saved result image: Tú.png
+11:26:03 - [DEBUG] - [5/9] Processing: Bảo Hân.jpg
+11:26:03 - [INFO] - Processing image for warping. Input size: 2394x1806
+11:26:03 - [DEBUG] - Markers ordered successfully. Centers: [103 247], [2325  257], ...
+11:26:03 - [INFO] - Warping completed successfully.
+11:26:03 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.89 | Min Conf: 0.79
+11:26:03 - [INFO] - Grading finished. Score: 490 (LC: 310, RC: 180)
+11:26:03 - [DEBUG] - Saved result image: Bảo Hân.png
+11:26:03 - [DEBUG] - [6/9] Processing: Trần Tuấn Đạt.jpg
+11:26:03 - [INFO] - Processing image for warping. Input size: 2566x1895
+11:26:03 - [DEBUG] - Markers ordered successfully. Centers: [116 244], [2490  275], ...
+11:26:03 - [INFO] - Warping completed successfully.
+11:26:04 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.90 | Min Conf: 0.79
+11:26:04 - [INFO] - Grading finished. Score: 545 (LC: 305, RC: 240)
+11:26:04 - [DEBUG] - Saved result image: Trần Tuấn Đạt.png
+11:26:04 - [DEBUG] - [7/9] Processing: Bảo Trâm.jpg
+11:26:04 - [INFO] - Processing image for warping. Input size: 2558x1936
+11:26:04 - [DEBUG] - Markers ordered successfully. Centers: [ 88 288], [2473  304], ...
+11:26:04 - [INFO] - Warping completed successfully.
+11:26:04 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.88 | Min Conf: 0.73
+11:26:04 - [INFO] - Grading finished. Score: 505 (LC: 325, RC: 180)
+11:26:04 - [DEBUG] - Saved result image: Bảo Trâm.png
+11:26:04 - [DEBUG] - [8/9] Processing: Mai Thi.jpg
+11:26:04 - [INFO] - Processing image for warping. Input size: 2486x1832
+11:26:04 - [DEBUG] - Markers ordered successfully. Centers: [ 87 262], [2371  270], ...
+11:26:04 - [INFO] - Warping completed successfully.
+11:26:04 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.89 | Min Conf: 0.56
+11:26:04 - [INFO] - Grading finished. Score: 420 (LC: 255, RC: 165)
+11:26:04 - [DEBUG] - Saved result image: Mai Thi.png
+11:26:04 - [DEBUG] - [9/9] Processing: Trọng.jpg
+11:26:04 - [INFO] - Processing image for warping. Input size: 2466x1766
+11:26:04 - [DEBUG] - Markers ordered successfully. Centers: [147 193], [2380  204], ...
+11:26:04 - [INFO] - Warping completed successfully.
+11:26:04 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.90 | Min Conf: 0.03
+11:26:04 - [INFO] - Grading finished. Score: 475 (LC: 260, RC: 215)
+11:26:04 - [DEBUG] - Saved result image: Trọng.png
+11:26:04 - [INFO] - Worker finished. Success: 9/9. Time: 2.32s
+11:26:04 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:08 - [INFO] - Answer Key found for ETS 2026 - 1
+11:26:08 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:26:28 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:26:28 - [INFO] - Grading finished. Score: 485 (LC: 295, RC: 190)
+11:26:28 - [INFO] - Updated score for: Thục Nghi
+11:26:31 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:26:44 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:26:44 - [INFO] - Grading finished. Score: 540 (LC: 305, RC: 235)
+11:26:44 - [INFO] - Updated score for: Tuyết Anh
+11:26:46 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:27:46 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:27:46 - [INFO] - Grading finished. Score: 445 (LC: 230, RC: 215)
+11:27:46 - [INFO] - Updated score for: Quyên
+11:27:48 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:27:55 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:27:55 - [INFO] - Grading finished. Score: 470 (LC: 300, RC: 170)
+11:27:55 - [INFO] - Updated score for: Tú
+11:27:56 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:28:01 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:28:01 - [INFO] - Grading finished. Score: 490 (LC: 310, RC: 180)
+11:28:01 - [INFO] - Updated score for: Bảo Hân
+11:28:03 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:28:08 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:28:08 - [INFO] - Grading finished. Score: 545 (LC: 305, RC: 240)
+11:28:08 - [INFO] - Updated score for: Trần Tuấn Đạt
+11:28:10 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:28:14 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:28:14 - [INFO] - Grading finished. Score: 505 (LC: 325, RC: 180)
+11:28:14 - [INFO] - Updated score for: Bảo Trâm
+11:28:15 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:28:24 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:28:24 - [INFO] - Grading finished. Score: 420 (LC: 255, RC: 165)
+11:28:24 - [INFO] - Updated score for: Mai Thi
+11:28:26 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:28:48 - [DEBUG] - GradeManager initialized for Test ID: 1 (Length: 200)
+11:28:48 - [INFO] - Grading finished. Score: 475 (LC: 260, RC: 215)
+11:28:48 - [INFO] - Updated score for: Trọng
+11:28:54 - [DEBUG] - Loaded JSON successfully: app_config.json
+11:35:55 - [DEBUG] - Loaded JSON successfully: app_config.json

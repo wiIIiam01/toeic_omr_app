@@ -9,5 +9,6 @@ Bao gồm:
 from .warp_processor import WarpingProcessor
 from .omr_engine import OMREngine
 from .grade_manager import GradeManager
+from .report_generator import ReportGenerator
 
-__all__ = ['WarpingProcessor', 'OMREngine', 'GradeManager']
+__all__ = ['WarpingProcessor', 'OMREngine', 'GradeManager', 'ReportGenerator']

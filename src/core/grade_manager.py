@@ -1,3 +1,4 @@
+import json
 from typing import List, Dict, Any, Tuple
 from pathlib import Path
 import cv2
@@ -27,8 +28,45 @@ class GradeManager:
         self.test_id = test_id
         self.class_name = class_name
         self.test_date = test_date
-        
+        self.weight_matrix = self._load_skill_matrix()
         app_logger.debug(f"GradeManager initialized for Test ID: {test_id} (Length: {len(self.key)})")
+
+    def _load_skill_matrix(self) -> np.ndarray:
+        #Đọc JSON thành NumPy array, trả về None nếu file không tồn tại.
+        matrix_path = Path(f"config/skill_matrices/{self.set_name.replace(" ", "")}_{self.test_id}.json")
+        if not matrix_path.exists():
+            app_logger.error(f"Lỗi không tìm thấy {matrix_path}")
+            return None
+        try:
+            with open(matrix_path, 'r', encoding='utf-8') as f:
+                return np.array(json.load(f), dtype=float)
+        except Exception as e:
+            app_logger.error(f"Lỗi đọc ma trận kỹ năng đề {self.test_id}: {e}")
+            return None
+        
+    def _calculate_skills(self, correct_vector: List[int]) -> Dict[str, float]:
+        """Thực hiện nhân ma trận trên RAM."""
+        skill_keys = ['lc_1', 'lc_2', 'lc_3', 'lc_4', 'rc_1', 'rc_2', 'rc_3', 'rc_4', 'rc_5']
+        
+        if self.weight_matrix is None:
+            return {k: 0.0 for k in skill_keys}
+
+        try:
+            vec = np.array(correct_vector, dtype=float)
+            if len(vec) != self.weight_matrix.shape[0]:
+                vec = np.pad(vec, (0, max(0, self.weight_matrix.shape[0] - len(vec))))[:self.weight_matrix.shape[0]]
+
+            achieved_scores = vec.dot(self.weight_matrix)
+            max_scores = self.weight_matrix.sum(axis=0)
+            
+            ratios = np.zeros_like(achieved_scores, dtype=float)
+            np.divide(achieved_scores, max_scores, out=ratios, where=max_scores!=0)
+            
+            return {skill_keys[i]: round(float(ratios[i]), 2) for i in range(9)}
+
+        except Exception as e:
+            app_logger.error(f"Lỗi tính toán: {e}")
+            return {k: 0.0 for k in skill_keys}
 
     def _process_key(self, key_raw: str) -> str:
         """Làm sạch chuỗi đáp án (xóa khoảng trắng, xuống dòng)."""
@@ -55,13 +93,12 @@ class GradeManager:
         scaled_score = scale_dict.get(safe_raw_score, 5)
         return scaled_score
 
-    def grade_answers(self, user_answers: List[str]) -> Tuple[Dict[str, Any], List[int]]:
+    def grade_answers(self, user_answers: List[str]) -> Dict[str, Any]:
         """
         Chấm điểm chi tiết.
         
         Returns:
-            parts_stats (Dict): Điểm số từng phần (Part 1-7, LC, RC, Total).
-            correct_vector (List[int]): Danh sách 0/1 (0: Sai, 1: Đúng) cho từng câu.
+            parts_stats (Dict): Điểm số từng phần (Part 1-7, LC, RC, Total) và các nhóm kỹ năng.
         """
         n_answers = len(user_answers)
         n_key = len(self.key)
@@ -114,9 +151,11 @@ class GradeManager:
         parts_stats['LC'] = lc_score
         parts_stats['RC'] = rc_score
         parts_stats['Total'] = total_score
+        skill_stats = self._calculate_skills(correct_vector)
+        parts_stats.update(skill_stats)
         
         app_logger.info(f"Grading finished. Score: {total_score} (LC: {lc_score}, RC: {rc_score})")
-        return parts_stats, correct_vector
+        return parts_stats
 
     def format_result(self, base_name: str, parts: Dict[str, int], answers_list: List[str], conf_stats: Dict[str, Any] = None, process_time: float=0.0) -> Dict[str, Any]:
         """Tạo dictionary kết quả để lưu vào CSV."""
@@ -139,6 +178,15 @@ class GradeManager:
             "part_5": parts['part_5'],
             "part_6": parts['part_6'],
             "part_7": parts['part_7'],
+            "lc_skill_1": parts['lc_1'],
+            "lc_skill_2": parts['lc_2'],
+            "lc_skill_3": parts['lc_3'],
+            "lc_skill_4": parts['lc_4'],
+            "rc_skill_1": parts['rc_1'],
+            "rc_skill_2": parts['rc_2'],
+            "rc_skill_3": parts['rc_3'],
+            "rc_skill_4": parts['rc_4'],
+            "rc_skill_5": parts['rc_5'],
             "detected_ans": answers_string,
             "conf": conf_stats.get('confidences_list', []),
             "process_time": process_time,

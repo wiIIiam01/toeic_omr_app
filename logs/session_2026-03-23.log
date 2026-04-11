@@ -1,0 +1,252 @@
+01:35:32 - [INFO] - ==========================================
+01:35:32 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+01:35:32 - [INFO] - ==========================================
+01:35:32 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:35:32 - [DEBUG] - Loaded JSON successfully: key.json
+01:35:32 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+01:35:32 - [DEBUG] - FormStateManager initialized.
+01:35:33 - [INFO] - UI initialized successfully. Entering main loop.
+01:35:36 - [DEBUG] - User selected set: 'ETS 2026'
+01:35:36 - [DEBUG] - State changed: set_name = ETS 2026
+01:35:38 - [DEBUG] - State changed: test_id = 6
+01:35:38 - [INFO] - Answer Key found for ETS 2026 - 6
+01:35:45 - [DEBUG] - State changed: class_name = MockTest
+01:35:45 - [INFO] - Answer Key found for ETS 2026 - 6
+01:35:51 - [DEBUG] - State changed: test_date = 2026-03-22
+01:35:51 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:02 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:07 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:07 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:07 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:07 - [INFO] - Form validation passed. Ready to score.
+01:36:07 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:07 - [DEBUG] - WarpingProcessor initialized with config.
+01:36:07 - [DEBUG] - OMREngine initialized.
+01:36:07 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:36:07 - [INFO] - Worker started. Processing 20 files...
+01:36:07 - [DEBUG] - [1/20] Processing: Mau Thi Quyen.jpg
+01:36:07 - [INFO] - Processing image for warping. Input size: 3837x2687
+01:36:07 - [DEBUG] - Markers ordered successfully. Centers: [213 285], [3639  326], ...
+01:36:07 - [INFO] - Warping completed successfully.
+01:36:08 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.90 | Min Conf: 0.50
+01:36:08 - [INFO] - Grading finished. Score: 425 (LC: 245, RC: 180)
+01:36:08 - [DEBUG] - Saved result image: Mau Thi Quyen.png
+01:36:08 - [DEBUG] - [2/20] Processing: Nguyen Ngoc Anh Quan.jpg
+01:36:08 - [INFO] - Processing image for warping. Input size: 3721x2679
+01:36:08 - [DEBUG] - Markers ordered successfully. Centers: [123 296], [3545  274], ...
+01:36:08 - [INFO] - Warping completed successfully.
+01:36:08 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.34
+01:36:08 - [INFO] - Grading finished. Score: 505 (LC: 250, RC: 255)
+01:36:08 - [DEBUG] - Saved result image: Nguyen Ngoc Anh Quan.png
+01:36:08 - [DEBUG] - [3/20] Processing: Nguyen Thao My.jpg
+01:36:08 - [INFO] - Processing image for warping. Input size: 3814x2509
+01:36:08 - [DEBUG] - Markers ordered successfully. Centers: [199 185], [3620  202], ...
+01:36:08 - [INFO] - Warping completed successfully.
+01:36:08 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.61
+01:36:08 - [INFO] - Grading finished. Score: 555 (LC: 330, RC: 225)
+01:36:08 - [DEBUG] - Saved result image: Nguyen Thao My.png
+01:36:08 - [DEBUG] - [4/20] Processing: Vo Song Huong.jpg
+01:36:08 - [INFO] - Processing image for warping. Input size: 3825x2612
+01:36:09 - [DEBUG] - Markers ordered successfully. Centers: [234 259], [3637  249], ...
+01:36:09 - [INFO] - Warping completed successfully.
+01:36:09 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.22
+01:36:09 - [INFO] - Grading finished. Score: 645 (LC: 340, RC: 305)
+01:36:09 - [DEBUG] - Saved result image: Vo Song Huong.png
+01:36:09 - [DEBUG] - [5/20] Processing: Dinh Xuan Hoang.jpg
+01:36:09 - [INFO] - Processing image for warping. Input size: 3770x2760
+01:36:09 - [DEBUG] - Markers ordered successfully. Centers: [176 307], [3586  312], ...
+01:36:09 - [INFO] - Warping completed successfully.
+01:36:09 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.08
+01:36:09 - [INFO] - Grading finished. Score: 290 (LC: 165, RC: 125)
+01:36:09 - [DEBUG] - Saved result image: Dinh Xuan Hoang.png
+01:36:09 - [DEBUG] - [6/20] Processing: Dang Van Them.jpg
+01:36:09 - [INFO] - Processing image for warping. Input size: 3708x2781
+01:36:09 - [DEBUG] - Markers ordered successfully. Centers: [149 418], [3553  419], ...
+01:36:09 - [INFO] - Warping completed successfully.
+01:36:09 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.58
+01:36:09 - [INFO] - Grading finished. Score: 375 (LC: 215, RC: 160)
+01:36:09 - [DEBUG] - Saved result image: Dang Van Them.png
+01:36:09 - [DEBUG] - [7/20] Processing: Bui Tran Ngoc Han.jpg
+01:36:10 - [INFO] - Processing image for warping. Input size: 3719x2527
+01:36:10 - [DEBUG] - Markers ordered successfully. Centers: [142 194], [3560  209], ...
+01:36:10 - [INFO] - Warping completed successfully.
+01:36:10 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.76
+01:36:10 - [INFO] - Grading finished. Score: 530 (LC: 305, RC: 225)
+01:36:10 - [DEBUG] - Saved result image: Bui Tran Ngoc Han.png
+01:36:10 - [DEBUG] - [8/20] Processing: Cao Thi Nga.jpg
+01:36:10 - [INFO] - Processing image for warping. Input size: 4080x3060
+01:36:10 - [DEBUG] - Markers ordered successfully. Centers: [311 522], [3761  545], ...
+01:36:10 - [INFO] - Warping completed successfully.
+01:36:10 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.86
+01:36:10 - [INFO] - Grading finished. Score: 305 (LC: 175, RC: 130)
+01:36:10 - [DEBUG] - Saved result image: Cao Thi Nga.png
+01:36:10 - [DEBUG] - [9/20] Processing: Vo Thi Ngoc Thao.jpg
+01:36:10 - [INFO] - Processing image for warping. Input size: 3773x2741
+01:36:10 - [DEBUG] - Markers ordered successfully. Centers: [191 317], [3595  323], ...
+01:36:10 - [INFO] - Warping completed successfully.
+01:36:10 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.49
+01:36:10 - [INFO] - Grading finished. Score: 330 (LC: 165, RC: 165)
+01:36:11 - [DEBUG] - Saved result image: Vo Thi Ngoc Thao.png
+01:36:11 - [DEBUG] - [10/20] Processing: Tran Ngoc Y Nhi.jpg
+01:36:11 - [INFO] - Processing image for warping. Input size: 4080x3060
+01:36:11 - [DEBUG] - Markers ordered successfully. Centers: [370 501], [3816  474], ...
+01:36:11 - [INFO] - Warping completed successfully.
+01:36:11 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.83
+01:36:11 - [INFO] - Grading finished. Score: 780 (LC: 375, RC: 405)
+01:36:11 - [DEBUG] - Saved result image: Tran Ngoc Y Nhi.png
+01:36:11 - [DEBUG] - [11/20] Processing: Nguyen Hoang Phuong Thao.jpg
+01:36:11 - [INFO] - Processing image for warping. Input size: 4080x3060
+01:36:11 - [DEBUG] - Markers ordered successfully. Centers: [373 497], [3823  529], ...
+01:36:11 - [INFO] - Warping completed successfully.
+01:36:11 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.79
+01:36:11 - [INFO] - Grading finished. Score: 395 (LC: 210, RC: 185)
+01:36:11 - [DEBUG] - Saved result image: Nguyen Hoang Phuong Thao.png
+01:36:11 - [DEBUG] - [12/20] Processing: Huynh Thi My Phuong.jpg
+01:36:11 - [INFO] - Processing image for warping. Input size: 3708x2710
+01:36:12 - [DEBUG] - Markers ordered successfully. Centers: [169 330], [3563  352], ...
+01:36:12 - [INFO] - Warping completed successfully.
+01:36:12 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.82
+01:36:12 - [INFO] - Grading finished. Score: 450 (LC: 245, RC: 205)
+01:36:12 - [DEBUG] - Saved result image: Huynh Thi My Phuong.png
+01:36:12 - [DEBUG] - [13/20] Processing: Le Nguyen Tuong Vi.jpg
+01:36:12 - [INFO] - Processing image for warping. Input size: 3735x2676
+01:36:12 - [DEBUG] - Markers ordered successfully. Centers: [172 242], [3592  258], ...
+01:36:12 - [INFO] - Warping completed successfully.
+01:36:12 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.20
+01:36:12 - [INFO] - Grading finished. Score: 350 (LC: 170, RC: 180)
+01:36:12 - [DEBUG] - Saved result image: Le Nguyen Tuong Vi.png
+01:36:12 - [DEBUG] - [14/20] Processing: Nguyen Vo Ngoc My.jpg
+01:36:12 - [INFO] - Processing image for warping. Input size: 3797x2557
+01:36:12 - [DEBUG] - Markers ordered successfully. Centers: [224 175], [3625  204], ...
+01:36:12 - [INFO] - Warping completed successfully.
+01:36:12 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.82
+01:36:12 - [INFO] - Grading finished. Score: 610 (LC: 285, RC: 325)
+01:36:12 - [DEBUG] - Saved result image: Nguyen Vo Ngoc My.png
+01:36:12 - [DEBUG] - [15/20] Processing: Nguyen Ngoc Tu.jpg
+01:36:12 - [INFO] - Processing image for warping. Input size: 4080x3060
+01:36:13 - [DEBUG] - Markers ordered successfully. Centers: [372 550], [3810  509], ...
+01:36:13 - [INFO] - Warping completed successfully.
+01:36:13 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.75
+01:36:13 - [INFO] - Grading finished. Score: 450 (LC: 260, RC: 190)
+01:36:13 - [DEBUG] - Saved result image: Nguyen Ngoc Tu.png
+01:36:13 - [DEBUG] - [16/20] Processing: Nguyen Duc Tai.jpg
+01:36:13 - [INFO] - Processing image for warping. Input size: 3451x2493
+01:36:13 - [DEBUG] - Markers ordered successfully. Centers: [226 267], [3226  285], ...
+01:36:13 - [INFO] - Warping completed successfully.
+01:36:13 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.43
+01:36:13 - [INFO] - Grading finished. Score: 395 (LC: 220, RC: 175)
+01:36:13 - [DEBUG] - Saved result image: Nguyen Duc Tai.png
+01:36:13 - [DEBUG] - [17/20] Processing: Mang Minh Nguyet Yen.jpg
+01:36:13 - [INFO] - Processing image for warping. Input size: 3725x2721
+01:36:13 - [DEBUG] - Markers ordered successfully. Centers: [150 319], [3562  320], ...
+01:36:13 - [INFO] - Warping completed successfully.
+01:36:13 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.75
+01:36:13 - [INFO] - Grading finished. Score: 620 (LC: 365, RC: 255)
+01:36:13 - [DEBUG] - Saved result image: Mang Minh Nguyet Yen.png
+01:36:13 - [DEBUG] - [18/20] Processing: Ngo Nhat Tung.jpg
+01:36:14 - [INFO] - Processing image for warping. Input size: 3817x2749
+01:36:14 - [DEBUG] - Markers ordered successfully. Centers: [234 271], [3672  312], ...
+01:36:14 - [INFO] - Warping completed successfully.
+01:36:14 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.89 | Min Conf: 0.64
+01:36:14 - [INFO] - Grading finished. Score: 700 (LC: 410, RC: 290)
+01:36:14 - [DEBUG] - Saved result image: Ngo Nhat Tung.png
+01:36:14 - [DEBUG] - [19/20] Processing: Vo Xuan Truong.jpg
+01:36:14 - [INFO] - Processing image for warping. Input size: 3766x2665
+01:36:14 - [DEBUG] - Markers ordered successfully. Centers: [218 249], [3632  271], ...
+01:36:14 - [INFO] - Warping completed successfully.
+01:36:14 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.92 | Min Conf: 0.44
+01:36:14 - [INFO] - Grading finished. Score: 480 (LC: 250, RC: 230)
+01:36:14 - [DEBUG] - Saved result image: Vo Xuan Truong.png
+01:36:14 - [DEBUG] - [20/20] Processing: Tran Mai Van Thanh.jpg
+01:36:14 - [INFO] - Processing image for warping. Input size: 4080x3060
+01:36:14 - [DEBUG] - Markers ordered successfully. Centers: [311 463], [3760  497], ...
+01:36:14 - [INFO] - Warping completed successfully.
+01:36:15 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.93 | Min Conf: 0.52
+01:36:15 - [INFO] - Grading finished. Score: 320 (LC: 175, RC: 145)
+01:36:15 - [DEBUG] - Saved result image: Tran Mai Van Thanh.png
+01:36:15 - [INFO] - Worker finished. Success: 20/20. Time: 7.56s
+01:36:15 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:18 - [INFO] - Answer Key found for ETS 2026 - 6
+01:36:18 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:36:30 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:36:30 - [INFO] - Grading finished. Score: 425 (LC: 245, RC: 180)
+01:36:30 - [INFO] - Updated score for: Mau Thi Quyen
+01:36:33 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:36:36 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:36:36 - [INFO] - Grading finished. Score: 505 (LC: 250, RC: 255)
+01:36:36 - [INFO] - Updated score for: Nguyen Ngoc Anh Quan
+01:36:38 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:36:45 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:36:45 - [INFO] - Grading finished. Score: 555 (LC: 330, RC: 225)
+01:36:45 - [INFO] - Updated score for: Nguyen Thao My
+01:36:46 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:36:50 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:36:50 - [INFO] - Grading finished. Score: 645 (LC: 340, RC: 305)
+01:36:50 - [INFO] - Updated score for: Vo Song Huong
+01:36:51 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:03 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:03 - [INFO] - Grading finished. Score: 290 (LC: 165, RC: 125)
+01:37:03 - [INFO] - Updated score for: Dinh Xuan Hoang
+01:37:08 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:14 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:14 - [INFO] - Grading finished. Score: 375 (LC: 215, RC: 160)
+01:37:14 - [INFO] - Updated score for: Dang Van Them
+01:37:16 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:18 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:18 - [INFO] - Grading finished. Score: 530 (LC: 305, RC: 225)
+01:37:18 - [INFO] - Updated score for: Bui Tran Ngoc Han
+01:37:20 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:23 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:23 - [INFO] - Grading finished. Score: 305 (LC: 175, RC: 130)
+01:37:23 - [INFO] - Updated score for: Cao Thi Nga
+01:37:24 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:31 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:31 - [INFO] - Grading finished. Score: 330 (LC: 165, RC: 165)
+01:37:31 - [INFO] - Updated score for: Vo Thi Ngoc Thao
+01:37:33 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:35 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:35 - [INFO] - Grading finished. Score: 780 (LC: 375, RC: 405)
+01:37:35 - [INFO] - Updated score for: Tran Ngoc Y Nhi
+01:37:37 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:39 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:39 - [INFO] - Grading finished. Score: 395 (LC: 210, RC: 185)
+01:37:39 - [INFO] - Updated score for: Nguyen Hoang Phuong Thao
+01:37:40 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:37:50 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:37:50 - [INFO] - Grading finished. Score: 450 (LC: 245, RC: 205)
+01:37:50 - [INFO] - Updated score for: Huynh Thi My Phuong
+01:37:51 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:00 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:00 - [INFO] - Grading finished. Score: 350 (LC: 170, RC: 180)
+01:38:00 - [INFO] - Updated score for: Le Nguyen Tuong Vi
+01:38:02 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:06 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:06 - [INFO] - Grading finished. Score: 610 (LC: 285, RC: 325)
+01:38:06 - [INFO] - Updated score for: Nguyen Vo Ngoc My
+01:38:08 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:13 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:13 - [INFO] - Grading finished. Score: 450 (LC: 260, RC: 190)
+01:38:13 - [INFO] - Updated score for: Nguyen Ngoc Tu
+01:38:14 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:18 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:18 - [INFO] - Grading finished. Score: 395 (LC: 220, RC: 175)
+01:38:18 - [INFO] - Updated score for: Nguyen Duc Tai
+01:38:19 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:23 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:23 - [INFO] - Grading finished. Score: 620 (LC: 365, RC: 255)
+01:38:23 - [INFO] - Updated score for: Mang Minh Nguyet Yen
+01:38:25 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:31 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:31 - [INFO] - Grading finished. Score: 700 (LC: 410, RC: 290)
+01:38:31 - [INFO] - Updated score for: Ngo Nhat Tung
+01:38:35 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:44 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:44 - [INFO] - Grading finished. Score: 480 (LC: 250, RC: 230)
+01:38:44 - [INFO] - Updated score for: Vo Xuan Truong
+01:38:45 - [DEBUG] - Loaded JSON successfully: app_config.json
+01:38:49 - [DEBUG] - GradeManager initialized for Test ID: 6 (Length: 200)
+01:38:49 - [INFO] - Grading finished. Score: 320 (LC: 175, RC: 145)
+01:38:49 - [INFO] - Updated score for: Tran Mai Van Thanh
+01:38:51 - [INFO] - Updated Master Data: data\master.csv
+02:06:35 - [INFO] - Application closed by user.
+02:06:35 - [INFO] - Application Process Terminated.

@@ -10,7 +10,7 @@ from .state_manager import FormStateManager
 from .components import DragDropArea, FileTableView
 
 from src.utils import app_logger, FileHandler
-from src.core import WarpingProcessor, OMREngine, GradeManager
+from src.core import WarpingProcessor, OMREngine, GradeManager, ReportGenerator
 from src.workers import ScoringWorker
 from .review_window import ReviewWindow
 
@@ -320,7 +320,7 @@ class OMRApplication:
             )
             
             # parts_stats chứa: {'Total': 900, 'LC': 400, 'Part 1': 5...}
-            parts_stats, _ = gm.grade_answers(list(new_answers_str))
+            parts_stats = gm.grade_answers(list(new_answers_str))
 
             # 2. CẬP NHẬT TRỰC TIẾP VÀO old_result (Không tạo dict mới)            
             # A. Cập nhật Điểm tổng
@@ -511,7 +511,15 @@ class OMRApplication:
         results = self.state_manager.get_value('results')
         if not results: return
         try:
-            path = FileHandler.save_results(results)
-            if path: messagebox.showinfo("Saved", f"Đã lưu kết quả: {path}")
+            csv_path = FileHandler.save_results(results) 
+            # 2. Xuất Báo cáo hình ảnh (Thẻ điểm)
+            report_gen = ReportGenerator()
+            success_count, reports_dir = report_gen.generate_batch(results)
+            # 3. Thông báo
+            messagebox.showinfo(
+                "Hoàn tất", 
+                f"Đã lưu CSV: {csv_path}\nĐã xuất {success_count} thẻ điểm tại:\n{reports_dir}"
+            )
         except Exception as e:
-            messagebox.showerror("Lỗi", str(e))
+            app_logger.error(f"Lỗi khi save results: {e}")
+            messagebox.showerror("Lỗi Lưu Báo Cáo", str(e))
