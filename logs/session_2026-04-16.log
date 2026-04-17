@@ -1,0 +1,42 @@
+16:41:35 - [INFO] - ==========================================
+16:41:35 - [INFO] -    STARTING TOEIC OMR SCORING APP v2.2    
+16:41:35 - [INFO] - ==========================================
+16:41:36 - [DEBUG] - Loaded JSON successfully: app_config.json
+16:41:36 - [DEBUG] - Loaded JSON successfully: key.json
+16:41:36 - [DEBUG] - Loaded JSON successfully: scoring_ref.json
+16:41:36 - [DEBUG] - FormStateManager initialized.
+16:41:37 - [INFO] - UI initialized successfully. Entering main loop.
+16:43:50 - [DEBUG] - User selected set: 'ETS 2026'
+16:43:50 - [DEBUG] - State changed: set_name = ETS 2026
+16:43:52 - [DEBUG] - State changed: test_id = 3
+16:43:52 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:55 - [DEBUG] - State changed: class_name = self
+16:43:55 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:57 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:58 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:58 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:58 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:58 - [INFO] - Auto-set date to today: 2026-04-16
+16:43:58 - [INFO] - Form validation passed. Ready to score.
+16:43:59 - [INFO] - Answer Key found for ETS 2026 - 3
+16:43:59 - [DEBUG] - WarpingProcessor initialized with config.
+16:43:59 - [DEBUG] - OMREngine initialized.
+16:43:59 - [DEBUG] - GradeManager initialized for Test ID: 3 (Length: 200)
+16:43:59 - [INFO] - Worker started. Processing 1 files...
+16:43:59 - [DEBUG] - [1/1] Processing: E26-T3-Nguyễn Văn Phong.jpg
+16:43:59 - [INFO] - Processing image for warping. Input size: 4080x3060
+16:43:59 - [DEBUG] - Markers ordered successfully. Centers: [140 196], [3880  182], ...
+16:43:59 - [INFO] - Warping completed successfully.
+16:43:59 - [INFO] - OMR Success. Answers: 200 | Avg Conf: 0.94 | Min Conf: 0.85
+16:43:59 - [INFO] - Grading finished. Score: 985 (LC: 495, RC: 490)
+16:43:59 - [DEBUG] - Saved result image: E26-T3-Nguyễn Văn Phong.png
+16:43:59 - [INFO] - Worker finished. Success: 1/1. Time: 0.34s
+16:43:59 - [INFO] - Answer Key found for ETS 2026 - 3
+16:44:01 - [INFO] - Answer Key found for ETS 2026 - 3
+16:44:03 - [DEBUG] - Loaded JSON successfully: app_config.json
+16:48:28 - [DEBUG] - GradeManager initialized for Test ID: 3 (Length: 200)
+16:48:28 - [INFO] - Grading finished. Score: 985 (LC: 495, RC: 490)
+16:48:28 - [INFO] - Updated score for: E26-T3-Nguyễn Văn Phong
+16:48:33 - [INFO] - Updated Master Data: data\master.csv
+16:49:02 - [INFO] - Application closed by user.
+16:49:02 - [INFO] - Application Process Terminated.
