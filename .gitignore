@@ -1,0 +1,8 @@
+logs/*
+data/*
+
+!logs/.gitkeep
+!data/.gitkeep
+
+copy.py
+Merged_Project_Code.txt

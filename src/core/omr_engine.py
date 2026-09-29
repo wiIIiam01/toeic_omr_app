@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from pathlib import Path
+import time
 from typing import Tuple, Dict, Any, List
 from src.utils.logger import app_logger
 
@@ -256,6 +258,46 @@ class OMREngine:
                 
                     # Truy xuất trực tiếp theo tọa độ (r, g) -> Cực kỳ an toàn
                     confidence = conf_grid[r, g]
+                    if confidence < 0.25: 
+                        col_start = g * 4
+                        col_end = col_start + 3
+                        
+                        PAD = 5
+                        x_left = X_CENTERS[col_start] - R - PAD
+                        x_right = X_CENTERS[col_end] + R + PAD
+                        y_top = Y_CENTERS[r] - R - PAD
+                        y_bottom = Y_CENTERS[r] + R + PAD
+                        
+                        H_img, W_img = img_warped_bgr.shape[:2]
+                        x_left, y_top = max(0, x_left), max(0, y_top)
+                        x_right, y_bottom = min(W_img, x_right), min(H_img, y_bottom)
+                        
+                        crop_img = img_warped_bgr[y_top:y_bottom, x_left:x_right]
+                        
+                        if crop_img.size > 0:
+                            gray_crop = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+                            
+                            # Thuật toán tìm thư mục gốc an toàn tuyệt đối bằng Pathlib
+                            current_file = Path(__file__).resolve()
+                            project_root = current_file.parent
+                            
+                            # Lùi ngược lên cho đến khi thấy thư mục 'src'
+                            for parent in current_file.parents:
+                                if parent.name == 'src':
+                                    project_root = parent.parent # Lấy thư mục chứa src
+                                    break
+                                    
+                            conflict_dir = project_root / 'conflict'
+                            conflict_dir.mkdir(parents=True, exist_ok=True)
+                            
+                            timestamp = int(time.time() * 1000)
+                            filename = f"low_conf_r{r}_g{g}_{timestamp}.png"
+                            filepath = conflict_dir / filename
+                            
+                            # In ra log để bạn biết chính xác file đang được lưu ở đâu
+                            app_logger.debug(f"Đang lưu ảnh conflict tại: {filepath}")
+                            
+                            cv2.imwrite(str(filepath), gray_crop)
                     conf_text = f"{int(confidence * 100)}"
                     
                     # Lấy tọa độ X, Y để vẽ
