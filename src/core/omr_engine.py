@@ -4,7 +4,16 @@ from pathlib import Path
 import time
 from typing import Tuple, Dict, Any, List
 from src.utils.logger import app_logger
+from functools import lru_cache
+import threading
 
+@lru_cache(maxsize=8)
+def _circle_offsets(R: int):
+    """Offset (dy, dx) của các pixel trong hình tròn bán kính R-2 (tính 1 lần cho mỗi R)."""
+    mask = np.zeros((2 * R, 2 * R), dtype=np.uint8)
+    cv2.circle(mask, (R, R), R - 2, 255, -1)
+    dy, dx = np.nonzero(mask)
+    return dy - R, dx - R
 class OMREngine:
 
     SCAN_THICKNESS = 50 
@@ -21,39 +30,53 @@ class OMREngine:
         self.config = config
         self.VIS_CFG = config.get('ALGORITHM_CONFIG', {}).get('visualization', {})
         app_logger.debug("OMREngine initialized.")
+        self.save_conflict_crops = config.get('save_conflict_crops', True)
+        self.conflict_dir = self._resolve_conflict_dir() if self.save_conflict_crops else None
 
-    def _fill_density(self, img_binary: np.ndarray, center_x: int, center_y: int, R: int) -> float:
-        """
-        Lấy giá trị density (độ đậm) của ô.
-        """
-        H, W = img_binary.shape
-        r_start = max(0, center_y - R)
-        r_end = min(H, center_y + R)
-        c_start = max(0, center_x - R)
-        c_end = min(W, center_x + R)
-    
-        roi = img_binary[r_start:r_end, c_start:c_end]
+    @staticmethod
+    def _resolve_conflict_dir() -> Path:
+        """Tìm thư mục gốc dự án (cha của 'src') và tạo <root>/conflict một lần duy nhất."""
+        current_file = Path(__file__).resolve()
+        root = current_file.parent
+        for parent in current_file.parents:
+            if parent.name == 'src':
+                root = parent.parent
+                break
+        d = root / 'conflict'
+        d.mkdir(parents=True, exist_ok=True)
+        return d
 
-        if roi.size == 0: return 0.0
-        
-        roi_h = r_end - r_start
-        roi_w = c_end - c_start
+    def _save_conflict_crop(self, img_bgr, x_centers, y_centers, r, g, R, pad=5):
+        """Cắt vùng 4 bubble của câu low-conf và lưu (an toàn với đường dẫn Unicode)."""
+        H, W = img_bgr.shape[:2]
+        x0 = max(0, x_centers[g * 4] - R - pad)
+        x1 = min(W, x_centers[g * 4 + 3] + R + pad)
+        y0 = max(0, y_centers[r] - R - pad)
+        y1 = min(H, y_centers[r] + R + pad)
+        crop = img_bgr[y0:y1, x0:x1]
+        if crop.size == 0:
+            return
+        ok, buf = cv2.imencode(".png", cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY))
+        if ok:
+            name = f"low_conf_r{r}_g{g}_{time.time_ns()}_{threading.get_ident()}.png"
+            try:
+                (self.conflict_dir / name).write_bytes(buf.tobytes())
+            except OSError as e:
+                app_logger.warning(f"Không lưu được ảnh conflict: {e}")
 
-        mask = np.zeros((roi_h, roi_w), dtype=np.uint8)
-        roi_center_x = roi_w // 2
-        roi_center_y = roi_h // 2
-    
-        cv2.circle(mask, (roi_center_x, roi_center_y), R-2, 255, -1) 
-    
-        masked_roi = cv2.bitwise_and(roi, roi, mask=mask)
-        total_circle_pixels = np.sum(mask == 255) 
-        filled_pixels_in_circle = np.sum(masked_roi == 255) 
-    
-        if total_circle_pixels == 0:
-            return 0.0
-        
-        return filled_pixels_in_circle / total_circle_pixels
-    
+    def _compute_density_matrix(self, img_binary: np.ndarray,
+                                x_centers: List[int], y_centers: List[int], R: int) -> np.ndarray:
+        """Tính độ đậm của toàn bộ lưới (rows x cols) trong một lần vector hóa."""
+        H, W = img_binary.shape[:2]
+        dy, dx = _circle_offsets(R)
+        if dy.size == 0:
+            return np.zeros((len(y_centers), len(x_centers)), dtype=float)
+
+        ys = np.clip(np.asarray(y_centers)[:, None, None] + dy, 0, H - 1)   # (rows, 1, N)
+        xs = np.clip(np.asarray(x_centers)[None, :, None] + dx, 0, W - 1)   # (1, cols, N)
+        samples = img_binary[ys, xs]                                        # (rows, cols, N)
+        return (samples == 255).mean(axis=2)
+
     def _read_answers(self, density_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Input: Ma trận density của 25x32 bubbles
@@ -205,16 +228,10 @@ class OMREngine:
             X_CENTERS = self._interpolate_x_original(valid_top_marks)
             Y_CENTERS = self._find_left_marks(img_warped_marker)
             
-            # 2. Detect Density
+            # 2. Detect Density (vector hóa toàn bộ 800 ô)
             rows = len(Y_CENTERS)
             cols = len(X_CENTERS)
-
-            density_matrix = np.zeros((rows, cols), dtype=float)
-
-            for i, center_y in enumerate(Y_CENTERS): 
-                for j, center_x in enumerate(X_CENTERS): 
-                    density = self._fill_density(img_warped_binary, center_x, center_y, R)
-                    density_matrix[i, j] = density
+            density_matrix = self._compute_density_matrix(img_warped_binary, X_CENTERS, Y_CENTERS, R)
 
             # 3. XỬ LÝ VECTOR HÓA (Nhận về Grid 25x8)
             answers_grid, conf_grid = self._read_answers(density_matrix)
@@ -258,46 +275,8 @@ class OMREngine:
                 
                     # Truy xuất trực tiếp theo tọa độ (r, g) -> Cực kỳ an toàn
                     confidence = conf_grid[r, g]
-                    if confidence < 0.25: 
-                        col_start = g * 4
-                        col_end = col_start + 3
-                        
-                        PAD = 5
-                        x_left = X_CENTERS[col_start] - R - PAD
-                        x_right = X_CENTERS[col_end] + R + PAD
-                        y_top = Y_CENTERS[r] - R - PAD
-                        y_bottom = Y_CENTERS[r] + R + PAD
-                        
-                        H_img, W_img = img_warped_bgr.shape[:2]
-                        x_left, y_top = max(0, x_left), max(0, y_top)
-                        x_right, y_bottom = min(W_img, x_right), min(H_img, y_bottom)
-                        
-                        crop_img = img_warped_bgr[y_top:y_bottom, x_left:x_right]
-                        
-                        if crop_img.size > 0:
-                            gray_crop = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
-                            
-                            # Thuật toán tìm thư mục gốc an toàn tuyệt đối bằng Pathlib
-                            current_file = Path(__file__).resolve()
-                            project_root = current_file.parent
-                            
-                            # Lùi ngược lên cho đến khi thấy thư mục 'src'
-                            for parent in current_file.parents:
-                                if parent.name == 'src':
-                                    project_root = parent.parent # Lấy thư mục chứa src
-                                    break
-                                    
-                            conflict_dir = project_root / 'conflict'
-                            conflict_dir.mkdir(parents=True, exist_ok=True)
-                            
-                            timestamp = int(time.time() * 1000)
-                            filename = f"low_conf_r{r}_g{g}_{timestamp}.png"
-                            filepath = conflict_dir / filename
-                            
-                            # In ra log để bạn biết chính xác file đang được lưu ở đâu
-                            app_logger.debug(f"Đang lưu ảnh conflict tại: {filepath}")
-                            
-                            cv2.imwrite(str(filepath), gray_crop)
+                    if self.conflict_dir is not None and confidence < 0.25:
+                        self._save_conflict_crop(img_warped_bgr, X_CENTERS, Y_CENTERS, r, g, R)
                     conf_text = f"{int(confidence * 100)}"
                     
                     # Lấy tọa độ X, Y để vẽ

@@ -89,7 +89,7 @@ class FileHandler:
 
             df_new = pd.DataFrame(results)
             
-            EXCLUDED_FIELDS = ['Reference', 'Confidence', 'LowestConf', 'LowestConfidence']
+            EXCLUDED_FIELDS = ['Reference', 'Confidence', 'LowestConf', 'LowestConfidence', 'conf', 'process_time']
             cols_to_drop = [col for col in EXCLUDED_FIELDS if col in df_new.columns]
             if cols_to_drop:
                 df_new.drop(columns=cols_to_drop, inplace=True)
@@ -103,7 +103,7 @@ class FileHandler:
                 df_final = pd.concat([df_old, df_new], ignore_index=True)
                 
                 # KEY LOGIC: Lọc trùng. 
-                subset_keys = ['Date', 'Class', 'Name', 'Set', 'Test']
+                subset_keys = ['Date', 'Class', 'Set', 'Test', 'Surname', 'Name']
                 valid_keys = [k for k in subset_keys if k in df_final.columns]
                 
                 if valid_keys:

@@ -214,7 +214,7 @@ class FileTableView(tk.Frame):
             self.tree.delete(item)
             
         # Tạo map kết quả để tra cứu nhanh theo tên file
-        results_map = {res['Name']: res for res in results_list}
+        results_map = {res['FileName']: res for res in results_list}
 
         for img_path in image_files:
             file_name = img_path.name
@@ -252,6 +252,12 @@ class FileTableView(tk.Frame):
         if not self.tree.exists(iid): return
         
         if result_dict:
+            ho_lot = result_dict.get('Surname', '')
+            ten = result_dict.get('Name', '')
+            display_name = f"{ho_lot} {ten}".strip()
+            # Fallback nếu quét ra chuỗi rỗng
+            if not display_name:
+                display_name = img_path.name
             avg_conf = result_dict.get('Confidence', 0.0)
             min_conf = result_dict.get('LowestConf', 0.0)
             is_reviewed = result_dict.get('is_reviewed', False)
@@ -267,7 +273,7 @@ class FileTableView(tk.Frame):
                 tag = 'success'
                 
             values = (
-                img_path.name, 
+                display_name, 
                 result_dict['Total'], 
                 result_dict['LC'],
                 result_dict['RC'],

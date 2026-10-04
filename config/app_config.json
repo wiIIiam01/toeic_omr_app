@@ -24,10 +24,18 @@
     },
 
     "ALGORITHM_CONFIG": {
-        "marker_scaling_ref": 0.041726618705035974,
-        "warp_size": {
+        "preprocessing": {
+            "marker_scaling_ref": 0.0225,
+            "marker_aspect_ratio_range": [0.8, 1.2],
+            "min_marker_density": 0.7
+        },
+        "warp_top_size": {
             "width": 1320,
             "height": 869
+        },
+        "warp_bottom_size": {
+            "width": 1214,
+            "height": 854
         },
         "visualization": {
             "threshold_high_density": 0.65,

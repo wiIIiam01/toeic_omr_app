@@ -4,6 +4,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 import time
+import os
+from concurrent.futures import ThreadPoolExecutor
 
 # Import từ các package đã được tái cấu trúc
 from src.core import WarpingProcessor, OMREngine, GradeManager
@@ -40,68 +42,51 @@ class ScoringWorker(Thread):
         # Đặt thread là daemon để nó tự động tắt khi chương trình chính tắt
         self.daemon = True 
 
+    def _process_one(self, item):
+        """Chấm 1 ảnh. Không đụng tới UI; trả về (img_path, result_dict, error_msg)."""
+        index, img_path = item
+        base_name = img_path.stem
+        try:
+            t0 = time.perf_counter()
+            app_logger.debug(f"[{index+1}/{len(self.image_files)}] Processing: {img_path.name}")
+
+            stream = np.fromfile(str(img_path), np.uint8)
+            img_bgr = cv2.imdecode(stream, cv2.IMREAD_UNCHANGED)
+            if img_bgr is None:
+                raise ValueError("Không thể đọc file ảnh (File lỗi hoặc định dạng không hỗ trợ).")
+
+            warped_bgr, warped_bin, warped_marker, ho_lot, ten = self.warp_processor.process_warping(img_bgr)
+            answers_list, image_with_grid, conf_stats = self.omr_engine.process_omr(
+                self.answer_key, warped_marker, warped_bin, warped_bgr
+            )
+            parts_stats = self.grade_manager.grade_answers(answers_list)
+            self.grade_manager.save_result_image(base_name, image_with_grid, self.result_dir)
+
+            result = self.grade_manager.format_result(
+                ho_lot, ten, base_name, parts_stats, answers_list, conf_stats
+            )
+            return img_path, result, None
+        except Exception as e:
+            app_logger.error(f"Error processing {img_path.name}: {e}")
+            return img_path, None, str(e)
+
     def run(self):
-        """
-        Hàm chính thực thi khi thread bắt đầu (.start()).
-        Chạy quá trình chấm điểm tuần tự cho từng file.
-        """
         total_files = len(self.image_files)
-        app_logger.info(f"Worker started. Processing {total_files} files...")
-        
+        workers = max(1, min(4, os.cpu_count() or 2, total_files))  # cap 4: mỗi ảnh full-res ngốn ~100-150MB RAM
+        app_logger.info(f"Worker started. Processing {total_files} files with {workers} threads...")
+
         start_time = time.time()
         success_count = 0
-        
-        for index, img_path in enumerate(self.image_files):
-            result_dict = None
-            error_msg = None
-            base_name = img_path.stem
-            
-            try:
-                file_start_time = time.perf_counter()
-                app_logger.debug(f"[{index+1}/{total_files}] Processing: {img_path.name}")
-                
-                # 1. Đọc ảnh
-                stream = np.fromfile(str(img_path), np.uint8)
-                img_bgr = cv2.imdecode(stream, cv2.IMREAD_UNCHANGED)
-                
-                if img_bgr is None:
-                    raise ValueError("Không thể đọc file ảnh (File lỗi hoặc định dạng không hỗ trợ).")
 
-                # 2. Xử lý Warping (Căn chỉnh)
-                img_warped_bgr, img_warped_binary, img_warped_marker = self.warp_processor.process_warping(img_bgr)
-                
-                # 3. Xử lý OMR (Quét đáp án)
-                answers_list, image_with_grid, conf_stats = self.omr_engine.process_omr(
-                    self.answer_key,
-                    img_warped_marker,
-                    img_warped_binary, 
-                    img_warped_bgr
-                )
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            # map() trả kết quả theo đúng thứ tự file -> bảng UI và CSV giữ nguyên thứ tự
+            for img_path, result_dict, error_msg in pool.map(
+                    self._process_one, enumerate(self.image_files)):
+                if result_dict is not None:
+                    success_count += 1
+                self.gui_app.master.after(0, self.gui_app.on_file_graded,
+                                          img_path, result_dict, error_msg)
 
-                # 4. Chấm điểm
-                parts_stats = self.grade_manager.grade_answers(answers_list)
-
-                # 5. Lưu ảnh kết quả & Format dữ liệu
-                # Lưu ảnh có vẽ lưới chấm điểm để đối chiếu
-                self.grade_manager.save_result_image(base_name, image_with_grid, self.result_dir)
-                
-                file_end_time = time.perf_counter()
-                process_duration = file_end_time - file_start_time
-                
-                # Tạo dict kết quả để hiển thị lên bảng
-                result_dict = self.grade_manager.format_result(base_name, parts_stats, answers_list, conf_stats, process_duration)
-                
-                success_count += 1
-            
-            except Exception as e:
-                error_msg = str(e)
-                app_logger.error(f"Error processing {img_path.name}: {error_msg}")
-            
-            # Cập nhật giao diện (Thread-safe Call)
-            self.gui_app.master.after(0, self.gui_app.on_file_graded, img_path, result_dict, error_msg)
-
-        elapsed_time = time.time() - start_time
-        app_logger.info(f"Worker finished. Success: {success_count}/{total_files}. Time: {elapsed_time:.2f}s")
-        
-        # Thông báo hoàn tất quy trình
+        elapsed = time.time() - start_time
+        app_logger.info(f"Worker finished. Success: {success_count}/{total_files}. Time: {elapsed:.2f}s")
         self.gui_app.master.after(0, self.gui_app.on_scoring_complete)

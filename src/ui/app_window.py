@@ -5,6 +5,7 @@ from typing import Dict, Any, Optional, List
 import numpy as np
 import sys
 import os
+import subprocess
 
 from .state_manager import FormStateManager
 from .components import DragDropArea, FileTableView
@@ -194,7 +195,7 @@ class OMRApplication:
         info_area = tk.Frame(frame, bg=self.P['C_LIGHT'])
         info_area.grid(row=0, column=1, rowspan=2, sticky='nse') 
         
-        tk.Label(info_area, text="TOEIC OMR SCORING v2.2", 
+        tk.Label(info_area, text="TOEIC OMR SCORING v2.4", 
                  font=(self.D['FONT_FAMILY'], 12, "bold"), 
                  fg=self.P['C_PRIMARY_DARK'], bg=self.P['C_LIGHT']).pack(anchor='e')
         
@@ -297,7 +298,7 @@ class OMRApplication:
         # 3. Mở cửa sổ
         ReviewWindow(
             parent=self.master, # Dùng master làm parent
-            student_name=result_data.get('Name', 'Unknown'),
+            student_name = f"{result_data.get('Surname', '')} {result_data.get('Name', '')}".strip(),
             img_path=img_path,
             current_answers=result_data.get('ground_truth', ''),
             confidence_list=result_data.get('conf', []),
@@ -319,31 +320,33 @@ class OMRApplication:
                 set_name=set_name, test_id=test_id
             )
             
-            # parts_stats chứa: {'Total': 900, 'LC': 400, 'Part 1': 5...}
             parts_stats = gm.grade_answers(list(new_answers_str))
 
-            # 2. CẬP NHẬT TRỰC TIẾP VÀO old_result (Không tạo dict mới)            
-            # A. Cập nhật Điểm tổng
+            # Điểm tổng
             old_result['Total'] = parts_stats['Total']
             old_result['LC'] = parts_stats['LC']
             old_result['RC'] = parts_stats['RC']
-            
+
+            # Điểm từng Part
             for i in range(1, 8):
                 old_result[f'part_{i}'] = parts_stats.get(f'part_{i}', 0)
-            
-            # C. Cập nhật Đáp án chốt (Ground Truth)
+
+            # Điểm kỹ năng (trước đây bị bỏ sót -> thẻ điểm hiển thị sai)
+            for i in range(1, 5):
+                old_result[f'lc_skill_{i}'] = parts_stats.get(f'lc_{i}', 0.0)
+            for i in range(1, 6):
+                old_result[f'rc_skill_{i}'] = parts_stats.get(f'rc_{i}', 0.0)
+
+            # Đáp án chốt + đánh dấu đã review
             old_result['ground_truth'] = new_answers_str
-            old_result['Reference'] = new_answers_str # Giữ key này để UI hiển thị đúng
-            
-            # D. Đánh dấu đã review
+            old_result['Reference'] = new_answers_str
             old_result['is_reviewed'] = True
-            
 
             # 3. ĐỒNG BỘ DỮ LIỆU
             all_results = self.state_manager.get_value('results')
             
             for idx, item in enumerate(all_results):
-                if item.get('Name') == old_result.get('Name'):
+                if item.get('FileName') == old_result.get('FileName'):
                     all_results[idx] = old_result
                     break
             
@@ -454,6 +457,7 @@ class OMRApplication:
         result_name = f"{state['test_date']}_{state['set_name']}_{state['test_id']}_{state['class_name']}".replace(" ", "").replace("-", "")
         self.current_result_dir = self.parent_log_dir / result_name
         self.current_result_dir.mkdir(exist_ok=True)
+        self.current_report_dir = None
         
         # Reset results
         self.state_manager.set_value('results', [])
@@ -499,7 +503,8 @@ class OMRApplication:
             self.start_btn.config(bg=self.P['C_ACCENT'], fg=self.P['C_PRIMARY_DARK'])
 
     def _on_open_log_folder(self):
-        path = getattr(self, 'current_result_dir', self.parent_log_dir)
+        path = (getattr(self, 'current_report_dir', None)
+            or getattr(self, 'current_result_dir', self.parent_log_dir))
         try:
             if sys.platform == 'win32': os.startfile(path)
             elif sys.platform == 'darwin': os.system(f'open "{path}"')
@@ -515,6 +520,8 @@ class OMRApplication:
             # 2. Xuất Báo cáo hình ảnh (Thẻ điểm)
             report_gen = ReportGenerator()
             success_count, reports_dir = report_gen.generate_batch(results)
+            if reports_dir:
+                self.current_report_dir = reports_dir
             # 3. Thông báo
             messagebox.showinfo(
                 "Hoàn tất", 

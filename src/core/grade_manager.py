@@ -4,6 +4,21 @@ from pathlib import Path
 import cv2
 import numpy as np
 from src.utils import app_logger, OMRUtils
+from functools import lru_cache
+
+@lru_cache(maxsize=32)
+def _load_skill_matrix_cached(path_str: str):
+    """Đọc ma trận kỹ năng 1 lần cho mỗi file; trả về None nếu thiếu/lỗi."""
+    path = Path(path_str)
+    if not path.exists():
+        app_logger.error(f"Lỗi không tìm thấy {path}")
+        return None
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return np.array(json.load(f), dtype=float)
+    except Exception as e:
+        app_logger.error(f"Lỗi đọc ma trận kỹ năng {path.name}: {e}")
+        return None
 
 class GradeManager:
     """
@@ -32,17 +47,9 @@ class GradeManager:
         app_logger.debug(f"GradeManager initialized for Test ID: {test_id} (Length: {len(self.key)})")
 
     def _load_skill_matrix(self) -> np.ndarray:
-        #Đọc JSON thành NumPy array, trả về None nếu file không tồn tại.
-        matrix_path = Path(f"config/skill_matrices/{self.set_name.replace(" ", "")}_{self.test_id}.json")
-        if not matrix_path.exists():
-            app_logger.error(f"Lỗi không tìm thấy {matrix_path}")
-            return None
-        try:
-            with open(matrix_path, 'r', encoding='utf-8') as f:
-                return np.array(json.load(f), dtype=float)
-        except Exception as e:
-            app_logger.error(f"Lỗi đọc ma trận kỹ năng đề {self.test_id}: {e}")
-            return None
+        name = self.set_name.replace(" ", "")
+        return _load_skill_matrix_cached(f"config/skill_matrices/{name}_{self.test_id}.json")
+
         
     def _calculate_skills(self, correct_vector: List[int]) -> Dict[str, float]:
         """Thực hiện nhân ma trận trên RAM."""
@@ -157,17 +164,19 @@ class GradeManager:
         app_logger.info(f"Grading finished. Score: {total_score} (LC: {lc_score}, RC: {rc_score})")
         return parts_stats
 
-    def format_result(self, base_name: str, parts: Dict[str, int], answers_list: List[str], conf_stats: Dict[str, Any] = None, process_time: float=0.0) -> Dict[str, Any]:
-        """Tạo dictionary kết quả để lưu vào CSV."""
+    def format_result(self, ho_lot: str, ten: str, base_name: str, parts: Dict[str, int], answers_list: List[str], conf_stats: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Tạo dictionary kết quả để chuyển cho UI và lưu CSV."""
         answers_string = ''.join(answers_list)
         
-        # Format theo yêu cầu báo cáo
+        # Cấu trúc Cột chuẩn hóa theo đúng thứ tự bạn yêu cầu
         row_dict = {
             "Date": self.test_date,
             "Class": self.class_name,
             "Set": self.set_name,
             "Test": self.test_id,
-            "Name": base_name,
+            "FileName": base_name,
+            "Surname": ho_lot,
+            "Name": ten,
             "Total": parts['Total'],
             "LC": parts['LC'],
             "RC": parts['RC'],
@@ -178,25 +187,26 @@ class GradeManager:
             "part_5": parts['part_5'],
             "part_6": parts['part_6'],
             "part_7": parts['part_7'],
-            "lc_skill_1": parts['lc_1'],
-            "lc_skill_2": parts['lc_2'],
-            "lc_skill_3": parts['lc_3'],
-            "lc_skill_4": parts['lc_4'],
-            "rc_skill_1": parts['rc_1'],
-            "rc_skill_2": parts['rc_2'],
-            "rc_skill_3": parts['rc_3'],
-            "rc_skill_4": parts['rc_4'],
-            "rc_skill_5": parts['rc_5'],
+            "LC_skill_1": parts['lc_1'],
+            "LC_skill_2": parts['lc_2'],
+            "LC_skill_3": parts['lc_3'],
+            "LC_skill_4": parts['lc_4'],
+            "RC_skill_1": parts['rc_1'],
+            "RC_skill_2": parts['rc_2'],
+            "RC_skill_3": parts['rc_3'],
+            "RC_skill_4": parts['rc_4'],
+            "RC_skill_5": parts['rc_5'],
             "detected_ans": answers_string,
-            "conf": conf_stats.get('confidences_list', []),
-            "process_time": process_time,
             "ground_truth": answers_string,
             "is_reviewed": False
         }
-        # 1. Dành cho UI
-        row_dict['Confidence'] = conf_stats.get('confidence', 0.0)
-        row_dict['LowestConf'] = conf_stats.get('lowest_conf', 0.0)
         
+        # Dữ liệu nội bộ chỉ dùng cho UI (Sẽ bị lọc bỏ khi lưu CSV)
+        if conf_stats:
+            row_dict['conf'] = conf_stats.get('confidences_list', [])
+            row_dict['Confidence'] = conf_stats.get('confidence', 0.0)
+            row_dict['LowestConf'] = conf_stats.get('lowest_conf', 0.0)
+            
         return row_dict
         
     def save_result_image(self, base_name: str, image: np.ndarray, result_dir: Path) -> bool:

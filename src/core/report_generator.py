@@ -78,10 +78,10 @@ class ReportGenerator:
         try:
             bg = Image.open(self.template_path).convert("RGBA")
             draw = ImageDraw.Draw(bg)
-            raw_name = student_data.get("Name", "UNKNOWN")
-            
+            raw_name = f"{student_data.get('Surname', '')} {student_data.get('Name', '')}".strip()
+            file_name = student_data.get("FileName")
             # --- BƯỚC 1: Dán ảnh bài làm ---
-            img_path = image_source_dir / f"{raw_name}.png"
+            img_path = image_source_dir / f"{file_name}.png"
             if img_path.exists():
                 try:
                     paper = Image.open(img_path).convert("RGBA")
@@ -113,10 +113,10 @@ class ReportGenerator:
             self._draw_fill(draw, self.coords["main_bars"]["RC"], student_data.get("RC", 0)/495.0, self.color_rc, is_main=True)
 
             for i, box in enumerate(self.coords["lc_skills"], start=1):
-                self._draw_fill(draw, box, float(student_data.get(f"lc_skill_{i}", 0.0)), self.color_lc)
+                self._draw_fill(draw, box, float(student_data.get(f"LC_skill_{i}", 0.0)), self.color_lc)
                 
             for i, box in enumerate(self.coords["rc_skills"], start=1):
-                self._draw_fill(draw, box, float(student_data.get(f"rc_skill_{i}", 0.0)), self.color_rc)
+                self._draw_fill(draw, box, float(student_data.get(f"RC_skill_{i}", 0.0)), self.color_rc)
 
             # --- LƯU FILE ---
             output_dir.mkdir(parents=True, exist_ok=True)
