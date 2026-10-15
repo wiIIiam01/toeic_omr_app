@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OMR Labeling & Review Tool</title>
+    <style>
+        body { background-color: #1E1E1E; color: #FFFFFF; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; user-select: none; }
+        
+        /* Tab Navigation */
+        .tabs { display: flex; background: #2D2D2D; padding: 10px 20px; gap: 15px; border-bottom: 2px solid #111; }
+        .tab-btn { background: none; border: none; color: #888; font-size: 16px; font-weight: bold; cursor: pointer; padding: 8px 16px; border-radius: 6px; transition: 0.2s; }
+        .tab-btn:hover { background: #3D3D3D; color: #FFF; }
+        .tab-btn.active { background: #00ADB5; color: #1E1E1E; }
+
+        /* Container cấu trúc chung */
+        .tab-content { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; overflow-y: auto; }
+        .tab-content.active { display: flex; }
+
+        /* --- STYLES DÀNH CHO TAB 1 (LABEL) --- */
+        .header { margin-bottom: 20px; text-align: center; }
+        .stats { color: #A0A0A0; font-size: 14px; margin-bottom: 20px; }
+        .cards-container { display: flex; gap: 20px; margin-bottom: 30px; }
+        .bubble-card { width: 140px; height: 190px; background-color: #2D2D2D; border-radius: 12px; display: flex; flex-direction: column; align-items: center; padding: 15px; box-sizing: border-box; border: 2px solid transparent; position: relative; }
+        .bubble-card img { width: 100%; height: auto; image-rendering: pixelated; margin: auto; }
+        .bubble-label { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #888; }
+        .focus { transform: scale(1.1); border-color: #00ADB5; box-shadow: 0 0 15px rgba(0, 173, 181, 0.4); z-index: 10; }
+        .focus .bubble-label { color: #00ADB5; }
+        .label-badge { position: absolute; bottom: 10px; font-size: 14px; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: none; }
+        .lbl-Empty { border-color: #555; opacity: 0.6; } .lbl-Empty .label-badge { display: block; background: #555; color: white; content: "Empty"; }
+        .lbl-Deselected { border-color: #E23E57; } .lbl-Deselected .label-badge { display: block; background: #E23E57; color: white; }
+        .lbl-Selected { border-color: #00B8A9; } .lbl-Selected .label-badge { display: block; background: #00B8A9; color: white; }
+        .instructions { background: #2D2D2D; padding: 15px 30px; border-radius: 8px; text-align: center; font-size: 13px; line-height: 1.8; color: #CCC; }
+        kbd { background: #444; padding: 3px 6px; border-radius: 4px; font-family: monospace; color: #FFF; }
+
+        /* --- STYLES DÀNH CHO TAB 2 (DATA) --- */
+        #tab-review { align-items: stretch; justify-content: flex-start; padding: 20px; }
+        .review-filters { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-shrink: 0;}
+        .filter-btn { background: #333; color: #FFF; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .filter-btn.active { background: #FFF; color: #000; }
+        
+        .review-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
+            gap: 6px; 
+            width: 100%; 
+            padding-bottom: 50px;
+        }
+        .review-grid img { 
+            width: 100%; height: auto; border-radius: 6px; cursor: pointer; 
+            image-rendering: pixelated; 
+            background: #222; border: 2px solid transparent; 
+            transition: 0.1s;
+        }
+        .review-grid img:hover { transform: scale(1.15); border-color: #00ADB5; z-index: 5; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        
+        /* Hiệu ứng loading nhỏ khi scroll */
+        #scroll-loader { text-align: center; color: #00ADB5; padding: 20px; font-weight: bold; display: none; grid-column: 1/-1;}
+
+        /* Menu nổi */
+        #context-menu {
+            position: absolute; display: none; background: #333; border: 1px solid #555; border-radius: 8px; 
+            overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 100;
+        }
+        .ctx-item { padding: 10px 20px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .ctx-item:hover { background: #444; }
+        .ctx-item.ctx-empty { color: #AAA; }
+        .ctx-item.ctx-deselect { color: #E23E57; }
+        .ctx-item.ctx-select { color: #00B8A9; }
+    </style>
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('labeling')" id="btn-tab-labeling">Label</button>
+        <button class="tab-btn" onclick="switchTab('review')" id="btn-tab-review">Data</button>
+    </div>
+
+    <!-- TAB 1: LABEL -->
+    <div id="tab-labeling" class="tab-content active">
+        <div class="header">
+            <h2 id="q-title">Đang tải dữ liệu...</h2>
+            <div class="stats" id="stats">Còn lại: 0 câu</div>
+        </div>
+        <div class="cards-container" id="cards-container"></div>
+        <div class="instructions">
+            <kbd>1</kbd> / <kbd>↓</kbd> : Empty &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <kbd>2</kbd> / <kbd>←</kbd> : Deselected &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <kbd>3</kbd> / <kbd>→</kbd> : Selected<br><br>
+            <kbd>Space</kbd> : Chốt & Next &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <kbd>Backspace</kbd> : Undo &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <kbd>Tab</kbd> : Skip câu này
+        </div>
+    </div>
+
+    <!-- TAB 2: DATA -->
+    <div id="tab-review" class="tab-content">
+        <div class="review-filters">
+            <button class="filter-btn active" onclick="loadReview('Empty', this)">Empty</button>
+            <button class="filter-btn" onclick="loadReview('Deselected', this)">Deselected</button>
+            <button class="filter-btn" onclick="loadReview('Selected', this)">Selected</button>
+        </div>
+        <div class="review-grid" id="review-grid"></div>
+    </div>
+
+    <!-- MENU ĐỔI NHÃN NHANH -->
+    <div id="context-menu">
+        <div class="ctx-item ctx-empty" onclick="relabelImage('Empty')">Empty</div>
+        <div class="ctx-item ctx-deselect" onclick="relabelImage('Deselected')">Deselected</div>
+        <div class="ctx-item ctx-select" onclick="relabelImage('Selected')">Selected</div>
+    </div>
+
+    <script>
+        /* ================= LOGIC CHUNG ================= */
+        let currentTab = 'labeling';
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById(`btn-tab-${tab}`).classList.add('active');
+
+            closeContextMenu();
+
+            if(tab === 'review' && allReviewData.length === 0) {
+                loadReview('Empty', document.querySelector('.filter-btn'));
+            }
+        }
+
+        /* ================= TAB 1: LABEL ================= */
+        let tasks = [];
+        let currentTaskIndex = 0;
+        let activeBubble = 0; 
+        let currentLabels = [null, null, null, null];
+        const opts = ['A', 'B', 'C', 'D'];
+
+        fetch('/api/tasks', { cache: 'no-store' }).then(r => r.json()).then(data => {            tasks = data;
+            if(tasks.length > 0) renderTask();
+            else document.getElementById('q-title').innerText = "Thư mục trống hoặc đã gán nhãn xong!";
+        });
+
+        function renderTask() {
+            if(currentTaskIndex >= tasks.length) {
+                document.getElementById('q-title').innerText = "Hoàn thành tất cả!";
+                document.getElementById('cards-container').innerHTML = "";
+                return;
+            }
+            const task = tasks[currentTaskIndex];
+            document.getElementById('q-title').innerText = `${task.q_index} (Confidence: ${task.confidence}%)`;
+            document.getElementById('stats').innerText = `Còn lại: ${tasks.length - currentTaskIndex} câu`;
+            
+            const container = document.getElementById('cards-container');
+            container.innerHTML = "";
+            activeBubble = 0;
+            currentLabels = [null, null, null, null];
+
+            opts.forEach((opt, index) => {
+                const imgUrl = `/api/image?path=${encodeURIComponent(task[opt])}`;
+                container.innerHTML += `
+                    <div class="bubble-card" id="card-${index}">
+                        <div class="bubble-label">Option ${opt}</div>
+                        <img src="${imgUrl}">
+                        <div class="label-badge" id="badge-${index}"></div>
+                    </div>
+                `;
+            });
+            updateFocus();
+        }
+
+        function updateFocus() {
+            for(let i=0; i<4; i++) {
+                let card = document.getElementById(`card-${i}`);
+                if(!card) continue;
+                card.classList.remove('focus');
+                if(i === activeBubble) card.classList.add('focus');
+            }
+        }
+
+        function applyLabel(label) {
+            if(activeBubble > 3) return;
+            currentLabels[activeBubble] = label;
+            document.getElementById(`card-${activeBubble}`).className = `bubble-card lbl-${label}`;
+            document.getElementById(`badge-${activeBubble}`).innerText = label;
+            activeBubble++;
+            updateFocus();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if(currentTab !== 'labeling') return; 
+            if(tasks.length === 0 || currentTaskIndex >= tasks.length) return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if(activeBubble === 4) submitCurrentTask();
+                return;
+            }
+            if (e.code === 'Tab') {
+                e.preventDefault();
+                currentTaskIndex++;
+                renderTask();
+                return;
+            }
+            if (e.code === 'Backspace') {
+                if (activeBubble > 0) {
+                    activeBubble--;
+                    currentLabels[activeBubble] = null;
+                    document.getElementById(`card-${activeBubble}`).className = 'bubble-card';
+                    updateFocus();
+                }
+                return;
+            }
+
+            if (activeBubble < 4) {
+                if (e.key === 'ArrowDown' || e.key === '1') applyLabel('Empty');
+                if (e.key === 'ArrowLeft' || e.key === '2') applyLabel('Deselected');
+                if (e.key === 'ArrowRight' || e.key === '3') applyLabel('Selected');
+            }
+        });
+
+        function submitCurrentTask() {
+            const task = tasks[currentTaskIndex];
+            const payload = {
+                paths: { 'A': task.A, 'B': task.B, 'C': task.C, 'D': task.D },
+                labels: currentLabels
+            };
+            fetch('/api/submit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(() => {
+                currentTaskIndex++;
+                renderTask();
+            });
+        }
+
+        /* ================= TAB 2: DATA (INFINITE SCROLL) ================= */
+        let allReviewData = [];       // Lưu toàn bộ 4000+ đường dẫn ảnh
+        let currentRenderIndex = 0;   // Đánh dấu đã vẽ đến đâu
+        let currentReviewLabel = '';  // Lưu nhãn đang xem
+        const CHUNK_SIZE = 150;       // Mỗi lần scroll sẽ vẽ thêm 150 ảnh
+        
+        let selectedReviewImage = null; 
+        let currentReviewPath = null;
+
+        function loadReview(label, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+
+            const grid = document.getElementById('review-grid');
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color:#888;">Đang tải dữ liệu...</div>';
+            
+            currentReviewLabel = label;
+            currentRenderIndex = 0;
+            allReviewData = [];
+
+        fetch(`/api/labeled/${label}`, { cache: 'no-store' })                .then(r => {
+                    if (!r.ok) throw new Error("API không phản hồi. Hãy kiểm tra cửa sổ Terminal.");
+                    return r.json();
+                })
+                .then(files => {
+                    grid.innerHTML = '';
+                    if(files.length === 0) {
+                        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color:#888;">Thư mục này hiện không có ảnh nào.</div>';
+                        return;
+                    }
+                    
+                    // Gắn vào mảng tổng và kích hoạt vẽ lần đầu
+                    allReviewData = files;
+                    
+                    // Thêm DOM hiển thị trạng thái loading ở cuối grid
+                    const loader = document.createElement('div');
+                    loader.id = 'scroll-loader';
+                    loader.innerText = 'Đang tải thêm...';
+                    grid.appendChild(loader);
+                    
+                    renderNextChunk();
+                })
+                .catch(err => {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color:#E23E57;">Lỗi: ${err.message}</div>`;
+                });
+        }
+
+        // Hàm vẽ từng cụm 150 ảnh
+        function renderNextChunk() {
+            if (currentRenderIndex >= allReviewData.length) return;
+            
+            const grid = document.getElementById('review-grid');
+            const loader = document.getElementById('scroll-loader');
+            
+            const endIndex = Math.min(currentRenderIndex + CHUNK_SIZE, allReviewData.length);
+            
+            for(let i = currentRenderIndex; i < endIndex; i++) {
+                const filepath = allReviewData[i];
+                const img = document.createElement('img');
+                img.loading = "lazy";
+                img.src = `/api/image?path=${encodeURIComponent(filepath)}`;
+                img.title = filepath; 
+                img.onclick = (e) => openContextMenu(e, img, filepath, currentReviewLabel);
+                
+                // Chèn ảnh vào TRƯỚC cái loader
+                grid.insertBefore(img, loader);
+            }
+            
+            currentRenderIndex = endIndex;
+            
+            // Ẩn/hiện chữ "Đang tải thêm..."
+            if (currentRenderIndex >= allReviewData.length) {
+                loader.style.display = 'none';
+            } else {
+                loader.style.display = 'block';
+            }
+        }
+
+        // Lắng nghe sự kiện cuộn (Scroll) trên Tab Review
+        const tabReview = document.getElementById('tab-review');
+        tabReview.addEventListener('scroll', () => {
+            // Kiểm tra nếu cuộn cách đáy khoảng 400px thì kích hoạt vẽ tiếp
+            if (tabReview.scrollTop + tabReview.clientHeight >= tabReview.scrollHeight - 400) {
+                renderNextChunk();
+            }
+        });
+
+        /* ================= CONTEXT MENU ================= */
+        const ctxMenu = document.getElementById('context-menu');
+        
+        function openContextMenu(e, imgElement, filepath, currentLabel) {
+            e.stopPropagation(); 
+            selectedReviewImage = imgElement;
+            currentReviewPath = filepath;
+
+            document.querySelectorAll('.ctx-item').forEach(el => el.style.display = 'block');
+            if(currentLabel === 'Empty') document.querySelector('.ctx-empty').style.display = 'none';
+            if(currentLabel === 'Deselected') document.querySelector('.ctx-deselect').style.display = 'none';
+            if(currentLabel === 'Selected') document.querySelector('.ctx-select').style.display = 'none';
+
+            ctxMenu.style.left = `${e.pageX + 10}px`;
+            ctxMenu.style.top = `${e.pageY + 10}px`;
+            ctxMenu.style.display = 'block';
+        }
+
+        function relabelImage(newLabel) {
+            if(!currentReviewPath || !selectedReviewImage) return;
+            
+            // 1. Bảo lưu giá trị vào biến cục bộ trước khi xóa state
+            const targetImage = selectedReviewImage;
+            const targetPath = currentReviewPath; 
+            
+            targetImage.style.display = 'none'; 
+            
+            // 2. Đóng menu (hàm này sẽ set currentReviewPath = null)
+            closeContextMenu();
+
+            // 3. Gửi fetch bằng biến đã bảo lưu (targetPath)
+            fetch('/api/relabel', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    path: targetPath, 
+                    new_label: newLabel
+                })
+            })
+            .then(async r => {
+                if (!r.ok) {
+                    const errorText = await r.text();
+                    throw new Error(`HTTP ${r.status}: ${errorText.substring(0, 100)}...`);
+                }
+                return r.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    alert("Lỗi từ Backend: " + data.error);
+                    targetImage.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                alert("Lỗi quá trình chuyển file:\n" + err.message);
+                targetImage.style.display = 'block'; 
+            });
+        }
+
+        function closeContextMenu() {
+            ctxMenu.style.display = 'none';
+            selectedReviewImage = null;
+            currentReviewPath = null;
+        }
+
+        window.addEventListener('click', () => closeContextMenu());
+    </script>
+</body>
+</html>

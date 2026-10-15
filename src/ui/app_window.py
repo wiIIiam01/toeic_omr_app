@@ -333,9 +333,9 @@ class OMRApplication:
 
             # Điểm kỹ năng (trước đây bị bỏ sót -> thẻ điểm hiển thị sai)
             for i in range(1, 5):
-                old_result[f'lc_skill_{i}'] = parts_stats.get(f'lc_{i}', 0.0)
+                old_result[f'LC_skill_{i}'] = parts_stats.get(f'lc_{i}', 0.0)
             for i in range(1, 6):
-                old_result[f'rc_skill_{i}'] = parts_stats.get(f'rc_{i}', 0.0)
+                old_result[f'RC_skill_{i}'] = parts_stats.get(f'rc_{i}', 0.0)
 
             # Đáp án chốt + đánh dấu đã review
             old_result['ground_truth'] = new_answers_str

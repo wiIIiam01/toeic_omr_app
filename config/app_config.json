@@ -27,7 +27,9 @@
         "preprocessing": {
             "marker_scaling_ref": 0.0225,
             "marker_aspect_ratio_range": [0.8, 1.2],
-            "min_marker_density": 0.7
+            "min_marker_density": 0.7,
+            "marker_max_ref": 0.15,
+            "marker_size_consistency": 0.5
         },
         "warp_top_size": {
             "width": 1320,

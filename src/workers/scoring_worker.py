@@ -56,6 +56,9 @@ class ScoringWorker(Thread):
                 raise ValueError("Không thể đọc file ảnh (File lỗi hoặc định dạng không hỗ trợ).")
 
             warped_bgr, warped_bin, warped_marker, ho_lot, ten = self.warp_processor.process_warping(img_bgr)
+            if not ho_lot and not ten:
+                ten = base_name   # phôi 4 marker: dùng tên file làm tên học viên
+
             answers_list, image_with_grid, conf_stats = self.omr_engine.process_omr(
                 self.answer_key, warped_marker, warped_bin, warped_bgr
             )

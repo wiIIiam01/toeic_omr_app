@@ -7,6 +7,9 @@ from src.utils.logger import app_logger
 from functools import lru_cache
 import threading
 
+CONFLICT_MAX_CONF = 0.40
+CONF_BUCKETS = ("conf_00_10", "conf_11_20", "conf_21_30", "conf_31_40")
+
 @lru_cache(maxsize=8)
 def _circle_offsets(R: int):
     """Offset (dy, dx) của các pixel trong hình tròn bán kính R-2 (tính 1 lần cho mỗi R)."""
@@ -15,7 +18,6 @@ def _circle_offsets(R: int):
     dy, dx = np.nonzero(mask)
     return dy - R, dx - R
 class OMREngine:
-
     SCAN_THICKNESS = 50 
     
     # Thông số lọc nhiễu cho vạch định vị (Top Marks)
@@ -28,10 +30,19 @@ class OMREngine:
  
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.VIS_CFG = config.get('ALGORITHM_CONFIG', {}).get('visualization', {})
+        self.VIS_CFG = config.get('visualization', {})
         app_logger.debug("OMREngine initialized.")
         self.save_conflict_crops = config.get('save_conflict_crops', True)
         self.conflict_dir = self._resolve_conflict_dir() if self.save_conflict_crops else None
+
+        # Tạo 4 thư mục bucket MỘT LẦN ở luồng chính, trước khi ThreadPool chạy
+        if self.conflict_dir is not None:
+            for bucket in CONF_BUCKETS:
+                (self.conflict_dir / bucket).mkdir(exist_ok=True)
+
+        # Bộ sinh timestamp duy nhất (OMREngine được dùng chung cho 4 thread)
+        self._ts_lock = threading.Lock()
+        self._last_ts = 0
 
     @staticmethod
     def _resolve_conflict_dir() -> Path:
@@ -46,23 +57,51 @@ class OMREngine:
         d.mkdir(parents=True, exist_ok=True)
         return d
 
-    def _save_conflict_crop(self, img_bgr, x_centers, y_centers, r, g, R, pad=5):
-        """Cắt vùng 4 bubble của câu low-conf và lưu (an toàn với đường dẫn Unicode)."""
+    def _save_conflict_crops(self, img_bgr, x_centers, y_centers, r, g, R,
+                             q_idx: int, confidence: float, pad: int = 5):
         H, W = img_bgr.shape[:2]
-        x0 = max(0, x_centers[g * 4] - R - pad)
-        x1 = min(W, x_centers[g * 4 + 3] + R + pad)
-        y0 = max(0, y_centers[r] - R - pad)
-        y1 = min(H, y_centers[r] + R + pad)
-        crop = img_bgr[y0:y1, x0:x1]
-        if crop.size == 0:
-            return
-        ok, buf = cv2.imencode(".png", cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY))
-        if ok:
-            name = f"low_conf_r{r}_g{g}_{time.time_ns()}_{threading.get_ident()}.png"
+        conf_pct = int(confidence * 100)            # floor: khớp với số vẽ trên ảnh kết quả
+        out_dir = self.conflict_dir / self._conf_bucket(conf_pct)
+
+        half = R + pad
+        yc = y_centers[r]
+        y0, y1 = max(0, yc - half), min(H, yc + half)
+
+        for k, opt in enumerate("ABCD"):
+            xc = x_centers[g * 4 + k]               # cột của đáp án k trong nhóm g
+            x0, x1 = max(0, xc - half), min(W, xc + half)
+            crop = img_bgr[y0:y1, x0:x1]
+            if crop.size == 0:
+                continue
+
+            # Bù viền trắng nếu bị cắt sát mép -> mọi crop có cùng kích thước 2*half
+            crop = cv2.copyMakeBorder(
+                crop,
+                y0 - (yc - half), (yc + half) - y1,
+                x0 - (xc - half), (xc + half) - x1,
+                cv2.BORDER_CONSTANT, value=(255, 255, 255))
+
+            ok, buf = cv2.imencode(".png", cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY))
+            if not ok:
+                continue
+            name = f"Q{q_idx + 1}_Opt{opt}_conf{conf_pct}_{self._unique_timestamp()}.png"
             try:
-                (self.conflict_dir / name).write_bytes(buf.tobytes())
+                (out_dir / name).write_bytes(buf.tobytes())
             except OSError as e:
-                app_logger.warning(f"Không lưu được ảnh conflict: {e}")
+                app_logger.warning(f"Không lưu được ảnh conflict {name}: {e}")
+
+    def _unique_timestamp(self) -> int:
+        """Timestamp nano-giây, tăng nghiêm ngặt, an toàn đa luồng."""
+        with self._ts_lock:
+            ts = max(time.time_ns(), self._last_ts + 1)
+            self._last_ts = ts
+            return ts
+
+    @staticmethod
+    def _conf_bucket(conf_pct: int) -> str:
+        """0–10 -> conf_00_10, 11–20 -> conf_11_20, 21–30 -> conf_21_30, 31–40 -> conf_31_40."""
+        idx = min(max(conf_pct - 1, 0) // 10, len(CONF_BUCKETS) - 1)
+        return CONF_BUCKETS[idx]
 
     def _compute_density_matrix(self, img_binary: np.ndarray,
                                 x_centers: List[int], y_centers: List[int], R: int) -> np.ndarray:
@@ -275,8 +314,9 @@ class OMREngine:
                 
                     # Truy xuất trực tiếp theo tọa độ (r, g) -> Cực kỳ an toàn
                     confidence = conf_grid[r, g]
-                    if self.conflict_dir is not None and confidence < 0.25:
-                        self._save_conflict_crop(img_warped_bgr, X_CENTERS, Y_CENTERS, r, g, R)
+                    if self.conflict_dir is not None and confidence <= CONFLICT_MAX_CONF:
+                        self._save_conflict_crops(img_warped_bgr, X_CENTERS, Y_CENTERS,
+                                                  r, g, R, q_idx, confidence)
                     conf_text = f"{int(confidence * 100)}"
                     
                     # Lấy tọa độ X, Y để vẽ
